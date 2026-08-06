@@ -1,0 +1,43 @@
+name: Enable GitHub Pages
+
+# Turns on Pages for this repo with source = main / root, which is the mode
+# that honours the CNAME file (and therefore the elawaady.com custom domain).
+#
+# It is safe to re-run: if the site already exists the create call returns 409
+# and the job falls through to updating the source instead.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/enable-pages.yml']
+
+permissions:
+  pages: write
+
+jobs:
+  enable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Point Pages at main / root
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -o pipefail
+
+          code=$(gh api --method POST "/repos/$REPO/pages" \
+            --input - <<< '{"source":{"branch":"main","path":"/"}}' \
+            --silent --include 2>/dev/null | head -1 | awk '{print $2}') || code=""
+
+          if [ "$code" = "201" ]; then
+            echo "Pages site created."
+          else
+            echo "Create returned '${code:-error}', updating the existing site instead."
+            gh api --method PUT "/repos/$REPO/pages" \
+              --input - <<< '{"source":{"branch":"main","path":"/"}}'
+          fi
+
+          echo "--- current state ---"
+          gh api "/repos/$REPO/pages" \
+            --jq '{status, html_url, cname, source: .source}'
