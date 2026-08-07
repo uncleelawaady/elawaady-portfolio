@@ -1,98 +1,178 @@
-/* ===== Ahmed Elawaady — Portfolio (elawaady.com) =====
-   All editable content lives in the DATA block below.
-   Every entry has an Arabic (ar) and English (en) version.
+/* ===== Ahmed Elawaady — Personal Digital Portfolio (elawaady-db.com) =====
+   Every piece of editable copy lives in the DATA block below.
+   Each entry carries an Arabic (ar) and an English (en) version.
 */
 
 const WHATSAPP = '201055578777';
 
+/* ---------------------------------------------------------------------------
+   STATS — set these to your real figures before sharing the site.
+   They are the only numbers on the page, so they should be ones you can stand
+   behind. Leave a value as null to hide that tile entirely.
+--------------------------------------------------------------------------- */
+const STATS = [
+  { icon:'i-layers',   value:12,  suffix:'+', ar:'مشروع تم بناؤه',    en:'Projects built' },
+  { icon:'i-chip',     value:4,   suffix:'',  ar:'منصات رقمية',       en:'Digital platforms' },
+  { icon:'i-users',    value:20,  suffix:'+', ar:'مجتمع رقمي',        en:'Communities' },
+  { icon:'i-swap',     value:30,  suffix:'+', ar:'خدمة تُدار',        en:'Services managed' },
+  { icon:'i-code',     value:25,  suffix:'+', ar:'تقنية وأداة',       en:'Technologies' },
+  { icon:'i-clock',    value:8,   suffix:'+', ar:'سنوات خبرة',        en:'Years of experience' }
+];
+
 const DATA = {
-  /* Words that rotate in the hero headline */
+  /* Rotating line under the name */
   typed: {
-    ar: ['مؤسس EXD', 'خبير خدمات رقمية', 'وسيط موثوق', 'مطوّر منصات', 'مستثمر دومينات'],
-    en: ['Founder of EXD', 'Digital Services Expert', 'Trusted Escrow Agent', 'Platform Builder', 'Domain Investor']
+    ar: ['رائد أعمال رقمي', 'مؤسس منصات', 'باني أنظمة رقمية', 'مطوّر حلول ذكاء اصطناعي'],
+    en: ['Digital Entrepreneur', 'Platform Founder', 'Digital Systems Builder', 'AI Solutions Developer']
   },
 
-  /* Scrolling strip under the hero */
   marquee: {
-    ar: ['وساطة آمنة', 'تسويق سوشيال ميديا', 'توثيق حسابات', 'متاجر إلكترونية', 'بوتات تليجرام', 'هوية بصرية', 'ذكاء اصطناعي', 'دومينات مميزة'],
-    en: ['Secure escrow', 'Social media marketing', 'Account verification', 'E-commerce stores', 'Telegram bots', 'Brand identity', 'AI solutions', 'Premium domains']
+    ar: ['ريادة أعمال رقمية','منصات رقمية','ذكاء اصطناعي','أتمتة العمليات','تطوير الويب','تجارة إلكترونية','بناء المجتمعات','أنظمة وساطة','تسويق رقمي','تطوير الأعمال'],
+    en: ['Digital Entrepreneurship','Digital Platforms','Artificial Intelligence','Workflow Automation','Web Development','E-Commerce','Community Building','Escrow Systems','Digital Marketing','Business Development']
   },
 
-  services: [
-    { icon:'i-swap',      ar:['وساطة آمنة','وسيط موثوق بين البائع والمشتري — الفلوس محفوظة لحد ما الطرفين ياخدوا حقهم بالكامل.'], en:['Secure escrow','A trusted middleman between buyer and seller — funds stay protected until both sides are fully satisfied.'] },
-    { icon:'i-megaphone',       ar:['تسويق ونمو','حملات سوشيال ميديا وإدارة صفحات وزيادة حقيقية في الوصول والمبيعات.'], en:['Marketing & growth','Social campaigns, page management and real growth in reach and sales.'] },
-    { icon:'i-cart',  ar:['متاجر ومنصات','بناء متجر أو منصة كاملة بلوحة تحكم — جاهزة تستقبل طلبات من أول يوم.'], en:['Stores & platforms','A complete store or platform with an admin dashboard — ready to take orders on day one.'] },
-    { icon:'i-palette',        ar:['هوية بصرية وتصميم','لوجو، ألوان، وهوية متكاملة تخلي براندك متميز وسط المنافسين.'], en:['Branding & design','Logo, colors and a full identity that sets your brand apart.'] },
-    { icon:'i-robot',          ar:['بوتات وأتمتة','بوتات تليجرام وواتساب وأنظمة أتمتة توفر عليك وقت وشغل يدوي.'], en:['Bots & automation','Telegram and WhatsApp bots plus automation that saves you hours of manual work.'] },
-    { icon:'i-sparkles',          ar:['حلول ذكاء اصطناعي','دمج الـ AI في شغلك: محتوى، دعم عملاء، وتحليل بيانات.'], en:['AI solutions','AI woven into your workflow: content, customer support and data analysis.'] },
-    { icon:'i-badge',   ar:['توثيق حسابات','توثيق رسمي للحسابات والصفحات بخطوات واضحة وآمنة.'], en:['Account verification','Official verification for accounts and pages, done safely and transparently.'] },
-    { icon:'i-globe',          ar:['دومينات واستثمار','شراء وبيع وتقييم الدومينات المميزة — واستشارات استثمار رقمي.'], en:['Domains & investing','Buying, selling and valuing premium domains — plus digital investment advice.'] }
+  /* Areas of Expertise — rendered as pills, not a bullet list */
+  expertise: [
+    'Digital Entrepreneurship','Digital Platforms','E-Commerce','Social Media Business',
+    'AI Solutions','Workflow Automation','Web Development','Bot Development',
+    'Digital Marketing','Media Buying','Platform Operations','Escrow Systems',
+    'Community Building','Business Development'
   ],
 
-  work: [
+  /* What I Build */
+  builds: [
+    { icon:'i-chip',      ar:['المنصات','بناء منصات رقمية كاملة بحسابات ولوحات تحكم وعمليات تشغيل حقيقية.'],           en:['Platforms','Complete digital platforms with accounts, dashboards and real operating flows.'] },
+    { icon:'i-store',     ar:['الأسواق الرقمية','ربط العميل والتاجر والمورد والخدمة داخل سوق واحد منظم.'],              en:['Marketplaces','Connecting customer, merchant, supplier and service inside one organised market.'] },
+    { icon:'i-users',     ar:['المجتمعات','تحويل التجمعات العشوائية إلى مجتمعات منظمة لها قواعد وقيمة.'],               en:['Communities','Turning scattered groups into organised communities with rules and value.'] },
+    { icon:'i-bolt',      ar:['الأتمتة','أنظمة تتولى العمل المتكرر بدل ما يتعمل يدوي كل مرة.'],                        en:['Automation','Systems that take over repetitive work instead of doing it by hand every time.'] },
+    { icon:'i-sparkles',  ar:['تدفقات الذكاء الاصطناعي','دمج أدوات الـ AI داخل سير العمل، مش استخدامها بشكل منفصل.'],  en:['AI workflows','Weaving AI tools into the workflow itself, not using them off to the side.'] },
+    { icon:'i-swap',      ar:['أنظمة الوساطة','تنظيم المعاملات الرقمية بحيث تكون حقوق كل طرف موثقة.'],                 en:['Escrow systems','Structuring digital transactions so every party’s rights are documented.'] },
+    { icon:'i-cart',      ar:['التجارة الإلكترونية','متاجر ومنتجات رقمية بعمليات طلب ودفع وتسليم مترابطة.'],           en:['E-Commerce','Stores and digital products with order, payment and delivery wired together.'] },
+    { icon:'i-globe',     ar:['المنظومات المتكاملة','ربط التقنية والتجارة والتشغيل والعميل داخل تجربة واحدة.'],        en:['Business ecosystems','Technology, commerce, operations and customer inside a single experience.'] }
+  ],
+
+  /* Capability groups — each a card with its own list */
+  capabilities: [
     {
-      icon:'i-store', url:'https://elwaset.net',
-      ar:['Elwaset.net','المؤسس والمطور','منصة عربية متكاملة للخدمات الرقمية والوساطة الآمنة: متجر، لوحة تحكم، حسابات عملاء، وإثبات تعاملات موثق.'],
-      en:['Elwaset.net','Founder & Developer','A full Arabic platform for digital services and secure escrow: storefront, admin dashboard, client accounts and documented proof of deals.'],
-      tags:['Platform','Firebase','E-commerce','Escrow']
+      icon:'i-megaphone',
+      ar:['المنصات الاجتماعية','خبرة تشغيلية في إدارة وتطوير ونقل ملكية الحسابات عبر المنصات الكبرى.'],
+      en:['Social platforms','Operational experience managing, growing and transferring accounts across the major platforms.'],
+      items:['TikTok','YouTube','Facebook','Instagram','Snapchat','X / Twitter','Telegram']
     },
     {
-      icon:'i-layers', url:'',
-      ar:['EXD | Elawaady XDigital','المؤسس','الشركة الأم لكل مشاريعي الرقمية — خدمات تسويق وبرمجة وتصميم وإدارة حضور رقمي للعلامات التجارية.'],
-      en:['EXD | Elawaady XDigital','Founder','The parent brand behind all my digital work — marketing, development, design and digital presence management for brands.'],
-      tags:['Agency','Branding','Growth']
+      icon:'i-badge',
+      ar:['التوثيق','عمليات التوثيق تخضع دائمًا لمتطلبات وسياسات كل منصة، وكل حالة تُقيَّم بشكل مستقل دون وعود غير واقعية.'],
+      en:['Platform verification','Verification always follows each platform’s own requirements and policies. Every case is assessed on its own merits — no unrealistic promises.'],
+      items:['TikTok','Snapchat','Facebook','Instagram','X','WhatsApp Business']
     },
     {
-      icon:'i-users', url:'https://t.me/elawaadyofficial',
-      ar:['مجتمعات رقمية','المدير والمشرف','قنوات ومجموعات بآلاف الأعضاء في مجالات الربح والخدمات الرقمية والتجارة الإلكترونية.'],
-      en:['Digital communities','Manager & Admin','Channels and groups with thousands of members around online income, digital services and e-commerce.'],
-      tags:['Telegram','Community','Content']
+      icon:'i-chart',
+      ar:['التسويق الرقمي','إدارة حملات مدفوعة عبر الشبكات الرئيسية مع تتبع الأداء والتحسين المستمر.'],
+      en:['Digital marketing','Running paid campaigns across the major networks with performance tracking and continuous optimisation.'],
+      items:['Meta Ads','Google Ads','TikTok Ads','Snapchat Ads','YouTube Ads','Media Buying','Campaign Management','Analytics']
     },
     {
-      icon:'i-globe', url:'',
-      ar:['محفظة الدومينات','المستثمر','محفظة أسماء نطاقات مميزة عربية وإنجليزية، مبنية على بحث في السوق والطلب الحقيقي.'],
-      en:['Domain portfolio','Investor','A portfolio of premium Arabic and English domain names, built on real market research and demand.'],
-      tags:['Domains','Investment']
+      icon:'i-sparkles',
+      ar:['الذكاء الاصطناعي','استخدام أدوات الذكاء الاصطناعي لبناء حلول، أتمتة العمليات، إنتاج المحتوى، وربط الأدوات بالأنظمة الرقمية.'],
+      en:['Artificial intelligence','Using AI tools to build solutions, automate operations, produce content and wire tools into digital systems.'],
+      items:['ChatGPT','Claude','Gemini','Midjourney','Perplexity','ElevenLabs','AI Automation','AI-assisted Workflows']
     },
     {
-      icon:'i-robot', url:'',
-      ar:['بوتات وأنظمة أتمتة','المطور','بوتات تليجرام لإدارة الطلبات والدفع والدعم، متوصلة مباشرة بلوحات التحكم.'],
-      en:['Bots & automation systems','Developer','Telegram bots for order management, payments and support, wired straight into admin dashboards.'],
-      tags:['Bots','Automation','APIs']
+      icon:'i-code',
+      ar:['التطوير والأتمتة','بناء المواقع والمتاجر والبوتات وربطها بأنظمة الطلبات والدفع عبر واجهات برمجية.'],
+      en:['Development & automation','Building sites, stores and bots, then wiring them into order and payment systems through APIs.'],
+      items:['Website Development','E-Commerce','Telegram Bots','WhatsApp Bots','Order Automation','Workflow Automation','n8n','API Integrations']
     },
     {
-      icon:'i-chart', url:'',
-      ar:['استشارات نمو','المستشار','خطط نمو عملية لأصحاب المشاريع: تسعير، عروض، قنوات تسويق، وتحسين التحويل.'],
-      en:['Growth consulting','Consultant','Practical growth plans for business owners: pricing, offers, marketing channels and conversion.'],
-      tags:['Strategy','Consulting']
+      icon:'i-cart',
+      ar:['التجارة الرقمية','خبرة في أسواق المنتجات الرقمية — الاشتراكات وبطاقات الهدايا وأرصدة الألعاب وخدمات البث.'],
+      en:['Digital commerce','Experience across digital product markets — subscriptions, gift cards, gaming credits and streaming services.'],
+      items:['Digital Subscriptions','Gift Cards','Gaming Credits','Streaming Services','Software & AI Subscriptions']
     }
   ],
 
-  domains: [
-    { icon:'i-crown',        ar:['دومينات مميزة','أسماء قصيرة وسهلة الحفظ'],       en:['Premium names','Short and memorable'] },
-    { icon:'i-globe',     ar:['دومينات عربية','كلمات عربية عالية الطلب'],       en:['Arabic domains','High-demand Arabic keywords'] },
-    { icon:'i-cart',ar:['تجارة إلكترونية','مناسبة للمتاجر والمنصات'],     en:['E-commerce','Built for stores and platforms'] },
-    { icon:'i-briefcase',    ar:['خدمات وأعمال','لشركات الخدمات والوكالات'],       en:['Services & business','For agencies and service brands'] },
-    { icon:'i-chip',    ar:['تقنية وذكاء اصطناعي','لمشاريع التكنولوجيا'],     en:['Tech & AI','For technology ventures'] },
-    { icon:'i-coins',        ar:['مالية واستثمار','لمشاريع المال والاستثمار'],     en:['Finance & investing','For fintech and investment projects'] }
+  /* Featured case study */
+  caseStudy: {
+    ar:{
+      title:'Elawaady XDigital Platform',
+      cat:'منصة رقمية / سوق إلكتروني / عمليات تشغيل',
+      role:'المؤسس وباني المنصة',
+      lead:'منظومة رقمية طُوّرت فكرتها لتنظيم تقديم وإدارة الخدمات الرقمية، وربط العملاء والتجار والموردين والخدمات وعمليات الدفع والمتابعة داخل نظام واحد. الهدف لم يكن إنشاء صفحة بيع، وإنما بناء منظومة سوق رقمي أكثر تنظيمًا وقابلية للتوسع.',
+      conceptTitle:'أطراف المنظومة',
+      featuresTitle:'مكونات المنصة',
+      goalsTitle:'الأهداف',
+      escrowTitle:'نظام الوساطة الآمنة',
+      escrowLead:'طوّرت تصورًا لنظام وساطة يساعد على تنظيم المعاملات الرقمية وحفظ حقوق الأطراف: توثيق الاتفاق، استلام وحفظ المبلغ، متابعة مراحل التنفيذ، توثيق المحادثات، التأكد من التسليم، إدارة النزاعات، ثم تحويل المبلغ للطرف المستحق بعد استيفاء الشروط.',
+      flow:['اتفاق واضح','دفع محفوظ','تنفيذ','مراجعة','إتمام'],
+      disputeFlow:['نزاع','تجميد المبلغ','مراجعة الأدلة','حل'],
+      rulesTitle:'قواعد الوساطة',
+      rules:[
+        'الشروط تُكتب قبل بدء المعاملة.',
+        'أي تعديل يحتاج موافقة الأطراف.',
+        'التسليم يتم وفق الاتفاق الموثق.',
+        'النزاعات تُراجع اعتمادًا على الأدلة.',
+        'المبلغ يمكن تجميده عند وجود نزاع.',
+        'الوعود غير المكتوبة لا تدخل ضمن الاتفاق.'
+      ],
+      note:'الاعتماد يكون على الاتفاقات والمحادثات والأدلة الموثقة، وليس على ضمانات غير قابلة للتحقق.',
+      goals:['تنظيم السوق الرقمي','تقليل العشوائية','تحسين ثقة العملاء','حماية أطراف التعامل','تسهيل الوصول للخدمات','جمع الخدمات في مكان واحد','خلق فرص عمل','منظومة قابلة للتوسع عربيًا']
+    },
+    en:{
+      title:'Elawaady XDigital Platform',
+      cat:'Digital Marketplace / Platform / Operations',
+      role:'Founder & Platform Builder',
+      lead:'A digital ecosystem designed to organise how digital services are delivered and managed, connecting customers, merchants, suppliers, services, payments and follow-up inside one system. The goal was never a sales page — it was a more structured, scalable digital marketplace.',
+      conceptTitle:'Ecosystem parties',
+      featuresTitle:'Platform features',
+      goalsTitle:'Business goals',
+      escrowTitle:'Secure escrow workflow',
+      escrowLead:'I developed a model for an escrow system that helps structure digital transactions and protect each party’s rights: documenting the agreement, holding the funds, tracking execution, recording conversations, confirming delivery, handling disputes, then releasing payment once the terms are met.',
+      flow:['Clear agreement','Secured payment','Execution','Review','Completion'],
+      disputeFlow:['Dispute','Freeze funds','Review evidence','Resolution'],
+      rulesTitle:'Escrow rules',
+      rules:[
+        'Terms are written down before the transaction starts.',
+        'Any change requires both parties to agree.',
+        'Delivery follows the documented agreement.',
+        'Disputes are reviewed against the evidence.',
+        'Funds can be frozen while a dispute is open.',
+        'Unwritten promises are not part of the agreement.'
+      ],
+      note:'Everything rests on documented agreements, conversations and evidence — not on guarantees that cannot be verified.',
+      goals:['Organise the digital market','Reduce the chaos','Improve customer trust','Protect both sides of a deal','Make services easier to reach','One place for many services','Create work opportunities','A scalable Arab-world ecosystem']
+    },
+    parties:['Customer','Merchant','Supplier','Services','Orders','Payments','Support','Ratings','Notifications','Escrow'],
+    features:['User Accounts','Merchant Accounts','Supplier Accounts','Service Catalog','Order Management','Secure Payments','Customer Support','Order Tracking','Notifications','Reviews','Related Services','Escrow Module']
+  },
+
+  /* Journey timeline — adjust years to match your own record */
+  journey: [
+    { year:'2018', ar:['البداية في السوق الرقمي','مسوّق ومشغّل','بداية العمل في الخدمات الرقمية وإدارة الحسابات وبناء أول شبكة عملاء.'],
+                   en:['Entering the digital market','Marketer & operator','Started in digital services, account management and building a first client base.'] },
+    { year:'2020', ar:['بناء المجتمعات','مؤسس ومدير مجتمعات','إنشاء وإدارة قنوات ومجموعات رقمية وتحويلها إلى شبكة منظمة للعملاء والموردين.'],
+                   en:['Community building','Founder & community manager','Created and ran digital channels and groups, turning them into an organised client and supplier network.'] },
+    { year:'2022', ar:['التوسع في التسويق والتشغيل','مشتري إعلانات ومدير عمليات','إدارة حملات مدفوعة عبر الشبكات الرئيسية وبناء فرق متعددة التخصصات.'],
+                   en:['Scaling marketing & operations','Media buyer & operations lead','Ran paid campaigns across major networks and built multidisciplinary teams.'] },
+    { year:'2024', ar:['الأتمتة والذكاء الاصطناعي','مطوّر حلول','بناء بوتات وأنظمة أتمتة ودمج أدوات الذكاء الاصطناعي داخل سير العمل اليومي.'],
+                   en:['Automation & AI','Solutions developer','Built bots and automation systems and folded AI tools into day-to-day workflows.'] },
+    { year:'2025', ar:['Elawaady XDigital Platform','المؤسس وباني المنصة','تطوير منظومة سوق رقمي تجمع الخدمات والدفع والوساطة والمتابعة في نظام واحد.'],
+                   en:['Elawaady XDigital Platform','Founder & platform builder','Developed a marketplace ecosystem bringing services, payments, escrow and follow-up into one system.'] }
   ],
 
-  skills: [
-    { ar:'التسويق الرقمي وإدارة الحملات', en:'Digital marketing & campaigns', level:95 },
-    { ar:'إدارة المنصات والمتاجر',        en:'Platform & store management',   level:92 },
-    { ar:'الوساطة وإدارة الصفقات',        en:'Escrow & deal management',      level:98 },
-    { ar:'تطوير الويب والأتمتة',          en:'Web development & automation',  level:85 },
-    { ar:'الهوية البصرية والتصميم',       en:'Branding & design',             level:88 },
-    { ar:'التفاوض وخدمة العملاء',         en:'Negotiation & client service',  level:96 }
-  ],
+  /* Communities */
+  communities: ['Facebook Groups','WhatsApp Communities','Telegram Channels','Digital Services Communities','Gaming Communities','YouTube Communities','Buying & Selling Communities'],
 
-  tags: ['HTML','CSS','JavaScript','Firebase','Telegram Bots','SEO','Meta Ads','TikTok Ads','Canva','Photoshop','Google Analytics','WordPress','Shopify','n8n','ChatGPT','Midjourney','Notion','Domains'],
+  /* Professional network disciplines */
+  network: ['Media Buyers','Digital Marketers','Social Media Managers','Content Creators','Graphic Designers','Video Editors','Motion Designers','Web Developers','Bot Developers','UI/UX Designers','SEO Specialists','Affiliate Marketers','Sales','Customer Support','Moderators','Account Managers'],
 
-  steps: [
-    { ar:['نتكلم','نفهم مشروعك وهدفك والميزانية، ونحدد إيه اللي محتاجه فعلاً.'], en:['We talk','We map out your project, goal and budget, and define what you actually need.'] },
-    { ar:['خطة وعرض','عرض واضح بالسعر والمدة والمخرجات — من غير مفاجآت.'],       en:['Plan & quote','A clear quote with price, timeline and deliverables — no surprises.'] },
-    { ar:['تنفيذ','نبدأ الشغل مع تحديثات مستمرة لحد ما توافق على كل تفصيلة.'],   en:['Execution','We build with continuous updates until you sign off on every detail.'] },
-    { ar:['تسليم ومتابعة','تستلم شغلك جاهز، ومعاك دعم ومتابعة بعد التسليم.'],    en:['Delivery & support','You get the finished work, plus support and follow-up after delivery.'] }
+  /* Approach */
+  approach: [
+    { icon:'i-check-circle', ar:['وضوح','كل اتفاق مكتوب ومفهوم من الطرفين قبل ما الشغل يبدأ.'],        en:['Clarity','Every agreement written down and understood by both sides before work starts.'] },
+    { icon:'i-layers',       ar:['تنظيم','بناء هيكل للعملية بدل التعامل مع كل حالة من الصفر.'],        en:['Structure','Building a process instead of handling every case from scratch.'] },
+    { icon:'i-bolt',         ar:['أتمتة','كل خطوة متكررة تتحول لنظام يشتغل لوحده.'],                   en:['Automation','Every repeated step becomes a system that runs itself.'] },
+    { icon:'i-chart',        ar:['قابلية للتوسع','الحل يتبني بحيث يستحمل نمو الحجم من غير ما ينهار.'], en:['Scalability','Built so growth in volume does not break it.'] },
+    { icon:'i-palette',      ar:['تجربة مستخدم','الواجهة تخدم المستخدم مش تعقّد عليه.'],               en:['User experience','The interface serves the user rather than complicating things.'] },
+    { icon:'i-shield',       ar:['حماية التعاملات','توثيق كل مرحلة بحيث حقوق الأطراف محفوظة.'],        en:['Protected transactions','Documenting every stage so both parties’ rights hold up.'] }
   ]
 };
 
@@ -119,67 +199,115 @@ function applyLang(l) {
 
 /* ===================== Section builders ===================== */
 const t = (item) => item[lang];
+const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+const chips = (arr) => arr.map(x => `<span>${x}</span>`).join('');
 
 function buildSections() {
-  // Marquee (duplicated so the loop is seamless)
+  /* Marquee — duplicated so the loop has no visible seam */
   const items = DATA.marquee[lang];
-  document.getElementById('marqueeTrack').innerHTML = [...items, ...items]
-    .map(s => `<span><svg class="ic"><use href="#i-star"/></svg>${s}</span>`).join('');
+  set('marqueeTrack', [...items, ...items]
+    .map(s => `<span><svg class="ic"><use href="#i-diamond"/></svg>${s}</span>`).join(''));
 
-  // Services
-  document.getElementById('servicesGrid').innerHTML = DATA.services.map(s => {
-    const [title, desc] = t(s);
-    return `<article class="card reveal">
-      <div class="card-icon"><svg class="ic"><use href="#${s.icon}"/></svg></div>
+  /* Areas of expertise */
+  set('expertiseGrid', chips(DATA.expertise));
+
+  /* What I build */
+  set('buildsGrid', DATA.builds.map(b => {
+    const [title, desc] = t(b);
+    return `<article class="card glass reveal">
+      <div class="card-icon"><svg class="ic"><use href="#${b.icon}"/></svg></div>
       <h3>${title}</h3><p>${desc}</p>
     </article>`;
-  }).join('');
+  }).join(''));
 
-  // Work
-  document.getElementById('workGrid').innerHTML = DATA.work.map(w => {
-    const [title, role, desc] = t(w);
-    const link = w.url
-      ? `<a class="work-link" href="${w.url}" target="_blank" rel="noopener">
-           ${lang === 'ar' ? 'زيارة المشروع' : 'Visit project'} <svg class="ic"><use href="#i-external"/></svg>
-         </a>` : '';
-    return `<article class="work-card reveal">
-      <div class="work-top">
-        <div class="work-badge"><svg class="ic"><use href="#${w.icon}"/></svg></div>
-        <div><h3>${title}</h3><span class="role">${role}</span></div>
+  /* Capability groups */
+  set('capsGrid', DATA.capabilities.map(c => {
+    const [title, desc] = t(c);
+    return `<article class="card glass reveal">
+      <div class="card-icon"><svg class="ic"><use href="#${c.icon}"/></svg></div>
+      <h3>${title}</h3><p>${desc}</p>
+      <ul class="card-list">${c.items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </article>`;
+  }).join(''));
+
+  /* Case study — the flow arrow has to follow the reading direction, not the glyph */
+  const cs = DATA.caseStudy, c = cs[lang];
+  const arw = lang === 'ar' ? '←' : '→';
+  set('caseBody', `
+    <div class="case-head">
+      <div class="case-badge"><svg class="ic"><use href="#i-chip"/></svg></div>
+      <div>
+        <h3>${c.title}</h3>
+        <span class="case-role">${c.role} &nbsp;•&nbsp; ${c.cat}</span>
       </div>
+    </div>
+    <p class="case-lead">${c.lead}</p>
+
+    <div class="case-cols">
+      <div class="case-col">
+        <h4>${c.conceptTitle}</h4>
+        <div class="chip-list">${chips(cs.parties)}</div>
+      </div>
+      <div class="case-col">
+        <h4>${c.featuresTitle}</h4>
+        <div class="chip-list">${chips(cs.features)}</div>
+      </div>
+      <div class="case-col">
+        <h4>${c.goalsTitle}</h4>
+        <div class="chip-list">${chips(c.goals)}</div>
+      </div>
+    </div>
+
+    <div class="case-cols">
+      <div class="case-col" style="grid-column:1/-1">
+        <h4>${c.escrowTitle}</h4>
+        <p class="case-lead" style="margin-block:0 4px">${c.escrowLead}</p>
+        <div class="flow">${c.flow.map((s, i) =>
+          `${i ? `<span class="arw">${arw}</span>` : ''}<i>${s}</i>`).join('')}</div>
+        <div class="flow dispute">${c.disputeFlow.map((s, i) =>
+          `${i ? `<span class="arw">${arw}</span>` : ''}<i>${s}</i>`).join('')}</div>
+        <ul class="rules">
+          ${c.rules.map(r => `<li><svg class="ic"><use href="#i-check-circle"/></svg><span>${r}</span></li>`).join('')}
+        </ul>
+        <p class="case-lead" style="margin-block-end:0"><em>${c.note}</em></p>
+      </div>
+    </div>
+  `);
+
+  /* Journey timeline */
+  set('timeline', DATA.journey.map(j => {
+    const [title, role, desc] = t(j);
+    return `<article class="tl-item reveal">
+      <span class="tl-year">${j.year}</span>
+      <h3>${title}</h3>
+      <span class="tl-role">${role}</span>
       <p>${desc}</p>
-      <div class="tags">${w.tags.map(x => `<span>${x}</span>`).join('')}</div>
-      ${link}
     </article>`;
-  }).join('');
+  }).join(''));
 
-  // Domains
-  document.getElementById('domainsGrid').innerHTML = DATA.domains.map(d => {
-    const [title, desc] = t(d);
-    return `<article class="domain-card reveal">
-      <svg class="ic"><use href="#${d.icon}"/></svg><h4>${title}</h4><p>${desc}</p>
+  /* Communities & network */
+  set('communitiesGrid', chips(DATA.communities));
+  set('networkGrid', chips(DATA.network));
+
+  /* Approach */
+  set('approachGrid', DATA.approach.map(a => {
+    const [title, desc] = t(a);
+    return `<article class="card glass reveal">
+      <div class="card-icon"><svg class="ic"><use href="#${a.icon}"/></svg></div>
+      <h3>${title}</h3><p>${desc}</p>
     </article>`;
-  }).join('');
+  }).join(''));
 
-  // Skills
-  document.getElementById('skillsBars').innerHTML = DATA.skills.map(s => `
-    <div class="skill">
-      <div class="skill-top"><span>${s[lang]}</span><span>${s.level}%</span></div>
-      <div class="skill-bar"><i data-level="${s.level}"></i></div>
-    </div>`).join('');
-
-  document.getElementById('skillsTags').innerHTML =
-    DATA.tags.map(x => `<span>${x}</span>`).join('');
-
-  // Process
-  document.getElementById('stepsGrid').innerHTML = DATA.steps.map((s, i) => {
-    const [title, desc] = t(s);
-    return `<article class="step reveal">
-      <div class="step-num">0${i + 1}</div><h3>${title}</h3><p>${desc}</p>
-    </article>`;
-  }).join('');
+  /* Stats */
+  set('statsBand', STATS.filter(s => s.value != null).map(s => `
+    <div class="stat glass reveal">
+      <svg class="ic"><use href="#${s.icon}"/></svg>
+      <strong data-count="${s.value}" data-suffix="${s.suffix || ''}">0</strong>
+      <span>${s[lang]}</span>
+    </div>`).join(''));
 
   observeReveals();
+  runCounters();
 }
 
 /* ===================== Typing effect ===================== */
@@ -195,7 +323,7 @@ function startTyping() {
     el.textContent = word.slice(0, i);
 
     if (!deleting && i < word.length) { i++; typeTimer = setTimeout(tick, 90); }
-    else if (!deleting) { deleting = true; typeTimer = setTimeout(tick, 1600); }
+    else if (!deleting) { deleting = true; typeTimer = setTimeout(tick, 1700); }
     else if (i > 0) { i--; typeTimer = setTimeout(tick, 45); }
     else { deleting = false; w = (w + 1) % words.length; typeTimer = setTimeout(tick, 250); }
   })();
@@ -209,9 +337,6 @@ function observeReveals() {
       entries.forEach(e => {
         if (!e.isIntersecting) return;
         e.target.classList.add('in');
-        e.target.querySelectorAll('.skill-bar i').forEach(bar => {
-          bar.style.width = bar.dataset.level + '%';
-        });
         revealObserver.unobserve(e.target);
       });
     }, { threshold: .12, rootMargin: '0px 0px -60px 0px' });
@@ -223,12 +348,13 @@ function observeReveals() {
 function runCounters() {
   document.querySelectorAll('[data-count]').forEach(el => {
     const target = +el.dataset.count;
+    const suffix = el.dataset.suffix || '';
     const start = performance.now();
-    const dur = 1800;
+    const dur = 1600;
     (function step(now) {
       const p = Math.min((now - start) / dur, 1);
       const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(target * eased).toLocaleString('en-US');
+      el.textContent = Math.round(target * eased).toLocaleString('en-US') + (p === 1 ? suffix : '');
       if (p < 1) requestAnimationFrame(step);
     })(start);
   });
@@ -239,19 +365,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
 
   applyLang(lang);
-  runCounters();
 
-  // Language toggle
   document.getElementById('langBtn').addEventListener('click', () => {
     applyLang(lang === 'ar' ? 'en' : 'ar');
   });
 
-  // Mobile menu
   const navLinks = document.getElementById('navLinks');
   document.getElementById('navToggle').addEventListener('click', () => navLinks.classList.toggle('open'));
   navLinks.addEventListener('click', e => { if (e.target.tagName === 'A') navLinks.classList.remove('open'); });
 
-  // Scroll: navbar state, progress bar, active link
   const nav = document.getElementById('nav');
   const progress = document.getElementById('scrollProgress');
   const sections = [...document.querySelectorAll('section[id], header[id]')];
@@ -263,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     progress.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
 
-    const current = sections.filter(s => s.offsetTop - 120 <= y).pop();
+    const current = sections.filter(s => s.offsetTop - 130 <= y).pop();
     if (current) {
       document.querySelectorAll('.nav-links a').forEach(a =>
         a.classList.toggle('active', a.getAttribute('href') === '#' + current.id));
@@ -272,14 +394,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Contact form -> WhatsApp
+  /* Contact form -> WhatsApp with the message pre-filled */
   document.getElementById('contactForm').addEventListener('submit', e => {
     e.preventDefault();
     const f = e.target;
-    const required = ['name', 'contact', 'message'];
     let ok = true;
 
-    required.forEach(n => {
+    ['name', 'contact', 'message'].forEach(n => {
       const input = f.elements[n];
       const empty = !input.value.trim();
       input.classList.toggle('err', empty);
@@ -288,14 +409,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!ok) return;
 
     const L = lang === 'ar'
-      ? { head: 'رسالة من موقع elawaady.com', name: 'الاسم', contact: 'التواصل', service: 'الخدمة', msg: 'التفاصيل' }
-      : { head: 'Message from elawaady.com', name: 'Name', contact: 'Contact', service: 'Service', msg: 'Details' };
+      ? { head: 'رسالة من elawaady-db.com', name: 'الاسم', contact: 'التواصل', topic: 'الموضوع', msg: 'التفاصيل' }
+      : { head: 'Message from elawaady-db.com', name: 'Name', contact: 'Contact', topic: 'Topic', msg: 'Details' };
 
     const text =
       `*${L.head}*\n\n` +
       `${L.name}: ${f.elements.name.value.trim()}\n` +
       `${L.contact}: ${f.elements.contact.value.trim()}\n` +
-      `${L.service}: ${f.elements.service.value}\n` +
+      `${L.topic}: ${f.elements.topic.value}\n` +
       `${L.msg}: ${f.elements.message.value.trim()}`;
 
     window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
