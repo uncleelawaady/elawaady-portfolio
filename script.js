@@ -6,6 +6,68 @@
 const WHATSAPP = '201055578777';
 
 /* ---------------------------------------------------------------------------
+   KASHIDA — the elongation mark (ـ, U+0640) added inside Arabic words.
+
+   It cannot go just anywhere: the mark only renders as a stretched connection
+   when the letter before it joins forward. Alef, dal, thal, ra, zay, waw, ta
+   marbuta, alef maqsura and hamza never join to the letter after them, so a
+   mark placed after one of those sits detached and breaks the word instead.
+   The traditional position is the last joinable seam — right before the final
+   letter — so that is what this picks.
+
+   Set to false to turn the whole effect off.
+--------------------------------------------------------------------------- */
+const KASHIDA = true;
+
+const TATWEEL = 'ـ';
+const AR_LETTER = /[ء-غف-ي]/;
+/* Letters with no forward join — nothing may be attached after them. */
+const NO_FORWARD_JOIN = new Set([...'اأإآٱدذرزوؤةىء']);
+
+function kashidaWord(word) {
+  if (word.indexOf(TATWEEL) !== -1) return word;
+
+  const seams = [];
+  for (let i = 0; i < word.length - 1; i++) {
+    const a = word[i], b = word[i + 1];
+    if (!AR_LETTER.test(a) || !AR_LETTER.test(b)) continue;
+    if (NO_FORWARD_JOIN.has(a)) continue;
+    if (a === 'ل' && 'اأإآٱ'.indexOf(b) !== -1) continue;  // keep the lam-alef ligature whole
+    seams.push(i);
+  }
+  if (!seams.length) return word;
+
+  const i = seams[seams.length - 1];
+  return word.slice(0, i + 1) + TATWEEL + word.slice(i + 1);
+}
+
+const kashida    = (text) => text.replace(/\S+/g, kashidaWord);
+const stripKashida = (text) => text.split(TATWEEL).join('');
+
+/* Walks the rendered page and elongates every Arabic word in it. Running over
+   the DOM rather than the source strings means JS-built sections and static
+   markup are treated the same, and <head> is left alone so the page title and
+   meta description stay searchable. */
+const KASHIDA_SKIP = new Set(['SCRIPT', 'STYLE', 'SVG', 'TEXTAREA', 'INPUT', 'CODE']);
+
+function applyKashida(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue.trim() || !AR_LETTER.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+      for (let p = node.parentElement; p; p = p.parentElement) {
+        if (KASHIDA_SKIP.has(p.tagName.toUpperCase())) return NodeFilter.FILTER_REJECT;
+        if (p.getAttribute && p.getAttribute('dir') === 'ltr') return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => { n.nodeValue = kashida(n.nodeValue); });
+}
+
+/* ---------------------------------------------------------------------------
    STATS — set these to your real figures before sharing the site.
    They are the only numbers on the page, so they should be ones you can stand
    behind. Leave a value as null to hide that tile entirely.
@@ -195,6 +257,9 @@ function applyLang(l) {
 
   buildSections();
   startTyping();
+
+  /* Last, so it sees both the static markup and everything buildSections wrote. */
+  if (KASHIDA && l === 'ar') applyKashida(document.body);
 }
 
 /* ===================== Section builders ===================== */
@@ -315,7 +380,11 @@ let typeTimer;
 function startTyping() {
   clearTimeout(typeTimer);
   const el = document.getElementById('typed');
-  const words = DATA.typed[lang];
+  /* The typing loop rewrites this node constantly, so the DOM pass cannot hold
+     here — the words are elongated up front instead. */
+  const words = (KASHIDA && lang === 'ar')
+    ? DATA.typed[lang].map(kashida)
+    : DATA.typed[lang];
   let w = 0, i = 0, deleting = false;
 
   (function tick() {
@@ -412,12 +481,14 @@ document.addEventListener('DOMContentLoaded', () => {
       ? { head: 'رسالة من elawaady-db.com', name: 'الاسم', contact: 'التواصل', topic: 'الموضوع', msg: 'التفاصيل' }
       : { head: 'Message from elawaady-db.com', name: 'Name', contact: 'Contact', topic: 'Topic', msg: 'Details' };
 
-    const text =
+    /* The <option> labels are elongated on screen; the message that leaves the
+       site should be plain text. */
+    const text = stripKashida(
       `*${L.head}*\n\n` +
       `${L.name}: ${f.elements.name.value.trim()}\n` +
       `${L.contact}: ${f.elements.contact.value.trim()}\n` +
       `${L.topic}: ${f.elements.topic.value}\n` +
-      `${L.msg}: ${f.elements.message.value.trim()}`;
+      `${L.msg}: ${f.elements.message.value.trim()}`);
 
     window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
   });
