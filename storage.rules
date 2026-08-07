@@ -1,0 +1,74 @@
+rules_version = '2';
+
+/* ===========================================================================
+   قواعد Firebase Storage — elawaady-db.com
+   ===========================================================================
+   الحدود هنا مكتوبة على السيرفر، فحد يتخطى الواجهة ويرفع مباشرة هيترفض.
+
+   قبل النشر: بدّل OWNER_UID بالـUID بتاعك.
+=========================================================================== */
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function ownerUid() { return 'OWNER_UID'; }
+    function isOwner()  { return request.auth != null && request.auth.uid == ownerUid(); }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    /* بعد الضغط في المتصفح الصورة بتبقى أصغر من ده بكتير. الحد موجود عشان
+       اللي بيرفع مباشرة من غير ما يعدي على الضغط. */
+    function withinSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    /* ------------------------------------------------------------------
+       صور إثبات التعامل: reviews/{uid}/{reviewId}/{file}
+       كل مستخدم بيرفع تحت مجلده هو وبس.
+       ------------------------------------------------------------------
+       القراءة عامة — لأن زوار الموقع (وهما مش مسجلين) لازم يشوفوا صور
+       التقييمات المعتمدة. الروابط عشوائية ومش قابلة للتخمين، ومبتتنشرش
+       غير بعد ما توافق على التقييم.
+    ------------------------------------------------------------------ */
+    match /reviews/{uid}/{reviewId}/{fileName} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && isImage()
+                    && withinSize();
+
+      /* مفيش استبدال لصورة اترفعت — الجديد بيتحط باسم جديد.
+         كده الصورة اللي وافقت عليها متتغيرش من تحت إيدك. */
+      allow update: if false;
+
+      allow delete: if isOwner() || (request.auth != null && request.auth.uid == uid);
+    }
+
+    /* ------------------------------------------------------------------
+       وسائط الموقع: صورك وصور المشاريع — إنت بس
+    ------------------------------------------------------------------ */
+    match /site/{allPaths=**} {
+      allow read:  if true;
+      allow write: if isOwner() && isImage() && withinSize();
+    }
+
+    /* ------------------------------------------------------------------
+       صور البروفايل: avatars/{uid}/{file}
+    ------------------------------------------------------------------ */
+    match /avatars/{uid}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == uid
+                   && isImage()
+                   && request.resource.size < 2 * 1024 * 1024;
+    }
+
+    /* أي مسار تاني ممنوع */
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

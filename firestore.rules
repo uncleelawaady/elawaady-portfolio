@@ -1,0 +1,200 @@
+rules_version = '2';
+
+/* ===========================================================================
+   قواعد Firestore — elawaady-db.com
+   ===========================================================================
+   دي الحدود الحقيقية للنظام. الواجهة بتخفي الأزرار، والقواعد دي هي اللي
+   بترفض العملية نفسها — فحتى لو حد عدّل الجافاسكريبت أو نادى الـAPI مباشرة،
+   مش هيعدي.
+
+   الملكية مربوطة بـ UID ثابت مش بالإيميل: الإيميل ممكن يتغير أو يتنقل،
+   والـUID بيفضل هو هو طول عمر الحساب.
+
+   قبل النشر: بدّل OWNER_UID تحت بالـUID بتاعك من
+   Firebase Console → Authentication → Users → عمود User UID
+=========================================================================== */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ------------------------------------------------------------------
+       الأساسيات
+    ------------------------------------------------------------------ */
+    function ownerUid() {
+      return 'OWNER_UID';
+    }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    /* مالك واحد بس. مفيش قائمة أدمن، ومفيش ترقية من أي مكان في الواجهة. */
+    function isOwner() {
+      return signedIn() && request.auth.uid == ownerUid();
+    }
+
+    /* الحقول اللي اتغيّرت فعلًا في عملية التحديث دي */
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function onlyChanged(allowed) {
+      return changed().hasOnly(allowed);
+    }
+
+    /* ------------------------------------------------------------------
+       محتوى البورتفوليو
+       content/portfolio  = المنشور، الموقع العام بيقراه
+       content/draft      = المسودة، للمالك بس
+    ------------------------------------------------------------------ */
+    match /content/portfolio {
+      allow read:  if true;
+      allow write: if isOwner();
+    }
+
+    match /content/draft {
+      /* المسودة مش منشورة، فمحدش غير المالك يشوفها */
+      allow read, write: if isOwner();
+    }
+
+    /* تاريخ النسخ للرجوع. بيتكتب مرة وبس — مفيش تعديل على نسخة قديمة،
+       عشان تاريخ النشر يفضل سجل موثوق. */
+    match /content_versions/{versionId} {
+      allow read:   if isOwner();
+      allow create: if isOwner();
+      allow update: if false;
+      allow delete: if isOwner();
+    }
+
+    /* ترتيب الأقسام وإظهارها */
+    match /sections/{sectionKey} {
+      allow read:  if true;
+      allow write: if isOwner();
+    }
+
+    /* إعدادات الموقع وروابط التواصل وSEO */
+    match /settings/{docId} {
+      allow read:  if true;
+      allow write: if isOwner();
+    }
+
+    /* ------------------------------------------------------------------
+       المستخدمين
+       المستخدم بيملك ملفه، بس مش بيملك دوره.
+    ------------------------------------------------------------------ */
+    match /users/{uid} {
+
+      function isSelf() {
+        return signedIn() && request.auth.uid == uid;
+      }
+
+      /* الحقول اللي المستخدم مسموح له يلمسها. أي حقل تاني — وأهمهم role
+         و status — بيتحدد من هنا وبس. */
+      function userEditableOnly() {
+        return onlyChanged(['displayName', 'photoURL', 'bio', 'updatedAt']);
+      }
+
+      allow read: if isSelf() || isOwner();
+
+      /* عند التسجيل: الدور لازم يكون user، والحساب لازم يبقى باسمه هو */
+      allow create: if isSelf()
+                    && request.resource.data.role == 'user'
+                    && request.resource.data.status == 'active'
+                    && request.resource.data.uid == uid;
+
+      allow update: if isOwner()
+                    || (isSelf() && userEditableOnly());
+
+      /* الحذف للمالك بس — عشان التقييمات متفضلش من غير صاحب */
+      allow delete: if isOwner();
+    }
+
+    /* ------------------------------------------------------------------
+       التقييمات
+    ------------------------------------------------------------------ */
+    match /reviews/{reviewId} {
+
+      function isAuthor() {
+        return signedIn() && resource.data.uid == request.auth.uid;
+      }
+
+      function validNewReview() {
+        let d = request.resource.data;
+        return d.uid == request.auth.uid
+            && d.status == 'pending'                    // مفيش نشر ذاتي
+            && d.featured == false
+            && d.rating is int && d.rating >= 1 && d.rating <= 5
+            && d.title is string  && d.title.size() <= 90
+            && d.body is string   && d.body.size() >= 10 && d.body.size() <= 1500
+            && d.dealType in ['escrow', 'trade', 'digital', 'project', 'consulting', 'other']
+            && !('moderatedBy' in d)
+            && !('moderatedAt' in d);
+      }
+
+      /* الحقول اللي صاحب التقييم يقدر يعدّلها، وهو لسه مستني مراجعة بس.
+         status و featured و moderatedBy و moderatedAt مش منهم. */
+      function authorEditableOnly() {
+        return onlyChanged(['title', 'body', 'rating', 'dealType', 'updatedAt']);
+      }
+
+      allow read: if resource.data.status == 'approved'   // العام يشوف المعتمد بس
+                  || isOwner()
+                  || isAuthor();
+
+      allow create: if signedIn() && validNewReview();
+
+      allow update: if isOwner()
+                    || (isAuthor()
+                        && resource.data.status == 'pending'
+                        && authorEditableOnly());
+
+      /* صاحب التقييم يقدر يسحبه طالما لسه مستني */
+      allow delete: if isOwner()
+                    || (isAuthor() && resource.data.status == 'pending');
+    }
+
+    /* ------------------------------------------------------------------
+       صور الإثبات — سجل لكل صورة مرفوعة
+    ------------------------------------------------------------------ */
+    match /review_media/{mediaId} {
+
+      function parent() {
+        return get(/databases/$(database)/documents/reviews/$(request.resource.data.reviewId)).data;
+      }
+      function existingParent() {
+        return get(/databases/$(database)/documents/reviews/$(resource.data.reviewId)).data;
+      }
+
+      allow read: if isOwner()
+                  || (signedIn() && resource.data.uid == request.auth.uid)
+                  || existingParent().status == 'approved';
+
+      /* الصورة لازم تكون مربوطة بتقييم يخص نفس الشخص */
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && parent().uid == request.auth.uid;
+
+      allow update: if isOwner();
+      allow delete: if isOwner()
+                    || (signedIn()
+                        && resource.data.uid == request.auth.uid
+                        && existingParent().status == 'pending');
+    }
+
+    /* ------------------------------------------------------------------
+       مكتبة وسائط الموقع — بتاعتك إنت
+    ------------------------------------------------------------------ */
+    match /media/{mediaId} {
+      allow read:  if true;
+      allow write: if isOwner();
+    }
+
+    /* ------------------------------------------------------------------
+       أي حاجة متذكرتش فوق: ممنوعة.
+       الافتراضي هو الرفض، مش السماح.
+    ------------------------------------------------------------------ */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

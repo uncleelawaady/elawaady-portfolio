@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /account.html
+Disallow: /login.html
 
 Sitemap: https://elawaady-db.com/sitemap.xml
