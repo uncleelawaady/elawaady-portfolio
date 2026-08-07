@@ -83,15 +83,9 @@
 
 ---
 
-## المرحلة التالتة — GitHub خاص
+## المرحلة التالتة — الرفع على Hostinger
 
-[Settings → General](https://github.com/uncleelawaady/elawaady-portfolio/settings) → انزل تحت خالص → **Change repository visibility** → **Make private**
-
-> **مهم:** أول ما الريبو يبقى خاص، **GitHub Pages هتقف** والموقع على `elawaady-db.com` هينزل. عشان كده الخطوة دي بتتعمل **مع** المرحلة الرابعة في نفس الوقت، مش قبلها.
-
----
-
-## المرحلة الرابعة — الرفع على Hostinger
+> **الريبو يفضل عام و GitHub Pages تفضل شغالة طول المراحل اللي فاتت.** الموقع الحالي هو اللي شغّال دلوقتي، ومحدش يقرّب لتغيير الـvisibility ولا يوقف Pages غير في الخطوة ٦ تحت — يعني بعد ما النسخة الجديدة تترفع على هوستنجر وتتجرّب وتشتغل فعلًا.
 
 hPanel → **Websites** → `elawaady-db.com` → **File Manager** → مجلد `public_html`
 
@@ -141,6 +135,16 @@ hPanel → **Domains** → `elawaady-db.com` → **DNS**
 **Authentication** → **Settings** → **Authorized domains** → **Add domain** → `elawaady-db.com`
 
 من غير الخطوة دي تسجيل الدخول هيترفض على الدومين.
+
+### ٦. آخر خطوة — اقفل GitHub Pages وخلّي الريبو خاص
+
+**دي آخر حاجة خالص، وبعد ما تتأكد إن الموقع على هوستنجر شغّال تمام** — الدخول والتقييمات ورفع الصور واللوحة.
+
+[Settings → General](https://github.com/uncleelawaady/elawaady-portfolio/settings) → انزل تحت خالص → **Change repository visibility** → **Make private**
+
+> أول ما الريبو يبقى خاص **GitHub Pages بتقف تلقائيًا**. عشان كده الترتيب ده مهم: هوستنجر يشتغل الأول، وبعدين نقفل التاني. لو عكست الترتيب الموقع هيقع في النص.
+
+لو لأي سبب النسخة الجديدة اتعطلت بعد كده، رجّع الـvisibility لـPublic والـDNS لـGitHub والموقع القديم يرجع زي ما هو.
 
 ---
 
