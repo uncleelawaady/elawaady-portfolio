@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم — elawaady-db.com</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+@font-face{
+  font-family:'Handicrafts';
+  src:url('assets/fonts/handicrafts-semibold.woff2') format('woff2');
+  font-weight:400 600;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'Handicrafts';
+  src:url('assets/fonts/handicrafts-bold.woff2') format('woff2');
+  font-weight:700 900;font-style:normal;font-display:swap;
+}
+
+:root{
+  --bg:#071F29; --panel:#0C2C37; --panel-2:#103744;
+  --line:#174553; --line-soft:#123846;
+  --text:#EAF4F7; --muted:#9FBAC4; --dim:#6F909C;
+  --turquoise:#10B5BF; --cyan:#20D6E3; --orange:#FF8A1C;
+  --grad:linear-gradient(135deg,#10B5BF,#20D6E3 60%,#5DE7F2);
+  --r:14px;
+  --side:262px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{
+  font-family:'Handicrafts','Tajawal','Manrope',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--cyan)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px}
+
+/* ===== Shell ===== */
+.shell{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
+
+.side{
+  background:var(--panel);border-inline-end:1px solid var(--line);
+  padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.side-brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;border-bottom:1px solid var(--line-soft);margin-bottom:14px}
+.side-brand img{width:38px;height:38px;border-radius:11px}
+.side-brand b{font-size:.98rem;display:block;line-height:1.3}
+.side-brand small{color:var(--dim);font-size:.68rem;letter-spacing:1.2px;text-transform:uppercase;font-family:'Manrope',sans-serif}
+
+.side nav{display:grid;gap:3px}
+.side nav button{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:start;
+  padding:11px 13px;border-radius:11px;border:1px solid transparent;background:none;
+  color:var(--muted);font-weight:700;font-size:.9rem;transition:.2s;
+}
+.side nav button:hover{background:rgba(32,214,227,.08);color:var(--text)}
+.side nav button.on{background:rgba(16,181,191,.15);border-color:rgba(32,214,227,.35);color:var(--text)}
+.side nav button .n{
+  margin-inline-start:auto;font-family:'Manrope',sans-serif;font-size:.72rem;font-weight:700;
+  color:var(--dim);background:rgba(255,255,255,.05);padding:1px 8px;border-radius:999px;
+}
+
+.main{padding:24px clamp(14px,3vw,34px) 90px;max-width:1000px}
+
+.topline{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+  padding-bottom:18px;margin-bottom:22px;border-bottom:1px solid var(--line-soft);
+}
+.topline h1{font-size:1.35rem;font-weight:900}
+.topline .spacer{margin-inline-start:auto}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;
+  border:1px solid transparent;font-weight:700;font-size:.88rem;transition:.22s;white-space:nowrap;
+}
+.btn-primary{background:var(--grad);color:#04222B}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.04);border-color:var(--line);color:var(--text)}
+.btn-ghost:hover{border-color:var(--turquoise)}
+.btn-warn{background:rgba(255,138,28,.12);border-color:rgba(255,138,28,.45);color:var(--orange)}
+.btn-warn:hover{background:rgba(255,138,28,.2)}
+.btn-sm{padding:7px 14px;font-size:.8rem}
+
+/* ===== Notice ===== */
+.notice{
+  display:flex;gap:12px;padding:15px 18px;border-radius:var(--r);margin-bottom:22px;
+  background:rgba(255,138,28,.07);border:1px solid rgba(255,138,28,.3);
+  color:var(--muted);font-size:.87rem;line-height:1.75;
+}
+.notice b{color:var(--orange)}
+
+/* ===== Cards & fields ===== */
+.panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.panel > h3{
+  font-size:.76rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);
+  font-weight:800;margin-bottom:14px;font-family:'Manrope',sans-serif;
+}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:5px}
+.field label .lg{
+  font-family:'Manrope',sans-serif;font-size:.64rem;letter-spacing:1px;color:var(--dim);
+  border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-inline-start:6px;
+}
+input,textarea,select{
+  width:100%;padding:11px 13px;border-radius:10px;font:inherit;font-size:.9rem;
+  background:var(--bg);border:1px solid var(--line);color:var(--text);transition:.2s;resize:vertical;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--turquoise);box-shadow:0 0 0 3px rgba(16,181,191,.18)}
+input[dir="ltr"],textarea[dir="ltr"]{font-family:'Manrope',sans-serif}
+textarea{min-height:88px;line-height:1.8}
+
+.item{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--r);padding:16px;margin-bottom:12px;position:relative}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.item-head b{font-size:.9rem}
+.item-head .spacer{margin-inline-start:auto}
+.icon-x{
+  width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  background:rgba(255,138,28,.1);border:1px solid rgba(255,138,28,.35);color:var(--orange);
+  font-size:1rem;line-height:1;transition:.2s;
+}
+.icon-x:hover{background:rgba(255,138,28,.24)}
+.move{
+  width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--muted);transition:.2s;
+}
+.move:hover{border-color:var(--turquoise);color:var(--text)}
+.move[disabled]{opacity:.3;cursor:not-allowed}
+
+.add{
+  width:100%;padding:12px;border-radius:var(--r);border:1px dashed var(--line);
+  background:none;color:var(--muted);font-weight:700;font-size:.85rem;transition:.2s;
+}
+.add:hover{border-color:var(--turquoise);color:var(--text);background:rgba(16,181,191,.06)}
+
+.sub-items{display:grid;gap:8px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line-soft)}
+.sub-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center}
+
+.hint{color:var(--dim);font-size:.78rem;margin-top:6px}
+
+/* ===== Save bar ===== */
+.savebar{
+  position:fixed;inset-block-end:0;inset-inline:var(--side) 0;z-index:50;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px clamp(14px,3vw,34px);
+  background:rgba(7,31,41,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);
+}
+.savebar .status{color:var(--dim);font-size:.82rem;margin-inline-start:auto}
+.savebar .status.ok{color:var(--cyan)}
+.savebar .status.dirty{color:var(--orange)}
+
+@media (max-width:860px){
+  :root{--side:0px}
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-inline-end:0;border-bottom:1px solid var(--line)}
+  .side nav{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));display:grid}
+  .row{grid-template-columns:1fr}
+  .sub-row{grid-template-columns:1fr}
+  .savebar{inset-inline:0}
+  .main{padding-bottom:130px}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="side">
+    <div class="side-brand">
+      <img src="assets/e-logo.png" alt="">
+      <div><b>لوحة التحكم</b><small>elawaady-db.com</small></div>
+    </div>
+    <nav id="tabs"></nav>
+  </aside>
+
+  <main class="main">
+    <div class="topline">
+      <h1 id="tabTitle">—</h1>
+      <div class="spacer"></div>
+      <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener">معاينة الموقع ↗</a>
+    </div>
+
+    <div class="notice">
+      <div>
+        <b>إزاي ده بيشتغل:</b> التعديلات بتتحفظ في المتصفح ده بس — الموقع الحقيقي مش بيتغير.
+        لما تخلص اضغط <b>تصدير content.js</b>، هينزّلك ملف، ارفعه على GitHub مكان القديم
+        وهيتنشر خلال دقيقة.
+        <br>
+        الصفحة دي مفيهاش أي مفتاح أو باسورد، فمحدش يقدر يغيّر موقعك منها.
+      </div>
+    </div>
+
+    <div id="panel"></div>
+  </main>
+</div>
+
+<div class="savebar">
+  <button class="btn btn-primary" id="btnExport">⬇ تصدير content.js</button>
+  <button class="btn btn-ghost btn-sm" id="btnSave">حفظ مسودة</button>
+  <label class="btn btn-ghost btn-sm" style="margin:0">
+    استيراد ملف<input type="file" id="fileIn" accept=".js,.json" hidden>
+  </label>
+  <button class="btn btn-warn btn-sm" id="btnReset">رجوع للأصلي</button>
+  <span class="status" id="status">—</span>
+</div>
+
+<script src="content.js?v=4"></script>
+<script src="admin.js?v=4"></script>
+</body>
+</html>

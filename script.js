@@ -1,9 +1,7 @@
-/* ===== Ahmed Elawaady — Personal Digital Portfolio (elawaady-db.com) =====
-   Every piece of editable copy lives in the DATA block below.
-   Each entry carries an Arabic (ar) and an English (en) version.
+/* ===== Ahmed Elawaady — elawaady-db.com =====
+   All copy lives in content.js. This file only renders it and runs the page.
+   A draft saved from admin.html overrides content.js when one is present.
 */
-
-const WHATSAPP = '201055578777';
 
 /* ---------------------------------------------------------------------------
    KASHIDA — the elongation mark (ـ, U+0640) added inside Arabic words.
@@ -14,40 +12,31 @@ const WHATSAPP = '201055578777';
    mark placed after one of those sits detached and breaks the word instead.
    The traditional position is the last joinable seam — right before the final
    letter — so that is what this picks.
-
-   Set to false to turn the whole effect off.
 --------------------------------------------------------------------------- */
 const KASHIDA = true;
 
 const TATWEEL = 'ـ';
 const AR_LETTER = /[ء-غف-ي]/;
-/* Letters with no forward join — nothing may be attached after them. */
 const NO_FORWARD_JOIN = new Set([...'اأإآٱدذرزوؤةىء']);
 
 function kashidaWord(word) {
   if (word.indexOf(TATWEEL) !== -1) return word;
-
   const seams = [];
   for (let i = 0; i < word.length - 1; i++) {
     const a = word[i], b = word[i + 1];
     if (!AR_LETTER.test(a) || !AR_LETTER.test(b)) continue;
     if (NO_FORWARD_JOIN.has(a)) continue;
-    if (a === 'ل' && 'اأإآٱ'.indexOf(b) !== -1) continue;  // keep the lam-alef ligature whole
+    if (a === 'ل' && 'اأإآٱ'.indexOf(b) !== -1) continue;   // keep the lam-alef ligature whole
     seams.push(i);
   }
   if (!seams.length) return word;
-
   const i = seams[seams.length - 1];
   return word.slice(0, i + 1) + TATWEEL + word.slice(i + 1);
 }
 
-const kashida    = (text) => text.replace(/\S+/g, kashidaWord);
-const stripKashida = (text) => text.split(TATWEEL).join('');
+const kashida       = (text) => text.replace(/\S+/g, kashidaWord);
+const stripKashida  = (text) => text.split(TATWEEL).join('');
 
-/* Walks the rendered page and elongates every Arabic word in it. Running over
-   the DOM rather than the source strings means JS-built sections and static
-   markup are treated the same, and <head> is left alone so the page title and
-   meta description stay searchable. */
 const KASHIDA_SKIP = new Set(['SCRIPT', 'STYLE', 'SVG', 'TEXTAREA', 'INPUT', 'CODE']);
 
 function applyKashida(root) {
@@ -61,348 +50,330 @@ function applyKashida(root) {
       return NodeFilter.FILTER_ACCEPT;
     }
   });
-
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
   nodes.forEach(n => { n.nodeValue = kashida(n.nodeValue); });
 }
 
-/* ---------------------------------------------------------------------------
-   STATS — set these to your real figures before sharing the site.
-   They are the only numbers on the page, so they should be ones you can stand
-   behind. Leave a value as null to hide that tile entirely.
---------------------------------------------------------------------------- */
-const STATS = [
-  { icon:'i-layers',   value:12,  suffix:'+', ar:'مشروع تم بناؤه',    en:'Projects built' },
-  { icon:'i-chip',     value:4,   suffix:'',  ar:'منصات رقمية',       en:'Digital platforms' },
-  { icon:'i-users',    value:20,  suffix:'+', ar:'مجتمع رقمي',        en:'Communities' },
-  { icon:'i-swap',     value:30,  suffix:'+', ar:'خدمة تُدار',        en:'Services managed' },
-  { icon:'i-code',     value:25,  suffix:'+', ar:'تقنية وأداة',       en:'Technologies' },
-  { icon:'i-clock',    value:8,   suffix:'+', ar:'سنوات خبرة',        en:'Years of experience' }
-];
-
-const DATA = {
-  /* Rotating line under the name */
-  typed: {
-    ar: ['رائد أعمال رقمي', 'مؤسس منصات', 'باني أنظمة رقمية', 'مطوّر حلول ذكاء اصطناعي'],
-    en: ['Digital Entrepreneur', 'Platform Founder', 'Digital Systems Builder', 'AI Solutions Developer']
-  },
-
-  marquee: {
-    ar: ['ريادة أعمال رقمية','منصات رقمية','ذكاء اصطناعي','أتمتة العمليات','تطوير الويب','تجارة إلكترونية','بناء المجتمعات','أنظمة وساطة','تسويق رقمي','تطوير الأعمال'],
-    en: ['Digital Entrepreneurship','Digital Platforms','Artificial Intelligence','Workflow Automation','Web Development','E-Commerce','Community Building','Escrow Systems','Digital Marketing','Business Development']
-  },
-
-  /* Areas of Expertise — rendered as pills, not a bullet list */
-  expertise: [
-    'Digital Entrepreneurship','Digital Platforms','E-Commerce','Social Media Business',
-    'AI Solutions','Workflow Automation','Web Development','Bot Development',
-    'Digital Marketing','Media Buying','Platform Operations','Escrow Systems',
-    'Community Building','Business Development'
-  ],
-
-  /* What I Build */
-  builds: [
-    { icon:'i-chip',      ar:['المنصات','بناء منصات رقمية كاملة بحسابات ولوحات تحكم وعمليات تشغيل حقيقية.'],           en:['Platforms','Complete digital platforms with accounts, dashboards and real operating flows.'] },
-    { icon:'i-store',     ar:['الأسواق الرقمية','ربط العميل والتاجر والمورد والخدمة داخل سوق واحد منظم.'],              en:['Marketplaces','Connecting customer, merchant, supplier and service inside one organised market.'] },
-    { icon:'i-users',     ar:['المجتمعات','تحويل التجمعات العشوائية إلى مجتمعات منظمة لها قواعد وقيمة.'],               en:['Communities','Turning scattered groups into organised communities with rules and value.'] },
-    { icon:'i-bolt',      ar:['الأتمتة','أنظمة تتولى العمل المتكرر بدل ما يتعمل يدوي كل مرة.'],                        en:['Automation','Systems that take over repetitive work instead of doing it by hand every time.'] },
-    { icon:'i-sparkles',  ar:['تدفقات الذكاء الاصطناعي','دمج أدوات الـ AI داخل سير العمل، مش استخدامها بشكل منفصل.'],  en:['AI workflows','Weaving AI tools into the workflow itself, not using them off to the side.'] },
-    { icon:'i-swap',      ar:['أنظمة الوساطة','تنظيم المعاملات الرقمية بحيث تكون حقوق كل طرف موثقة.'],                 en:['Escrow systems','Structuring digital transactions so every party’s rights are documented.'] },
-    { icon:'i-cart',      ar:['التجارة الإلكترونية','متاجر ومنتجات رقمية بعمليات طلب ودفع وتسليم مترابطة.'],           en:['E-Commerce','Stores and digital products with order, payment and delivery wired together.'] },
-    { icon:'i-globe',     ar:['المنظومات المتكاملة','ربط التقنية والتجارة والتشغيل والعميل داخل تجربة واحدة.'],        en:['Business ecosystems','Technology, commerce, operations and customer inside a single experience.'] }
-  ],
-
-  /* Capability groups — each a card with its own list */
-  capabilities: [
-    {
-      icon:'i-megaphone',
-      ar:['المنصات الاجتماعية','خبرة تشغيلية في إدارة وتطوير ونقل ملكية الحسابات عبر المنصات الكبرى.'],
-      en:['Social platforms','Operational experience managing, growing and transferring accounts across the major platforms.'],
-      items:['TikTok','YouTube','Facebook','Instagram','Snapchat','X / Twitter','Telegram']
-    },
-    {
-      icon:'i-badge',
-      ar:['التوثيق','عمليات التوثيق تخضع دائمًا لمتطلبات وسياسات كل منصة، وكل حالة تُقيَّم بشكل مستقل دون وعود غير واقعية.'],
-      en:['Platform verification','Verification always follows each platform’s own requirements and policies. Every case is assessed on its own merits — no unrealistic promises.'],
-      items:['TikTok','Snapchat','Facebook','Instagram','X','WhatsApp Business']
-    },
-    {
-      icon:'i-chart',
-      ar:['التسويق الرقمي','إدارة حملات مدفوعة عبر الشبكات الرئيسية مع تتبع الأداء والتحسين المستمر.'],
-      en:['Digital marketing','Running paid campaigns across the major networks with performance tracking and continuous optimisation.'],
-      items:['Meta Ads','Google Ads','TikTok Ads','Snapchat Ads','YouTube Ads','Media Buying','Campaign Management','Analytics']
-    },
-    {
-      icon:'i-sparkles',
-      ar:['الذكاء الاصطناعي','استخدام أدوات الذكاء الاصطناعي لبناء حلول، أتمتة العمليات، إنتاج المحتوى، وربط الأدوات بالأنظمة الرقمية.'],
-      en:['Artificial intelligence','Using AI tools to build solutions, automate operations, produce content and wire tools into digital systems.'],
-      items:['ChatGPT','Claude','Gemini','Midjourney','Perplexity','ElevenLabs','AI Automation','AI-assisted Workflows']
-    },
-    {
-      icon:'i-code',
-      ar:['التطوير والأتمتة','بناء المواقع والمتاجر والبوتات وربطها بأنظمة الطلبات والدفع عبر واجهات برمجية.'],
-      en:['Development & automation','Building sites, stores and bots, then wiring them into order and payment systems through APIs.'],
-      items:['Website Development','E-Commerce','Telegram Bots','WhatsApp Bots','Order Automation','Workflow Automation','n8n','API Integrations']
-    },
-    {
-      icon:'i-cart',
-      ar:['التجارة الرقمية','خبرة في أسواق المنتجات الرقمية — الاشتراكات وبطاقات الهدايا وأرصدة الألعاب وخدمات البث.'],
-      en:['Digital commerce','Experience across digital product markets — subscriptions, gift cards, gaming credits and streaming services.'],
-      items:['Digital Subscriptions','Gift Cards','Gaming Credits','Streaming Services','Software & AI Subscriptions']
-    }
-  ],
-
-  /* Featured case study */
-  caseStudy: {
-    ar:{
-      title:'Elawaady XDigital Platform',
-      cat:'منصة رقمية / سوق إلكتروني / عمليات تشغيل',
-      role:'المؤسس وباني المنصة',
-      lead:'منظومة رقمية طُوّرت فكرتها لتنظيم تقديم وإدارة الخدمات الرقمية، وربط العملاء والتجار والموردين والخدمات وعمليات الدفع والمتابعة داخل نظام واحد. الهدف لم يكن إنشاء صفحة بيع، وإنما بناء منظومة سوق رقمي أكثر تنظيمًا وقابلية للتوسع.',
-      conceptTitle:'أطراف المنظومة',
-      featuresTitle:'مكونات المنصة',
-      goalsTitle:'الأهداف',
-      escrowTitle:'نظام الوساطة الآمنة',
-      escrowLead:'طوّرت تصورًا لنظام وساطة يساعد على تنظيم المعاملات الرقمية وحفظ حقوق الأطراف: توثيق الاتفاق، استلام وحفظ المبلغ، متابعة مراحل التنفيذ، توثيق المحادثات، التأكد من التسليم، إدارة النزاعات، ثم تحويل المبلغ للطرف المستحق بعد استيفاء الشروط.',
-      flow:['اتفاق واضح','دفع محفوظ','تنفيذ','مراجعة','إتمام'],
-      disputeFlow:['نزاع','تجميد المبلغ','مراجعة الأدلة','حل'],
-      rulesTitle:'قواعد الوساطة',
-      rules:[
-        'الشروط تُكتب قبل بدء المعاملة.',
-        'أي تعديل يحتاج موافقة الأطراف.',
-        'التسليم يتم وفق الاتفاق الموثق.',
-        'النزاعات تُراجع اعتمادًا على الأدلة.',
-        'المبلغ يمكن تجميده عند وجود نزاع.',
-        'الوعود غير المكتوبة لا تدخل ضمن الاتفاق.'
-      ],
-      note:'الاعتماد يكون على الاتفاقات والمحادثات والأدلة الموثقة، وليس على ضمانات غير قابلة للتحقق.',
-      goals:['تنظيم السوق الرقمي','تقليل العشوائية','تحسين ثقة العملاء','حماية أطراف التعامل','تسهيل الوصول للخدمات','جمع الخدمات في مكان واحد','خلق فرص عمل','منظومة قابلة للتوسع عربيًا']
-    },
-    en:{
-      title:'Elawaady XDigital Platform',
-      cat:'Digital Marketplace / Platform / Operations',
-      role:'Founder & Platform Builder',
-      lead:'A digital ecosystem designed to organise how digital services are delivered and managed, connecting customers, merchants, suppliers, services, payments and follow-up inside one system. The goal was never a sales page — it was a more structured, scalable digital marketplace.',
-      conceptTitle:'Ecosystem parties',
-      featuresTitle:'Platform features',
-      goalsTitle:'Business goals',
-      escrowTitle:'Secure escrow workflow',
-      escrowLead:'I developed a model for an escrow system that helps structure digital transactions and protect each party’s rights: documenting the agreement, holding the funds, tracking execution, recording conversations, confirming delivery, handling disputes, then releasing payment once the terms are met.',
-      flow:['Clear agreement','Secured payment','Execution','Review','Completion'],
-      disputeFlow:['Dispute','Freeze funds','Review evidence','Resolution'],
-      rulesTitle:'Escrow rules',
-      rules:[
-        'Terms are written down before the transaction starts.',
-        'Any change requires both parties to agree.',
-        'Delivery follows the documented agreement.',
-        'Disputes are reviewed against the evidence.',
-        'Funds can be frozen while a dispute is open.',
-        'Unwritten promises are not part of the agreement.'
-      ],
-      note:'Everything rests on documented agreements, conversations and evidence — not on guarantees that cannot be verified.',
-      goals:['Organise the digital market','Reduce the chaos','Improve customer trust','Protect both sides of a deal','Make services easier to reach','One place for many services','Create work opportunities','A scalable Arab-world ecosystem']
-    },
-    parties:['Customer','Merchant','Supplier','Services','Orders','Payments','Support','Ratings','Notifications','Escrow'],
-    features:['User Accounts','Merchant Accounts','Supplier Accounts','Service Catalog','Order Management','Secure Payments','Customer Support','Order Tracking','Notifications','Reviews','Related Services','Escrow Module']
-  },
-
-  /* Journey timeline — adjust years to match your own record */
-  journey: [
-    { year:'2018', ar:['البداية في السوق الرقمي','مسوّق ومشغّل','بداية العمل في الخدمات الرقمية وإدارة الحسابات وبناء أول شبكة عملاء.'],
-                   en:['Entering the digital market','Marketer & operator','Started in digital services, account management and building a first client base.'] },
-    { year:'2020', ar:['بناء المجتمعات','مؤسس ومدير مجتمعات','إنشاء وإدارة قنوات ومجموعات رقمية وتحويلها إلى شبكة منظمة للعملاء والموردين.'],
-                   en:['Community building','Founder & community manager','Created and ran digital channels and groups, turning them into an organised client and supplier network.'] },
-    { year:'2022', ar:['التوسع في التسويق والتشغيل','مشتري إعلانات ومدير عمليات','إدارة حملات مدفوعة عبر الشبكات الرئيسية وبناء فرق متعددة التخصصات.'],
-                   en:['Scaling marketing & operations','Media buyer & operations lead','Ran paid campaigns across major networks and built multidisciplinary teams.'] },
-    { year:'2024', ar:['الأتمتة والذكاء الاصطناعي','مطوّر حلول','بناء بوتات وأنظمة أتمتة ودمج أدوات الذكاء الاصطناعي داخل سير العمل اليومي.'],
-                   en:['Automation & AI','Solutions developer','Built bots and automation systems and folded AI tools into day-to-day workflows.'] },
-    { year:'2025', ar:['Elawaady XDigital Platform','المؤسس وباني المنصة','تطوير منظومة سوق رقمي تجمع الخدمات والدفع والوساطة والمتابعة في نظام واحد.'],
-                   en:['Elawaady XDigital Platform','Founder & platform builder','Developed a marketplace ecosystem bringing services, payments, escrow and follow-up into one system.'] }
-  ],
-
-  /* Communities */
-  communities: ['Facebook Groups','WhatsApp Communities','Telegram Channels','Digital Services Communities','Gaming Communities','YouTube Communities','Buying & Selling Communities'],
-
-  /* Professional network disciplines */
-  network: ['Media Buyers','Digital Marketers','Social Media Managers','Content Creators','Graphic Designers','Video Editors','Motion Designers','Web Developers','Bot Developers','UI/UX Designers','SEO Specialists','Affiliate Marketers','Sales','Customer Support','Moderators','Account Managers'],
-
-  /* Approach */
-  approach: [
-    { icon:'i-check-circle', ar:['وضوح','كل اتفاق مكتوب ومفهوم من الطرفين قبل ما الشغل يبدأ.'],        en:['Clarity','Every agreement written down and understood by both sides before work starts.'] },
-    { icon:'i-layers',       ar:['تنظيم','بناء هيكل للعملية بدل التعامل مع كل حالة من الصفر.'],        en:['Structure','Building a process instead of handling every case from scratch.'] },
-    { icon:'i-bolt',         ar:['أتمتة','كل خطوة متكررة تتحول لنظام يشتغل لوحده.'],                   en:['Automation','Every repeated step becomes a system that runs itself.'] },
-    { icon:'i-chart',        ar:['قابلية للتوسع','الحل يتبني بحيث يستحمل نمو الحجم من غير ما ينهار.'], en:['Scalability','Built so growth in volume does not break it.'] },
-    { icon:'i-palette',      ar:['تجربة مستخدم','الواجهة تخدم المستخدم مش تعقّد عليه.'],               en:['User experience','The interface serves the user rather than complicating things.'] },
-    { icon:'i-shield',       ar:['حماية التعاملات','توثيق كل مرحلة بحيث حقوق الأطراف محفوظة.'],        en:['Protected transactions','Documenting every stage so both parties’ rights hold up.'] }
-  ]
-};
-
-/* ===================== Language ===================== */
-let lang = localStorage.getItem('elawaadyLang') || 'ar';
-
-function applyLang(l) {
-  lang = l;
-  localStorage.setItem('elawaadyLang', l);
-
-  const html = document.documentElement;
-  html.lang = l;
-  html.dir = l === 'ar' ? 'rtl' : 'ltr';
-  document.getElementById('langBtn').textContent = l === 'ar' ? 'EN' : 'ع';
-
-  document.querySelectorAll('[data-ar][data-en]').forEach(el => {
-    const val = el.getAttribute('data-' + l);
-    if (val != null) el.textContent = val;
-  });
-
-  buildSections();
-  startTyping();
-
-  /* Last, so it sees both the static markup and everything buildSections wrote. */
-  if (KASHIDA && l === 'ar') applyKashida(document.body);
+/* ===================== Content ===================== */
+/* admin.html writes a draft here; it only ever affects the browser it was
+   saved in, and export is what makes a change real. */
+function loadContent() {
+  try {
+    const draft = localStorage.getItem('elawaadyDraft');
+    if (draft) return JSON.parse(draft);
+  } catch (e) {}
+  return window.SITE_CONTENT;
 }
 
-/* ===================== Section builders ===================== */
-const t = (item) => item[lang];
+const C = loadContent();
+const WHATSAPP = C.meta.whatsapp;
+
+/* ===================== State ===================== */
+let lang  = 'ar';
+let theme = 'dark';
+let openCategory = null;
+let query = '';
+
+try {
+  lang  = localStorage.getItem('elawaadyLang')  || 'ar';
+  theme = localStorage.getItem('elawaadyTheme') || 'dark';
+} catch (e) {}
+
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+const t   = (item) => item[lang];
 const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
-const chips = (arr) => arr.map(x => `<span>${x}</span>`).join('');
+const txt = (id, s)    => { const el = document.getElementById(id); if (el) el.textContent = s; };
+const chips = (arr) => arr.map(x => `<span>${esc(x)}</span>`).join('');
+const L = (ar, en) => lang === 'ar' ? ar : en;
 
-function buildSections() {
-  /* Marquee — duplicated so the loop has no visible seam */
-  const items = DATA.marquee[lang];
-  set('marqueeTrack', [...items, ...items]
-    .map(s => `<span><svg class="ic"><use href="#i-diamond"/></svg>${s}</span>`).join(''));
+/* ===================== Search ===================== */
+/* A category matches if its own text matches, or any of its items do. When a
+   query is active, only the matching items inside a category are shown. */
+function matchCat(cat) {
+  if (!query) return { hit: true, items: cat.items };
+  const q = stripKashida(query).toLowerCase().trim();
+  const inTitle = t(cat).join(' ').toLowerCase().includes(q);
+  const items = cat.items.filter(i => (i.ar + ' ' + i.en).toLowerCase().includes(q));
+  if (inTitle) return { hit: true, items: cat.items };
+  return { hit: items.length > 0, items };
+}
 
-  /* Areas of expertise */
-  set('expertiseGrid', chips(DATA.expertise));
+/* ===================== Renderers ===================== */
+function renderHero() {
+  txt('heroBadge',  t(C.hero.badge));
+  txt('heroTitle',  t(C.hero.title));
+  txt('heroTitle2', t(C.hero.title2));
+  txt('heroDesc',   t(C.hero.desc));
+  txt('heroCta1',   t(C.hero.cta1));
+  txt('heroCta2',   t(C.hero.cta2));
+  txt('searchGo',   L('بحث', 'Search'));
+  const input = document.getElementById('searchInput');
+  input.placeholder = t(C.hero.search);
+  input.value = query;
 
-  /* What I build */
-  set('buildsGrid', DATA.builds.map(b => {
+  set('heroFeatures', C.hero.features.map(f =>
+    `<span><svg class="ic"><use href="#${esc(f.icon)}"/></svg>${esc(t(f))}</span>`).join(''));
+}
+
+function renderStats() {
+  const live = C.stats.filter(s => Number(s.value) > 0);
+  set('statsBand', live.map(s => `
+    <div class="stat glass reveal">
+      <svg class="ic"><use href="#${esc(s.icon)}"/></svg>
+      <strong data-count="${Number(s.value)}" data-suffix="${esc(s.suffix || '')}">0</strong>
+      <span>${esc(t(s))}</span>
+    </div>`).join(''));
+}
+
+function renderAbout() {
+  txt('aboutName', t(C.meta.name));
+  txt('aboutRole', t(C.meta.role));
+  set('aboutParas', C.about.paras[lang].map(p => `<p>${esc(p)}</p>`).join(''));
+  set('aboutPoints', C.about.points.map(p =>
+    `<li><svg class="ic"><use href="#${esc(p.icon)}"/></svg><span>${esc(t(p))}</span></li>`).join(''));
+  set('aboutCards', C.about.cards.map(c => {
+    const [label, value] = t(c);
+    return `<div class="mini-card glass"><svg class="ic"><use href="#${esc(c.icon)}"/></svg>
+      <h4>${esc(label)}</h4><p>${esc(value)}</p></div>`;
+  }).join(''));
+}
+
+function renderExpertise() {
+  const results = C.expertise.map(cat => ({ cat, ...matchCat(cat) })).filter(r => r.hit);
+  const totalItems = C.expertise.reduce((n, c) => n + c.items.length, 0);
+
+  txt('expertiseCount', query
+    ? L(`${results.length} مجال فيهم نتيجة لبحثك`, `${results.length} areas match your search`)
+    : L(`${C.expertise.length} مجال خبرة و${totalItems} تخصص فرعي`,
+        `${C.expertise.length} areas of expertise across ${totalItems} specialisms`));
+
+  /* Filter row */
+  set('filterRow',
+    `<button data-cat="" class="${openCategory ? '' : 'on'}">${esc(L('الكل', 'All'))}</button>` +
+    C.expertise.map(c =>
+      `<button data-cat="${esc(c.id)}" class="${openCategory === c.id ? 'on' : ''}">${esc(t(c)[0])}</button>`).join(''));
+
+  if (!results.length) {
+    set('catGrid', `<div class="empty" style="grid-column:1/-1">
+      <svg class="ic"><use href="#i-search"/></svg>
+      ${esc(L('مفيش نتائج للبحث ده. جرّب كلمة تانية.', 'Nothing matched that search. Try another word.'))}
+    </div>`);
+    set('catDetail', '');
+    return;
+  }
+
+  set('catGrid', results.map(({ cat, items }) => {
+    const [title, desc] = t(cat);
+    const shown = items.slice(0, 3);
+    const rest  = items.length - shown.length;
+    return `<article class="cat-card glass reveal" data-cat="${esc(cat.id)}">
+      <div class="cat-icon"><svg class="ic"><use href="#${esc(cat.icon)}"/></svg></div>
+      <h3>${esc(title)}</h3>
+      <p>${esc(desc)}</p>
+      <div class="cat-chips">
+        ${shown.map(i => `<span>${esc(t(i))}</span>`).join('')}
+        ${rest > 0 ? `<span class="more">+${rest}</span>` : ''}
+      </div>
+      <div class="cat-foot">
+        <span class="cat-count">${items.length} ${esc(L('تخصص', 'specialisms'))}</span>
+        <button class="cat-open" type="button" data-open="${esc(cat.id)}">
+          ${esc(L('اعرض الكل', 'View all'))} <svg class="ic"><use href="#i-arrow"/></svg>
+        </button>
+      </div>
+    </article>`;
+  }).join(''));
+
+  /* Expanded band for the open category */
+  const open = openCategory && results.find(r => r.cat.id === openCategory);
+  if (!open) { set('catDetail', ''); return; }
+
+  const [title, desc] = t(open.cat);
+  set('catDetail', `
+    <div class="detail-band glass">
+      <div class="band-head">
+        <div class="cat-icon"><svg class="ic"><use href="#${esc(open.cat.icon)}"/></svg></div>
+        <div><h3>${esc(title)}</h3><small>${open.items.length} ${esc(L('تخصص', 'specialisms'))}</small></div>
+        <button class="band-close" type="button" data-close="1">
+          ${esc(L('إغلاق', 'Close'))} <svg class="ic"><use href="#i-close"/></svg>
+        </button>
+      </div>
+      <div class="sub-grid">
+        ${open.items.map(i => `<div class="sub-card">
+          <svg class="ic"><use href="#${esc(open.cat.icon)}"/></svg>
+          <strong>${esc(i.ar)}</strong><em dir="ltr">${esc(i.en)}</em>
+        </div>`).join('')}
+      </div>
+    </div>`);
+}
+
+function renderBuilds() {
+  set('buildsGrid', C.builds.map(b => {
     const [title, desc] = t(b);
     return `<article class="card glass reveal">
-      <div class="card-icon"><svg class="ic"><use href="#${b.icon}"/></svg></div>
-      <h3>${title}</h3><p>${desc}</p>
+      <div class="card-icon"><svg class="ic"><use href="#${esc(b.icon)}"/></svg></div>
+      <h3>${esc(title)}</h3><p>${esc(desc)}</p>
     </article>`;
   }).join(''));
+}
 
-  /* Capability groups */
-  set('capsGrid', DATA.capabilities.map(c => {
-    const [title, desc] = t(c);
-    return `<article class="card glass reveal">
-      <div class="card-icon"><svg class="ic"><use href="#${c.icon}"/></svg></div>
-      <h3>${title}</h3><p>${desc}</p>
-      <ul class="card-list">${c.items.map(i => `<li>${i}</li>`).join('')}</ul>
-    </article>`;
-  }).join(''));
+function renderCase() {
+  const cs = C.caseStudy, c = cs[lang];
+  const arw = lang === 'ar' ? '←' : '→';   // the arrow has to follow the reading direction
+  const flow = (arr, cls) => `<div class="flow ${cls}">${arr.map((s, i) =>
+    `${i ? `<span class="arw">${arw}</span>` : ''}<i>${esc(s)}</i>`).join('')}</div>`;
 
-  /* Case study — the flow arrow has to follow the reading direction, not the glyph */
-  const cs = DATA.caseStudy, c = cs[lang];
-  const arw = lang === 'ar' ? '←' : '→';
   set('caseBody', `
     <div class="case-head">
       <div class="case-badge"><svg class="ic"><use href="#i-chip"/></svg></div>
-      <div>
-        <h3>${c.title}</h3>
-        <span class="case-role">${c.role} &nbsp;•&nbsp; ${c.cat}</span>
-      </div>
+      <div><h3>${esc(c.title)}</h3><span class="case-role">${esc(c.role)} &nbsp;•&nbsp; ${esc(c.cat)}</span></div>
     </div>
-    <p class="case-lead">${c.lead}</p>
-
+    <p class="case-lead">${esc(c.lead)}</p>
     <div class="case-cols">
-      <div class="case-col">
-        <h4>${c.conceptTitle}</h4>
-        <div class="chip-list">${chips(cs.parties)}</div>
-      </div>
-      <div class="case-col">
-        <h4>${c.featuresTitle}</h4>
-        <div class="chip-list">${chips(cs.features)}</div>
-      </div>
-      <div class="case-col">
-        <h4>${c.goalsTitle}</h4>
-        <div class="chip-list">${chips(c.goals)}</div>
-      </div>
+      <div class="case-col"><h4>${esc(c.conceptTitle)}</h4><div class="chip-list">${chips(cs.parties)}</div></div>
+      <div class="case-col"><h4>${esc(c.featuresTitle)}</h4><div class="chip-list">${chips(cs.features)}</div></div>
+      <div class="case-col"><h4>${esc(c.goalsTitle)}</h4><div class="chip-list">${chips(c.goals)}</div></div>
     </div>
-
     <div class="case-cols">
       <div class="case-col" style="grid-column:1/-1">
-        <h4>${c.escrowTitle}</h4>
-        <p class="case-lead" style="margin-block:0 4px">${c.escrowLead}</p>
-        <div class="flow">${c.flow.map((s, i) =>
-          `${i ? `<span class="arw">${arw}</span>` : ''}<i>${s}</i>`).join('')}</div>
-        <div class="flow dispute">${c.disputeFlow.map((s, i) =>
-          `${i ? `<span class="arw">${arw}</span>` : ''}<i>${s}</i>`).join('')}</div>
-        <ul class="rules">
-          ${c.rules.map(r => `<li><svg class="ic"><use href="#i-check-circle"/></svg><span>${r}</span></li>`).join('')}
-        </ul>
-        <p class="case-lead" style="margin-block-end:0"><em>${c.note}</em></p>
+        <h4>${esc(c.escrowTitle)}</h4>
+        <p class="case-lead" style="margin-block:0 4px">${esc(c.escrowLead)}</p>
+        ${flow(c.flow, '')}
+        ${flow(c.disputeFlow, 'dispute')}
+        <ul class="rules">${c.rules.map(r =>
+          `<li><svg class="ic"><use href="#i-check-circle"/></svg><span>${esc(r)}</span></li>`).join('')}</ul>
+        <p class="case-lead" style="margin-block-end:0"><em>${esc(c.note)}</em></p>
       </div>
-    </div>
-  `);
+    </div>`);
+}
 
-  /* Journey timeline */
-  set('timeline', DATA.journey.map(j => {
+function renderJourney() {
+  set('timeline', C.journey.map(j => {
     const [title, role, desc] = t(j);
     return `<article class="tl-item reveal">
-      <span class="tl-year">${j.year}</span>
-      <h3>${title}</h3>
-      <span class="tl-role">${role}</span>
-      <p>${desc}</p>
+      <span class="tl-year">${esc(j.year)}</span>
+      <h3>${esc(title)}</h3><span class="tl-role">${esc(role)}</span><p>${esc(desc)}</p>
     </article>`;
   }).join(''));
+}
 
-  /* Communities & network */
-  set('communitiesGrid', chips(DATA.communities));
-  set('networkGrid', chips(DATA.network));
-
-  /* Approach */
-  set('approachGrid', DATA.approach.map(a => {
+function renderApproach() {
+  set('approachGrid', C.approach.map(a => {
     const [title, desc] = t(a);
     return `<article class="card glass reveal">
-      <div class="card-icon"><svg class="ic"><use href="#${a.icon}"/></svg></div>
-      <h3>${title}</h3><p>${desc}</p>
+      <div class="card-icon"><svg class="ic"><use href="#${esc(a.icon)}"/></svg></div>
+      <h3>${esc(title)}</h3><p>${esc(desc)}</p>
     </article>`;
   }).join(''));
+}
 
-  /* Stats */
-  set('statsBand', STATS.filter(s => s.value != null).map(s => `
-    <div class="stat glass reveal">
-      <svg class="ic"><use href="#${s.icon}"/></svg>
-      <strong data-count="${s.value}" data-suffix="${s.suffix || ''}">0</strong>
-      <span>${s[lang]}</span>
-    </div>`).join(''));
+function renderContact() {
+  const m = C.meta;
+  const wa = `https://wa.me/${esc(m.whatsapp)}`;
+  const pretty = '+' + String(m.whatsapp).replace(/^(\d{2})(\d{3})(\d{3})(\d{4}).*$/, '$1 $2 $3 $4');
+  set('contactLinks', `
+    <a class="contact-card glass wa" href="${wa}" target="_blank" rel="noopener">
+      <svg class="ic"><use href="#i-whatsapp"/></svg><div><strong>WhatsApp</strong><span dir="ltr">${esc(pretty)}</span></div></a>
+    <a class="contact-card glass tg" href="https://t.me/${esc(m.telegram)}" target="_blank" rel="noopener">
+      <svg class="ic"><use href="#i-telegram"/></svg><div><strong>Telegram</strong><span dir="ltr">@${esc(m.telegram)}</span></div></a>
+    <a class="contact-card glass ml" href="mailto:${esc(m.email)}">
+      <svg class="ic"><use href="#i-mail"/></svg><div><strong>${esc(L('البريد', 'Email'))}</strong><span dir="ltr">${esc(m.email)}</span></div></a>
+    <a class="contact-card glass ln" href="https://linkedin.com/in/${esc(m.linkedin)}" target="_blank" rel="noopener">
+      <svg class="ic"><use href="#i-linkedin"/></svg><div><strong>LinkedIn</strong><span dir="ltr">/in/${esc(m.linkedin)}</span></div></a>`);
+
+  set('footerSocial', `
+    <a href="${wa}" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="ic"><use href="#i-whatsapp"/></svg></a>
+    <a href="https://t.me/${esc(m.telegram)}" target="_blank" rel="noopener" aria-label="Telegram"><svg class="ic"><use href="#i-telegram"/></svg></a>
+    <a href="https://linkedin.com/in/${esc(m.linkedin)}" target="_blank" rel="noopener" aria-label="LinkedIn"><svg class="ic"><use href="#i-linkedin"/></svg></a>
+    <a href="mailto:${esc(m.email)}" aria-label="Email"><svg class="ic"><use href="#i-mail"/></svg></a>`);
+
+  txt('footerDomain', m.domain);
+  document.getElementById('fabWa').href = wa;
+}
+
+function renderRest() {
+  set('communitiesGrid', chips(C.communities));
+  set('networkGrid', chips(C.network));
+  txt('visionTitle', C.vision[lang][0]);
+  txt('visionText',  C.vision[lang][1]);
+}
+
+/* ===================== Language & theme ===================== */
+function render() {
+  document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+    const v = el.getAttribute('data-' + lang);
+    if (v != null) el.textContent = v;
+  });
+
+  renderHero(); renderStats(); renderAbout(); renderExpertise();
+  renderBuilds(); renderCase(); renderJourney(); renderApproach();
+  renderContact(); renderRest();
 
   observeReveals();
   runCounters();
+  startTyping();
+
+  /* Last, so it sees both the static markup and everything just rendered. */
+  if (KASHIDA && lang === 'ar') applyKashida(document.body);
+  startTicker();
 }
 
-/* ===================== Typing effect ===================== */
+function applyLang(l) {
+  lang = l;
+  try { localStorage.setItem('elawaadyLang', l); } catch (e) {}
+  document.documentElement.lang = l;
+  document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('langBtn').textContent = l === 'ar' ? 'EN' : 'ع';
+  render();
+}
+
+function applyTheme(mode) {
+  theme = mode;
+  try { localStorage.setItem('elawaadyTheme', mode); } catch (e) {}
+  if (mode === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  else document.documentElement.removeAttribute('data-theme');
+  document.querySelector('#themeBtn use')
+    .setAttribute('href', mode === 'light' ? '#i-moon' : '#i-sun');
+  document.getElementById('themeBtn').classList.toggle('on', mode === 'light');
+}
+
+/* ===================== Ticker ===================== */
+let tickerTimer;
+function startTicker() {
+  clearInterval(tickerTimer);
+  const el = document.getElementById('ticker');
+  const lines = C.ticker[lang].map(s => (KASHIDA && lang === 'ar') ? kashida(s) : s);
+  let i = 0;
+  const show = () => {
+    el.textContent = lines[i];
+    el.style.animation = 'none';
+    void el.offsetWidth;              // restart the entrance animation
+    el.style.animation = '';
+    i = (i + 1) % lines.length;
+  };
+  show();
+  if (lines.length > 1) tickerTimer = setInterval(show, 4500);
+}
+
+/* ===================== Typing ===================== */
 let typeTimer;
 function startTyping() {
   clearTimeout(typeTimer);
   const el = document.getElementById('typed');
-  /* The typing loop rewrites this node constantly, so the DOM pass cannot hold
-     here — the words are elongated up front instead. */
-  const words = (KASHIDA && lang === 'ar')
-    ? DATA.typed[lang].map(kashida)
-    : DATA.typed[lang];
-  let w = 0, i = 0, deleting = false;
-
+  const full = t(C.hero.accent);
+  const word = (KASHIDA && lang === 'ar') ? kashida(full) : full;
+  let i = 0;
   (function tick() {
-    const word = words[w];
     el.textContent = word.slice(0, i);
-
-    if (!deleting && i < word.length) { i++; typeTimer = setTimeout(tick, 90); }
-    else if (!deleting) { deleting = true; typeTimer = setTimeout(tick, 1700); }
-    else if (i > 0) { i--; typeTimer = setTimeout(tick, 45); }
-    else { deleting = false; w = (w + 1) % words.length; typeTimer = setTimeout(tick, 250); }
+    if (i < word.length) { i++; typeTimer = setTimeout(tick, 55); }
   })();
 }
 
-/* ===================== Reveal on scroll ===================== */
+/* ===================== Reveal & counters ===================== */
 let revealObserver;
 function observeReveals() {
   if (!revealObserver) {
-    revealObserver = new IntersectionObserver((entries) => {
+    revealObserver = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (!e.isIntersecting) return;
         e.target.classList.add('in');
@@ -413,15 +384,13 @@ function observeReveals() {
   document.querySelectorAll('.reveal:not(.in)').forEach(el => revealObserver.observe(el));
 }
 
-/* ===================== Counters ===================== */
 function runCounters() {
   document.querySelectorAll('[data-count]').forEach(el => {
     const target = +el.dataset.count;
     const suffix = el.dataset.suffix || '';
     const start = performance.now();
-    const dur = 1600;
     (function step(now) {
-      const p = Math.min((now - start) / dur, 1);
+      const p = Math.min((now - start) / 1600, 1);
       const eased = 1 - Math.pow(1 - p, 3);
       el.textContent = Math.round(target * eased).toLocaleString('en-US') + (p === 1 ? suffix : '');
       if (p < 1) requestAnimationFrame(step);
@@ -429,32 +398,85 @@ function runCounters() {
   });
 }
 
-/* ===================== Nav, scroll, form ===================== */
+/* ===================== Boot ===================== */
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
 
+  applyTheme(theme);
   applyLang(lang);
 
-  document.getElementById('langBtn').addEventListener('click', () => {
-    applyLang(lang === 'ar' ? 'en' : 'ar');
+  document.getElementById('langBtn').addEventListener('click', () => applyLang(lang === 'ar' ? 'en' : 'ar'));
+  document.getElementById('themeBtn').addEventListener('click', () => applyTheme(theme === 'light' ? 'dark' : 'light'));
+
+  /* Mobile menu */
+  const navLinks = document.getElementById('navLinks');
+  const navToggle = document.getElementById('navToggle');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.querySelector('use').setAttribute('href', open ? '#i-close' : '#i-menu');
+  });
+  navLinks.addEventListener('click', e => {
+    if (e.target.tagName !== 'A') return;
+    navLinks.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.querySelector('use').setAttribute('href', '#i-menu');
   });
 
-  const navLinks = document.getElementById('navLinks');
-  document.getElementById('navToggle').addEventListener('click', () => navLinks.classList.toggle('open'));
-  navLinks.addEventListener('click', e => { if (e.target.tagName === 'A') navLinks.classList.remove('open'); });
+  /* Search — live as you type, and the header icon jumps to the field */
+  const searchInput = document.getElementById('searchInput');
+  let searchTimer;
+  searchInput.addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    const v = e.target.value;
+    searchTimer = setTimeout(() => {
+      query = v;
+      openCategory = null;
+      renderExpertise();
+      if (KASHIDA && lang === 'ar') applyKashida(document.getElementById('expertise'));
+      observeReveals();
+    }, 200);
+  });
+  document.getElementById('heroSearch').addEventListener('submit', e => {
+    e.preventDefault();
+    document.getElementById('expertise').scrollIntoView({ behavior: 'smooth' });
+  });
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => searchInput.focus(), 500);
+  });
 
+  /* Category open / close / filter — delegated so re-renders keep working */
+  document.getElementById('expertise').addEventListener('click', e => {
+    const openBtn  = e.target.closest('[data-open]');
+    const closeBtn = e.target.closest('[data-close]');
+    const filter   = e.target.closest('.filter-row button');
+    if (!openBtn && !closeBtn && !filter) return;
+
+    if (closeBtn) openCategory = null;
+    else if (openBtn) openCategory = openBtn.dataset.open;
+    else openCategory = filter.dataset.cat || null;
+
+    renderExpertise();
+    if (KASHIDA && lang === 'ar') applyKashida(document.getElementById('expertise'));
+    observeReveals();
+
+    if (openCategory) {
+      const band = document.querySelector('.detail-band');
+      if (band) band.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+
+  /* Scroll state */
   const nav = document.getElementById('nav');
-  const progress = document.getElementById('scrollProgress');
+  const toTop = document.getElementById('toTop');
   const sections = [...document.querySelectorAll('section[id], header[id]')];
 
   function onScroll() {
     const y = window.scrollY;
     nav.classList.toggle('scrolled', y > 40);
-
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
-
-    const current = sections.filter(s => s.offsetTop - 130 <= y).pop();
+    toTop.classList.toggle('show', y > 600);
+    const current = sections.filter(s => s.offsetTop - 140 <= y).pop();
     if (current) {
       document.querySelectorAll('.nav-links a').forEach(a =>
         a.classList.toggle('active', a.getAttribute('href') === '#' + current.id));
@@ -463,12 +485,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* Contact form -> WhatsApp with the message pre-filled */
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  /* Contact form -> WhatsApp */
   document.getElementById('contactForm').addEventListener('submit', e => {
     e.preventDefault();
     const f = e.target;
     let ok = true;
-
     ['name', 'contact', 'message'].forEach(n => {
       const input = f.elements[n];
       const empty = !input.value.trim();
@@ -477,18 +500,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     if (!ok) return;
 
-    const L = lang === 'ar'
-      ? { head: 'رسالة من elawaady-db.com', name: 'الاسم', contact: 'التواصل', topic: 'الموضوع', msg: 'التفاصيل' }
-      : { head: 'Message from elawaady-db.com', name: 'Name', contact: 'Contact', topic: 'Topic', msg: 'Details' };
+    const T = lang === 'ar'
+      ? { head: `رسالة من ${C.meta.domain}`, name: 'الاسم', contact: 'التواصل', topic: 'الموضوع', msg: 'التفاصيل' }
+      : { head: `Message from ${C.meta.domain}`, name: 'Name', contact: 'Contact', topic: 'Topic', msg: 'Details' };
 
-    /* The <option> labels are elongated on screen; the message that leaves the
-       site should be plain text. */
+    /* The option labels are elongated on screen; what leaves the site is plain. */
     const text = stripKashida(
-      `*${L.head}*\n\n` +
-      `${L.name}: ${f.elements.name.value.trim()}\n` +
-      `${L.contact}: ${f.elements.contact.value.trim()}\n` +
-      `${L.topic}: ${f.elements.topic.value}\n` +
-      `${L.msg}: ${f.elements.message.value.trim()}`);
+      `*${T.head}*\n\n` +
+      `${T.name}: ${f.elements.name.value.trim()}\n` +
+      `${T.contact}: ${f.elements.contact.value.trim()}\n` +
+      `${T.topic}: ${f.elements.topic.value}\n` +
+      `${T.msg}: ${f.elements.message.value.trim()}`);
 
     window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
   });
