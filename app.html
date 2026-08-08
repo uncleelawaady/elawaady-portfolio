@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>تقييمات العملاء — Elawaady</title>
+<link rel="icon" href="assets/favicon.png" type="image/png">
+
+<style>
+/* ===========================================================================
+   خط «The Year of Handicrafts» — نفس خط الموقع.
+   الملفات نسبية، فلو الصفحة اتفتحت من غير مجلد assets بيقع على خط النظام
+   من غير ما حاجة تتكسر.
+=========================================================================== */
+@font-face{font-family:'Handicrafts';src:url('assets/fonts/handicrafts-semibold.woff2') format('woff2');
+  font-weight:400 600;font-style:normal;font-display:swap}
+@font-face{font-family:'Handicrafts';src:url('assets/fonts/handicrafts-bold.woff2') format('woff2');
+  font-weight:700 900;font-style:normal;font-display:swap}
+
+/* ===== نفس رموز الهوية اللي في style.css ===== */
+:root{
+  --turquoise:#10B5BF; --cyan:#20D6E3; --aqua:#5DE7F2; --orange:#FF8A1C;
+  --bg:#071F29; --bg-2:#0B2A34; --surface:#0C2C37; --surface-2:#103744;
+  --line:#174553; --line-soft:#123846;
+  --text:#EAF4F7; --muted:#9FBAC4; --dim:#6F909C;
+  --chip-bg:rgba(255,255,255,.04);
+  --glass:linear-gradient(160deg,rgba(23,69,83,.55),rgba(12,44,55,.75));
+  --grad:linear-gradient(135deg,var(--turquoise),var(--cyan) 60%,var(--aqua));
+  --glow:0 0 0 1px rgba(32,214,227,.18),0 18px 46px rgba(4,20,27,.6);
+  --ok:#2ED47A; --warn:#FFC53D; --bad:#FF6B6B;
+  --radius:22px; --radius-sm:14px; --container:1080px; --nav-h:70px;
+}
+:root[data-theme="light"]{
+  --bg:#F2F7F9; --bg-2:#FFFFFF; --surface:#FFFFFF; --surface-2:#EAF2F5;
+  --line:#CFE0E6; --line-soft:#DDE9ED;
+  --text:#082A35; --muted:#41707E; --dim:#6C949F;
+  --chip-bg:rgba(8,42,53,.04);
+  --glass:linear-gradient(160deg,#FFFFFF,#EEF6F8);
+  --glow:0 0 0 1px rgba(16,181,191,.16),0 14px 34px rgba(8,42,53,.1);
+  --ok:#15884E; --warn:#9A6B00; --bad:#C43B3B;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{font-family:'Handicrafts','Tajawal','Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.9;-webkit-font-smoothing:antialiased;
+  padding-block-start:var(--nav-h);overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+.container{width:min(100% - 28px,var(--container));margin-inline:auto}
+
+/* ===== أزرار ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 22px;border-radius:999px;border:1px solid transparent;
+  font-weight:700;font-size:.93rem;cursor:pointer;transition:.24s;white-space:nowrap}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn-grad{background:var(--grad);color:#04222B;box-shadow:0 12px 30px rgba(16,181,191,.3)}
+.btn-grad:hover:not([disabled]){transform:translateY(-2px)}
+.btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text)}
+.btn-ghost:hover:not([disabled]){border-color:var(--turquoise);background:rgba(16,181,191,.12)}
+.btn-ok{background:rgba(46,212,122,.14);border-color:rgba(46,212,122,.45);color:var(--ok)}
+.btn-bad{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.42);color:var(--bad)}
+.btn-warn{background:rgba(255,138,28,.1);border-color:rgba(255,138,28,.45);color:var(--orange)}
+.btn-sm{padding:8px 15px;font-size:.84rem}
+.btn.block{width:100%}
+
+/* ===== الشريط العلوي ===== */
+.nav{position:fixed;inset-block-start:0;inset-inline:0;z-index:900;height:var(--nav-h);
+  display:flex;align-items:center;background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(18px);border-block-end:1px solid var(--line-soft)}
+.nav-inner{display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}
+.brand-logo{width:36px;height:36px;object-fit:contain;border-radius:11px}
+.brand-name{font-size:1rem;line-height:1.2}
+.brand-name em{display:block;font-style:normal;font-size:.56rem;font-weight:600;
+  letter-spacing:1.3px;text-transform:uppercase;color:var(--dim)}
+.nav-links{display:flex;gap:2px;margin-inline-start:auto}
+.nav-links a{display:block;padding:7px 12px;border-radius:999px;font-weight:600;
+  font-size:.88rem;color:var(--muted);transition:.2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(16,181,191,.14)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:50%;
+  background:var(--chip-bg);border:1px solid var(--line);color:var(--muted);transition:.2s;font-size:1rem}
+.icon-btn:hover{color:var(--text);border-color:var(--turquoise)}
+.nav-toggle{display:none}
+@media(max-width:860px){
+  .nav-links{position:fixed;inset-block-start:var(--nav-h);inset-inline:0;flex-direction:column;
+    gap:0;background:var(--bg-2);border-block-end:1px solid var(--line);padding:8px 14px 16px;
+    display:none}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:12px 10px}
+  .nav-toggle{display:grid}
+}
+
+/* ===== تخطيط ===== */
+.page{padding-block:36px 80px}
+.page-head{margin-block-end:26px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;padding:6px 15px;border-radius:999px;
+  background:rgba(16,181,191,.12);border:1px solid rgba(32,214,227,.32);
+  color:var(--aqua);font-weight:700;font-size:.78rem}
+h1.title{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;line-height:1.3;margin-block:12px 6px}
+.sub{color:var(--muted);font-size:.96rem;max-width:62ch}
+
+.card{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;box-shadow:var(--glow)}
+.grid{display:grid;gap:16px}
+@media(min-width:760px){.grid.two{grid-template-columns:repeat(2,1fr)}}
+
+/* ===== نماذج ===== */
+.field{margin-block-end:16px}
+.field label{display:block;font-weight:700;font-size:.9rem;margin-block-end:7px}
+.field .hint{color:var(--dim);font-size:.8rem;font-weight:400;margin-inline-start:6px}
+.input,textarea.input,select.input{width:100%;padding:12px 15px;border-radius:var(--radius-sm);
+  background:var(--bg-2);border:1px solid var(--line);color:var(--text);
+  font:inherit;font-size:.94rem;line-height:1.7;transition:.2s}
+:root[data-theme="light"] .input{background:#fff}
+.input:focus{outline:none;border-color:var(--turquoise);box-shadow:0 0 0 3px rgba(16,181,191,.16)}
+textarea.input{resize:vertical;min-height:130px}
+.counter{text-align:end;font-size:.76rem;color:var(--dim);margin-block-start:5px}
+.msg{padding:11px 15px;border-radius:var(--radius-sm);font-size:.88rem;margin-block-end:14px;display:none}
+.msg.show{display:block}
+.msg.err{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.4);color:var(--bad)}
+.msg.ok{background:rgba(46,212,122,.12);border:1px solid rgba(46,212,122,.4);color:var(--ok)}
+.msg.info{background:rgba(255,197,61,.1);border:1px solid rgba(255,197,61,.35);color:var(--warn)}
+
+.tabs{display:flex;gap:6px;background:var(--chip-bg);border:1px solid var(--line);
+  border-radius:999px;padding:5px;margin-block-end:22px;overflow-x:auto}
+.tabs button{padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;
+  color:var(--muted);white-space:nowrap;transition:.2s}
+.tabs button.on{background:var(--grad);color:#04222B}
+
+/* ===== النجوم ===== */
+.stars{display:inline-flex;flex-direction:row-reverse;gap:4px}
+.stars button{font-size:1.9rem;line-height:1;color:var(--line);transition:.15s;padding:0 2px}
+.stars button.lit{color:var(--orange);text-shadow:0 0 16px rgba(255,138,28,.5)}
+.stars button:hover{transform:scale(1.14)}
+.stars-ro{color:var(--orange);letter-spacing:2px;font-size:1.05rem;direction:ltr;display:inline-block}
+.stars-ro .off{color:var(--line)}
+
+/* ===== حالة التقييم ===== */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;
+  font-size:.76rem;font-weight:700;border:1px solid}
+.pill.pending {background:rgba(255,197,61,.12);border-color:rgba(255,197,61,.4);color:var(--warn)}
+.pill.approved{background:rgba(46,212,122,.12);border-color:rgba(46,212,122,.4);color:var(--ok)}
+.pill.rejected{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4);color:var(--bad)}
+.pill.hidden  {background:var(--chip-bg);border-color:var(--line);color:var(--dim)}
+.pill.featured{background:rgba(255,138,28,.12);border-color:rgba(255,138,28,.45);color:var(--orange)}
+
+/* ===== بطاقة تقييم ===== */
+.review{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;display:flex;flex-direction:column;gap:13px}
+.review.is-featured{border-color:rgba(255,138,28,.45)}
+.rv-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.avatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;object-fit:cover;
+  background:var(--surface-2);border:1px solid var(--line)}
+.avatar.ph{display:grid;place-items:center;font-weight:800;color:var(--aqua);font-size:1.05rem}
+.rv-who{min-width:0}
+.rv-name{font-weight:800;font-size:.98rem}
+.rv-meta{color:var(--dim);font-size:.78rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rv-title{font-weight:800;font-size:1.06rem;line-height:1.5}
+.rv-body{color:var(--muted);font-size:.94rem;white-space:pre-wrap;word-break:break-word}
+.rv-actions{display:flex;gap:8px;flex-wrap:wrap;padding-block-start:4px;
+  border-block-start:1px solid var(--line-soft)}
+
+/* ===== شبكة الصور ===== */
+/* أربع صور كحد أقصى، فالسقف ده بيمنع الصورة الواحدة إنها تتمطط على عرض
+   البطاقة كله */
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px;
+  max-width:460px}
+.shots img{aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:1px solid var(--line);
+  cursor:zoom-in;transition:.2s}
+.shots img:hover{transform:scale(1.03);border-color:var(--turquoise)}
+
+/* ===== المرفقات في نموذج الإرسال ===== */
+.drop{border:2px dashed var(--line);border-radius:var(--radius);padding:26px 18px;
+  text-align:center;color:var(--muted);transition:.2s;cursor:pointer}
+.drop:hover,.drop.over{border-color:var(--turquoise);background:rgba(16,181,191,.06)}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;
+  margin-block-start:14px}
+.pick{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.pick img{aspect-ratio:3/4;object-fit:cover}
+.pick .x{position:absolute;inset-block-start:6px;inset-inline-end:6px;width:26px;height:26px;
+  border-radius:50%;background:rgba(7,31,41,.82);color:#fff;display:grid;place-items:center;
+  font-size:.85rem;line-height:1}
+.pick .redo{position:absolute;inset-block-end:0;inset-inline:0;padding:6px;font-size:.74rem;
+  font-weight:700;background:rgba(7,31,41,.82);color:var(--aqua);text-align:center}
+
+/* ===== نافذة ===== */
+.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:center;padding:16px;
+  background:rgba(3,14,19,.86);backdrop-filter:blur(6px)}
+.modal.open{display:grid}
+.modal-box{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);
+  width:min(100%,720px);max-height:92vh;overflow:auto;padding:20px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-block-end:14px}
+.modal-head h3{font-size:1.1rem;font-weight:800}
+
+/* أداة التمويه */
+.redact-stage{background:#04141b;border:1px solid var(--line);border-radius:14px;
+  padding:10px;display:grid;place-items:center;margin-block-end:12px}
+.redact-stage canvas{max-width:100%;max-height:56vh;border-radius:8px;cursor:crosshair;touch-action:none}
+.redact-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-block-end:12px}
+.redact-bar input[type=range]{accent-color:var(--turquoise);flex:1;min-width:130px}
+
+/* عارض الصور */
+.viewer{position:fixed;inset:0;z-index:1100;display:none;background:rgba(3,14,19,.95)}
+.viewer.open{display:grid;place-items:center}
+.viewer img{max-width:94vw;max-height:86vh;border-radius:10px;object-fit:contain}
+.viewer .nav-x{position:absolute;inset-block-start:16px;inset-inline-end:18px;font-size:1.7rem;color:#fff}
+.viewer .arrow{position:absolute;inset-block-start:50%;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:1.4rem}
+.viewer .prev{inset-inline-start:14px}
+.viewer .next{inset-inline-end:14px}
+.viewer .count{position:absolute;inset-block-end:20px;inset-inline:0;text-align:center;
+  color:#9FBAC4;font-size:.85rem}
+
+/* ===== متفرقات ===== */
+.empty{text-align:center;padding:56px 20px;color:var(--dim)}
+.empty .big{font-size:2.4rem;margin-block-end:10px}
+.spinner{width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--turquoise);
+  border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;inset-block-end:22px;inset-inline-start:50%;transform:translateX(50%);
+  z-index:1200;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.88rem;
+  background:var(--surface-2);border:1px solid var(--line);box-shadow:var(--glow);
+  opacity:0;pointer-events:none;transition:.3s}
+.toast.show{opacity:1;transform:translateX(50%) translateY(-6px)}
+.toast.err{border-color:rgba(255,107,107,.5);color:var(--bad)}
+.toast.ok{border-color:rgba(46,212,122,.5);color:var(--ok)}
+
+.summary{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.avg{font-size:3rem;font-weight:900;line-height:1;background:var(--grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.bars{flex:1;min-width:200px;display:grid;gap:5px}
+.bar-row{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;font-size:.78rem}
+.bar{height:7px;border-radius:99px;background:var(--chip-bg);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--grad);border-radius:99px}
+
+.testbar{background:rgba(255,197,61,.1);border-block-end:1px solid rgba(255,197,61,.3);
+  color:var(--warn);font-size:.8rem;font-weight:700;text-align:center;padding:7px 14px}
+.divider{display:flex;align-items:center;gap:12px;color:var(--dim);font-size:.8rem;
+  margin-block:18px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+</style>
+</head>
+
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="brand">
+      <img src="assets/e-logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+      <span class="brand-name">Elawaady<em>Client Reviews</em></span>
+    </a>
+    <ul class="nav-links" id="navLinks"></ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="تبديل الوضع" title="تبديل الوضع">◐</button>
+      <button class="icon-btn nav-toggle" id="navToggle" aria-label="القائمة">☰</button>
+    </div>
+  </div>
+</nav>
+
+<div id="testbar"></div>
+<main id="view"><div class="spinner"></div></main>
+
+<div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
+
+<div class="viewer" id="viewer">
+  <button class="nav-x" data-vx aria-label="إغلاق">✕</button>
+  <button class="arrow prev" data-vp aria-label="السابق">‹</button>
+  <img id="viewerImg" alt="">
+  <button class="arrow next" data-vn aria-label="التالي">›</button>
+  <div class="count" id="viewerCount"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="firebase-config.js"></script>
+<script type="module">
+/* ===========================================================================
+   تقييمات العملاء — التطبيق كله في ملف واحد
+   ===========================================================================
+   الرحلة: تسجيل → كتابة تقييم → رفع صور بعد تمويهها → pending → مراجعة من
+   لوحة المالك → approved → يظهر في الصفحة العامة.
+
+   الملف بيشتغل على واجهتين خلفيتين:
+
+     firebase   لما firebase-config.js يبقى متملّي. ده الوضع الحقيقي.
+     test       لما يبقى فاضي. قاعدة بيانات في المتصفح (IndexedDB) بتعمل
+                نفس الرحلة بالظبط عشان تتجرب من غير أي حساب سحابي.
+
+   القواعد اللي بتمنع المستخدم يغيّر status أو featured أو moderatedBy مكتوبة
+   في firestore.rules — الكود ده مش بيحميها، السيرفر هو اللي بيرفض. الوضع
+   test بيقلّد نفس الرفض عشان الاختبار يبان صح.
+=========================================================================== */
+
+/* ===========================  KASHIDA  ==================================
+   علامة التطويل (ـ) جوّه كل كلمة عربية.
+   العلامة مبتتحطش في أي مكان: هي بتترسم كوصلة ممدودة بس لو الحرف اللي
+   قبلها بيوصل لقدام. ا د ذ ر ز و ة ى ء مبيوصلوش، فالعلامة بعدهم بتقع
+   مفصولة وتكسر الكلمة. الموضع التقليدي هو آخر وصلة — قبل الحرف الأخير.
+   نفس المنطق الموجود في script.js عشان الشكل يفضل واحد في الموقع كله.
+======================================================================== */
+const TATWEEL = 'ـ';
+const AR_LETTER = /[ء-غف-ي]/;
+const NO_FORWARD_JOIN = new Set([...'اأإآٱدذرزوؤةىء']);
+const KASHIDA_SKIP = new Set(['SCRIPT','STYLE','SVG','TEXTAREA','INPUT','CODE']);
+
+function kashidaWord(word){
+  if (word.indexOf(TATWEEL) !== -1) return word;
+  const seams = [];
+  for (let i = 0; i < word.length - 1; i++){
+    const a = word[i], b = word[i+1];
+    if (!AR_LETTER.test(a) || !AR_LETTER.test(b)) continue;
+    if (NO_FORWARD_JOIN.has(a)) continue;
+    if (a === 'ل' && 'اأإآٱ'.indexOf(b) !== -1) continue;   // نسيب لام-ألف زي ما هي
+    seams.push(i);
+  }
+  if (!seams.length) return word;
+  const i = seams[seams.length - 1];
+  return word.slice(0, i+1) + TATWEEL + word.slice(i+1);
+}
+const kashida = (t) => t.replace(/\S+/g, kashidaWord);
+
+function applyKashida(root){
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      if (!node.nodeValue.trim() || !AR_LETTER.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+      for (let p = node.parentElement; p; p = p.parentElement){
+        if (KASHIDA_SKIP.has(p.tagName.toUpperCase())) return NodeFilter.FILTER_REJECT;
+        /* المحتوى اللي المستخدم كتبه بيتساب زي ما هو — إحنا منزوّدش علامات
+           في كلام حد تاني. */
+        if (p.dataset && p.dataset.nokashida !== undefined) return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => { n.nodeValue = kashida(n.nodeValue); });
+}
+
+/* ===========================  أدوات صغيرة  ============================== */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* أي نص بيتحط في العنصر بعد الرسم لازم يعدي من هنا، وإلا هيبقى الكلام
+   الوحيد في الصفحة من غير علامة تطويل. */
+const setText = (el, s) => { if (el) el.textContent = kashida(String(s)); };
+
+let toastTimer;
+function toast(text, kind = ''){
+  const t = $('#toast');
+  setText(t, text);
+  t.className = 'toast show ' + kind;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = 'toast ' + kind, 3200);
+}
+
+function openModal(html){
+  $('#modalBox').innerHTML = html;
+  $('#modal').classList.add('open');
+  applyKashida($('#modalBox'));
+  return $('#modalBox');
+}
+const closeModal = () => $('#modal').classList.remove('open');
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+const fmtDate = (v) => {
+  const d = v instanceof Date ? v : (v && v.toDate ? v.toDate() : (v ? new Date(v) : null));
+  if (!d || isNaN(d)) return '';
+  return d.toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' });
+};
+
+const initials = (name) => (String(name || '؟').trim()[0] || '؟').toUpperCase();
+
+const avatarHTML = (name, photo) => photo
+  ? `<img class="avatar" src="${esc(photo)}" alt="">`
+  : `<div class="avatar ph">${esc(initials(name))}</div>`;
+
+const starsRO = (n) => {
+  const k = Math.max(0, Math.min(5, Math.round(n || 0)));
+  return `<span class="stars-ro">${'★'.repeat(k)}<span class="off">${'★'.repeat(5-k)}</span></span>`;
+};
+
+/* ===========================  ثوابت المجال  ============================= */
+const DEAL_TYPES = [
+  { id:'escrow',     ar:'وساطة' },
+  { id:'trade',      ar:'بيع أو شراء' },
+  { id:'digital',    ar:'خدمات رقمية' },
+  { id:'project',    ar:'تعاون أو مشروع' },
+  { id:'consulting', ar:'استشارة' },
+  { id:'other',      ar:'أخرى' }
+];
+const dealLabel = (id) => (DEAL_TYPES.find(d => d.id === id) || DEAL_TYPES[5]).ar;
+
+const STATUS_AR = { pending:'قيد المراجعة', approved:'منشور', rejected:'مرفوض', hidden:'مخفي' };
+
+const LIMITS = {
+  maxFiles: 4,
+  maxBytes: 5 * 1024 * 1024,
+  maxDimension: 1600,
+  thumbSize: 400,
+  quality: 0.82,
+  types: ['image/jpeg','image/png','image/webp']
+};
+
+/* ===========================  الصور  ==================================== */
+function loadImage(src){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => rej(new Error('مقدرتش أقرا الصورة دي.'));
+    img.src = src;
+  });
+}
+
+function checkFile(file){
+  if (!LIMITS.types.includes(file.type)) return `«${file.name}» مش JPG ولا PNG ولا WEBP.`;
+  if (file.size > LIMITS.maxBytes)       return `«${file.name}» أكبر من 5 ميجا.`;
+  return null;
+}
+
+async function drawScaled(source, maxDim, quality){
+  const img = source instanceof HTMLImageElement ? source : await loadImage(source);
+  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const c = document.createElement('canvas');
+  c.width  = Math.round(img.width  * scale);
+  c.height = Math.round(img.height * scale);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return new Promise(res => c.toBlob(res, 'image/jpeg', quality));
+}
+const thumbnail = (src) => drawScaled(src, LIMITS.thumbSize, 0.72);
+
+/* ---------------------------------------------------------------------------
+   لوحة التمويه
+   ---------------------------------------------------------------------------
+   المستخدم بيمسح بصباعه فوق الأرقام والأسماء. المسح بكسلة حقيقية على
+   الكانفس: بناخد المربع، نصغّره لحتة صغيرة، ونرجّعه مكبّر — فالمعلومة
+   بتضيع من البكسلات نفسها، مش متغطية بطبقة فوقها.
+
+   الأصل اللي المستخدم اختاره مبيخرجش من جهازه أبدًا؛ اللي بيترفع هو ناتج
+   الكانفس بعد المسح.
+--------------------------------------------------------------------------- */
+class Redactor {
+  constructor(canvas){
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d', { willReadFrequently:true });
+    this.brush = 34;
+    this.drawing = false;
+    this.dirty = false;
+    this.history = [];
+    this._down = this._down.bind(this);
+    this._move = this._move.bind(this);
+    this._up   = this._up.bind(this);
+  }
+
+  async load(src){
+    const img = await loadImage(src);
+    /* بنصغّر هنا مرة واحدة: اللي بيتمسح بيتمسح على المقاس النهائي، فمفيش
+       تفاصيل بترجع تاني لما نصغّر بعدين قبل الرفع. */
+    const scale = Math.min(1, LIMITS.maxDimension / Math.max(img.width, img.height));
+    this.canvas.width  = Math.round(img.width  * scale);
+    this.canvas.height = Math.round(img.height * scale);
+    this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+    this.dirty = false;
+    this.history = [];
+    this.canvas.addEventListener('pointerdown', this._down);
+    this.canvas.addEventListener('pointermove', this._move);
+    window.addEventListener('pointerup', this._up);
+    return this;
+  }
+
+  destroy(){
+    this.canvas.removeEventListener('pointerdown', this._down);
+    this.canvas.removeEventListener('pointermove', this._move);
+    window.removeEventListener('pointerup', this._up);
+  }
+
+  _at(e){
+    const r = this.canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - r.left) * (this.canvas.width  / r.width),
+      y: (e.clientY - r.top ) * (this.canvas.height / r.height)
+    };
+  }
+
+  _down(e){
+    e.preventDefault();
+    /* لقطة قبل كل ضربة، عشان «تراجع» يرجّع خطوة كاملة مش نقطة */
+    this.history.push(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
+    if (this.history.length > 12) this.history.shift();
+    this.drawing = true;
+    this._paint(this._at(e));
+  }
+  _move(e){ if (this.drawing) this._paint(this._at(e)); }
+  _up(){ this.drawing = false; }
+
+  _paint({ x, y }){
+    const size = this.brush, half = size / 2;
+    const sx = Math.max(0, Math.round(x - half));
+    const sy = Math.max(0, Math.round(y - half));
+    const sw = Math.min(size, this.canvas.width  - sx);
+    const sh = Math.min(size, this.canvas.height - sy);
+    if (sw <= 0 || sh <= 0) return;
+
+    const tiny = document.createElement('canvas');
+    tiny.width  = Math.max(1, Math.round(sw / 9));
+    tiny.height = Math.max(1, Math.round(sh / 9));
+    tiny.getContext('2d').drawImage(this.canvas, sx, sy, sw, sh, 0, 0, tiny.width, tiny.height);
+
+    this.ctx.imageSmoothingEnabled = false;
+    this.ctx.drawImage(tiny, 0, 0, tiny.width, tiny.height, sx, sy, sw, sh);
+    this.ctx.imageSmoothingEnabled = true;
+    this.dirty = true;
+  }
+
+  undo(){
+    const last = this.history.pop();
+    if (!last) return false;
+    this.ctx.putImageData(last, 0, 0);
+    this.dirty = this.history.length > 0;
+    return true;
+  }
+
+  /* JPEG دايمًا: أصغر، ومفيش شفافية تحمل معلومة مخفية، وإعادة الترميز
+     بتتخلص من أي EXIF كان في الأصل (مكان التصوير مثلًا). */
+  toBlob(q = LIMITS.quality){
+    return new Promise(res => this.canvas.toBlob(res, 'image/jpeg', q));
+  }
+}
+
+/* =======================================================================
+   الواجهة الخلفية — الوضع التجريبي
+   =======================================================================
+   قاعدة بيانات في المتصفح. الصور بتتخزن كـBlob في IndexedDB زي ما هي،
+   من غير base64، فمفيش مشكلة مساحة.
+
+   كل عملية بتعدي على نفس الفحوصات اللي في firestore.rules — بنرفض نفس
+   الحاجات وبنفس الرسايل، عشان لو اختبرت الصلاحيات هنا تلاقي نفس النتيجة
+   اللي هتيجي من فايربيز.
+======================================================================= */
+const TEST_OWNER_UID = 'test-owner-uid';
+
+function idbOpen(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('elawaady-reviews-test', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => res(r.result);
+    r.onerror   = () => rej(r.error);
+  });
+}
+async function idbGet(key){
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const q = db.transaction('kv').objectStore('kv').get(key);
+    q.onsuccess = () => res(q.result);
+    q.onerror   = () => rej(q.error);
+  });
+}
+async function idbSet(key, val){
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror    = () => rej(tx.error);
+  });
+}
+
+async function sha256(text){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const rid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+
+/* الروابط بتتعمل من الـBlob وقت العرض وبتتخزن في الذاكرة بس */
+const blobURLs = new Map();
+function urlFor(id, blob){
+  if (!blob) return '';
+  if (!blobURLs.has(id)) blobURLs.set(id, URL.createObjectURL(blob));
+  return blobURLs.get(id);
+}
+
+function makeTestBackend(){
+  let db = null;
+  let currentUid = null;
+  const listeners = new Set();
+
+  const SESSION_KEY = 'elawaady-test-session';
+
+  async function load(){
+    db = await idbGet('db');
+    if (!db){
+      db = { users:{}, reviews:[], media:{} };
+      /* حسابين جاهزين عشان تقدر تجرب الرحلة كاملة من أول لحظة */
+      db.users[TEST_OWNER_UID] = {
+        uid: TEST_OWNER_UID, email:'owner@elawaady-db.com',
+        pass: await sha256('Owner#2026'),
+        displayName:'أحمد العوضي', photoURL:'', bio:'صاحب الموقع.',
+        role:'user', status:'active', createdAt: Date.now()
+      };
+      const testUid = 'test-user-uid';
+      db.users[testUid] = {
+        uid: testUid, email:'tester@elawaady-db.com',
+        pass: await sha256('Test#2026'),
+        displayName:'عميل تجريبي', photoURL:'',
+        bio:'حساب للتجربة.', role:'user', status:'active', createdAt: Date.now()
+      };
+      await save();
+    }
+    currentUid = localStorage.getItem(SESSION_KEY);
+    if (currentUid && !db.users[currentUid]) currentUid = null;
+  }
+
+  const save = () => idbSet('db', db);
+
+  const publicUser = (u) => u
+    ? { uid:u.uid, email:u.email, displayName:u.displayName, photoURL:u.photoURL,
+        bio:u.bio, role:u.role, status:u.status, createdAt:u.createdAt }
+    : null;
+
+  function broadcast(){
+    const u = publicUser(db.users[currentUid]);
+    listeners.forEach(fn => { try { fn(u, u); } catch(e){ console.error(e); } });
+  }
+
+  async function setSession(uid){
+    currentUid = uid;
+    if (uid) localStorage.setItem(SESSION_KEY, uid);
+    else localStorage.removeItem(SESSION_KEY);
+    broadcast();
+  }
+
+  const me = () => db.users[currentUid] || null;
+  const requireUser = () => { const u = me(); if (!u) throw new Error('لازم تسجّل دخول الأول.'); return u; };
+  const isOwner = () => currentUid === TEST_OWNER_UID;
+
+  /* الصور بترجع كروابط مؤقتة من الـBlob */
+  function hydrate(r){
+    const images = (r.imageIds || []).map(id => ({
+      url:      urlFor(id, db.media[id] && db.media[id].full),
+      thumbUrl: urlFor(id + ':t', db.media[id] && db.media[id].thumb)
+    }));
+    return { ...r, images };
+  }
+
+  return {
+    mode: 'test',
+    OWNER_UID: TEST_OWNER_UID,
+
+    async start(){
+      await load();
+      broadcast();
+    },
+
+    onUser(fn){
+      listeners.add(fn);
+      fn(publicUser(me()), publicUser(me()));
+      return () => listeners.delete(fn);
+    },
+
+    getUser:    () => publicUser(me()),
+    getProfile: () => publicUser(me()),
+    isOwner,
+
+    async register(email, password, displayName){
+      email = String(email).trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('الإيميل مش مكتوب صح.');
+      if (String(password).length < 6) throw new Error('كلمة السر ضعيفة — خليها 6 حروف على الأقل.');
+      if (Object.values(db.users).some(u => u.email === email))
+        throw new Error('الإيميل ده مستخدم في حساب تاني.');
+
+      const uid = 'u-' + rid();
+      db.users[uid] = {
+        uid, email, pass: await sha256(password),
+        displayName: displayName || email.split('@')[0],
+        photoURL:'', bio:'',
+        role:'user',            // الدور دايمًا user — مفيش طريقة حد يعمل لنفسه أدمن
+        status:'active', createdAt: Date.now()
+      };
+      await save();
+      await setSession(uid);
+      return publicUser(db.users[uid]);
+    },
+
+    async login(email, password){
+      email = String(email).trim().toLowerCase();
+      const hash = await sha256(password);
+      const u = Object.values(db.users).find(x => x.email === email);
+      if (!u || u.pass !== hash) throw new Error('الإيميل أو كلمة السر غلط.');
+      await setSession(u.uid);
+      return publicUser(u);
+    },
+
+    /* في الوضع التجريبي مفيش نافذة جوجل حقيقية — بنعمل حساب ثابت بنفس
+       النتيجة عشان الزرار يتجرب. */
+    async loginWithGoogle(){
+      const email = 'google.tester@gmail.com';
+      let u = Object.values(db.users).find(x => x.email === email);
+      if (!u){
+        const uid = 'g-' + rid();
+        db.users[uid] = { uid, email, pass:null, displayName:'حساب جوجل تجريبي',
+          photoURL:'', bio:'', role:'user', status:'active', createdAt: Date.now() };
+        await save();
+        u = db.users[uid];
+      }
+      await setSession(u.uid);
+      return publicUser(u);
+    },
+
+    async logout(){ await setSession(null); },
+
+    async resetPassword(){ throw new Error('استرجاع كلمة السر شغال في الوضع الحقيقي بس.'); },
+
+    async updateMyProfile(fields){
+      const u = requireUser();
+      for (const k of ['displayName','photoURL','bio'])
+        if (k in fields) u[k] = fields[k];
+      u.updatedAt = Date.now();
+      /* الاسم والصورة بيتنسخوا على التقييمات القديمة عشان العرض يفضل متسق */
+      db.reviews.forEach(r => {
+        if (r.uid === u.uid){ r.authorName = u.displayName; r.authorPhoto = u.photoURL; }
+      });
+      await save();
+      broadcast();
+    },
+
+    async uploadAvatar(blob){
+      const id = 'av-' + rid();
+      db.media[id] = { full: blob, thumb: blob };
+      await save();
+      return urlFor(id, blob);
+    },
+
+    async listApproved(){
+      return db.reviews
+        .filter(r => r.status === 'approved')
+        .sort((a,b) => (b.featured?1:0)-(a.featured?1:0) || b.createdAt - a.createdAt)
+        .map(hydrate);
+    },
+
+    async listMine(){
+      const u = requireUser();
+      return db.reviews.filter(r => r.uid === u.uid)
+        .sort((a,b) => b.createdAt - a.createdAt).map(hydrate);
+    },
+
+    async listAll(){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      return db.reviews.slice().sort((a,b) => b.createdAt - a.createdAt).map(hydrate);
+    },
+
+    async submitReview({ rating, title, body, dealType, images = [] }, onProgress){
+      const u = requireUser();
+
+      /* نفس فحوصات validNewReview() في firestore.rules */
+      const r = Number(rating);
+      if (!(Number.isInteger(r) && r >= 1 && r <= 5)) throw new Error('اختار تقييم من 1 لـ5 نجوم.');
+      if (String(title).trim().length > 90)  throw new Error('العنوان أطول من 90 حرف.');
+      const text = String(body).trim();
+      if (text.length < 10)   throw new Error('اكتب 10 حروف على الأقل في التقييم.');
+      if (text.length > 1500) throw new Error('التقييم أطول من 1500 حرف.');
+      if (!DEAL_TYPES.some(d => d.id === dealType)) throw new Error('نوع التعامل مش مظبوط.');
+      if (images.length > LIMITS.maxFiles) throw new Error('4 صور كحد أقصى.');
+
+      const id = 'r-' + rid();
+      const imageIds = [];
+      for (let i = 0; i < images.length; i++){
+        onProgress && onProgress(i + 1, images.length);
+        const mid = 'm-' + rid();
+        db.media[mid] = { full: images[i].blob, thumb: images[i].thumb || images[i].blob };
+        imageIds.push(mid);
+      }
+
+      db.reviews.push({
+        id, uid: u.uid,
+        authorName: u.displayName, authorPhoto: u.photoURL,
+        rating: r,
+        title: String(title).trim(),
+        body: text,
+        dealType,
+        status: 'pending',       // إجباري — مفيش نشر ذاتي
+        featured: false,
+        imageIds,
+        imageCount: imageIds.length,
+        createdAt: Date.now(), updatedAt: Date.now()
+      });
+      await save();
+      return id;
+    },
+
+    async withdrawMine(id){
+      const u = requireUser();
+      const r = db.reviews.find(x => x.id === id);
+      if (!r) throw new Error('التقييم ده مش موجود.');
+      if (r.uid !== u.uid || r.status !== 'pending') throw new Error('الصلاحية مرفوضة.');
+      db.reviews = db.reviews.filter(x => x.id !== id);
+      await save();
+    },
+
+    async moderate(id, status){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      const r = db.reviews.find(x => x.id === id);
+      if (!r) throw new Error('التقييم ده مش موجود.');
+      r.status = status;
+      r.moderatedBy = currentUid;
+      r.moderatedAt = Date.now();
+      r.updatedAt = Date.now();
+      await save();
+    },
+
+    async setFeatured(id, featured){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      const r = db.reviews.find(x => x.id === id);
+      if (!r) throw new Error('التقييم ده مش موجود.');
+      r.featured = Boolean(featured);
+      r.updatedAt = Date.now();
+      await save();
+    },
+
+    async removeReview(id){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      db.reviews = db.reviews.filter(x => x.id !== id);
+      await save();
+    },
+
+    /* بيتنادى من زرار «تصفير بيانات التجربة» — الوضع التجريبي بس */
+    async resetTestData(){
+      db = null;
+      await idbSet('db', null);
+      localStorage.removeItem(SESSION_KEY);
+      location.reload();
+    }
+  };
+}
+
+/* =======================================================================
+   الواجهة الخلفية — فايربيز
+   =======================================================================
+   بتتحمّل بالتحميل الكسول: الاستيراد من CDN مبيحصلش خالص طول ما الإعداد
+   فاضي، فالوضع التجريبي مبيحتاجش إنترنت ولا حساب.
+======================================================================= */
+async function makeFirebaseBackend(cfg, ownerUid){
+  const CDN = 'https://www.gstatic.com/firebasejs/10.12.2';
+  const [{ initializeApp }, A, F, S] = await Promise.all([
+    import(`${CDN}/firebase-app.js`),
+    import(`${CDN}/firebase-auth.js`),
+    import(`${CDN}/firebase-firestore.js`),
+    import(`${CDN}/firebase-storage.js`)
+  ]);
+
+  const app     = initializeApp(cfg);
+  const auth    = A.getAuth(app);
+  const db      = F.getFirestore(app);
+  const storage = S.getStorage(app);
+  A.setPersistence(auth, A.browserLocalPersistence).catch(() => {});
+
+  const MESSAGES = {
+    'auth/invalid-credential':     'الإيميل أو كلمة السر غلط.',
+    'auth/wrong-password':         'كلمة السر غلط.',
+    'auth/user-not-found':         'مفيش حساب بالإيميل ده.',
+    'auth/email-already-in-use':   'الإيميل ده مستخدم في حساب تاني.',
+    'auth/weak-password':          'كلمة السر ضعيفة — خليها 6 حروف على الأقل.',
+    'auth/invalid-email':          'الإيميل مش مكتوب صح.',
+    'auth/too-many-requests':      'محاولات كتير. استنى شوية وحاول تاني.',
+    'auth/popup-closed-by-user':   'قفلت نافذة جوجل قبل ما تخلص.',
+    'auth/network-request-failed': 'مفيش اتصال بالإنترنت.',
+    'permission-denied':           'الصلاحية مرفوضة.',
+    'unavailable':                 'الخدمة مش متاحة دلوقتي. حاول تاني بعد شوية.'
+  };
+  const wrap = (err) => {
+    const code = String((err && err.code) || '').replace(/^firestore\//, '');
+    return new Error(MESSAGES[code] || (err && err.message) || 'حصل خطأ مش متوقع.');
+  };
+  const run = async (fn) => { try { return await fn(); } catch (e){ throw wrap(e); } };
+
+  let user = null, profile = null, ready = false;
+  const listeners = new Set();
+  const broadcast = () => listeners.forEach(fn => { try { fn(user, profile); } catch(e){ console.error(e); } });
+
+  /* ملف المستخدم بيتعمل مرة واحدة عند أول دخول. الدور دايمًا user،
+     والقواعد بترفض أي إنشاء بدور تاني. */
+  async function ensureProfile(u){
+    const refDoc = F.doc(db, 'users', u.uid);
+    const snap = await F.getDoc(refDoc);
+    if (!snap.exists()){
+      const p = {
+        uid: u.uid, email: u.email || '',
+        displayName: u.displayName || (u.email || '').split('@')[0] || 'مستخدم',
+        photoURL: u.photoURL || '', bio: '',
+        role: 'user', status: 'active',
+        createdAt: F.serverTimestamp(), updatedAt: F.serverTimestamp()
+      };
+      await F.setDoc(refDoc, p);
+      return p;
+    }
+    F.updateDoc(refDoc, { updatedAt: F.serverTimestamp() }).catch(() => {});
+    return snap.data();
+  }
+
+  const started = new Promise(res => {
+    A.onAuthStateChanged(auth, async (u) => {
+      user = u; profile = null;
+      if (u){
+        try { profile = await ensureProfile(u); }
+        catch (e){ console.warn('تعذّر تحميل ملف المستخدم:', e.message); }
+      }
+      ready = true;
+      res();
+      broadcast();
+    });
+  });
+
+  const col  = () => F.collection(db, 'reviews');
+  const rows = (snap) => snap.docs.map(d => ({ id:d.id, ...d.data() }));
+
+  async function uploadOne(uid, reviewId, blob, thumb){
+    const base = `reviews/${uid}/${reviewId}/${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
+    const fullRef = S.ref(storage, `${base}.jpg`);
+    await S.uploadBytes(fullRef, blob, { contentType:'image/jpeg' });
+    const url = await S.getDownloadURL(fullRef);
+
+    let thumbUrl = url, thumbPath = `${base}.jpg`;
+    if (thumb){
+      const tRef = S.ref(storage, `${base}-thumb.jpg`);
+      await S.uploadBytes(tRef, thumb, { contentType:'image/jpeg' });
+      thumbUrl  = await S.getDownloadURL(tRef);
+      thumbPath = `${base}-thumb.jpg`;
+    }
+    return { url, path:`${base}.jpg`, thumbUrl, thumbPath, bytes: blob.size };
+  }
+
+  return {
+    mode: 'firebase',
+    OWNER_UID: ownerUid,
+
+    start: () => started,
+
+    onUser(fn){
+      listeners.add(fn);
+      if (ready) fn(user, profile);
+      return () => listeners.delete(fn);
+    },
+
+    getUser:    () => user,
+    getProfile: () => profile,
+    isOwner:    () => Boolean(user && ownerUid && user.uid === ownerUid),
+
+    register: (email, password, displayName) => run(async () => {
+      const cred = await A.createUserWithEmailAndPassword(auth, email, password);
+      if (displayName){
+        await A.updateProfile(cred.user, { displayName });
+        await F.setDoc(F.doc(db, 'users', cred.user.uid), { displayName }, { merge:true }).catch(() => {});
+      }
+      return cred.user;
+    }),
+
+    login: (email, password) => run(() => A.signInWithEmailAndPassword(auth, email, password)),
+
+    loginWithGoogle: () => run(() => {
+      const p = new A.GoogleAuthProvider();
+      p.setCustomParameters({ prompt:'select_account' });
+      return A.signInWithPopup(auth, p);
+    }),
+
+    logout: () => run(() => A.signOut(auth)),
+
+    resetPassword: (email) => run(() => A.sendPasswordResetEmail(auth, email)),
+
+    updateMyProfile: (fields) => run(async () => {
+      if (!user) throw new Error('مش مسجّل دخول.');
+      const allowed = {};
+      /* بنبعت الحقول المسموحة بس — نفس اللي القواعد بتقبله، عشان مفيش
+         طلب يترفض بسبب حقل اتبعت بالغلط. */
+      for (const k of ['displayName','photoURL','bio']) if (k in fields) allowed[k] = fields[k];
+      allowed.updatedAt = F.serverTimestamp();
+      await F.updateDoc(F.doc(db, 'users', user.uid), allowed);
+      await A.updateProfile(user, {
+        displayName: allowed.displayName ?? user.displayName,
+        photoURL:    allowed.photoURL    ?? user.photoURL
+      }).catch(() => {});
+      profile = { ...profile, ...allowed };
+      broadcast();
+    }),
+
+    uploadAvatar: (blob) => run(async () => {
+      if (!user) throw new Error('مش مسجّل دخول.');
+      const r = S.ref(storage, `avatars/${user.uid}/${Date.now()}.jpg`);
+      await S.uploadBytes(r, blob, { contentType:'image/jpeg' });
+      return S.getDownloadURL(r);
+    }),
+
+    listApproved: (max = 60) => run(async () =>
+      rows(await F.getDocs(F.query(col(), F.where('status','==','approved'),
+        F.orderBy('createdAt','desc'), F.limit(max))))),
+
+    listMine: () => run(async () => {
+      if (!user) return [];
+      return rows(await F.getDocs(F.query(col(), F.where('uid','==',user.uid),
+        F.orderBy('createdAt','desc'))));
+    }),
+
+    listAll: () => run(async () =>
+      rows(await F.getDocs(F.query(col(), F.orderBy('createdAt','desc'))))),
+
+    /* الترتيب مقصود: التقييم بيتعمل الأول، وبعدين الصور بترفع تحت مساره.
+       لو الرفع فشل في النص، التقييم بيفضل موجود بالصور اللي نجحت — أحسن
+       من إننا نضيّع اللي المستخدم كتبه. */
+    submitReview: ({ rating, title, body, dealType, images = [] }, onProgress) => run(async () => {
+      if (!user) throw new Error('لازم تسجّل دخول الأول.');
+      const p = profile || {};
+      const created = await F.addDoc(col(), {
+        uid: user.uid,
+        authorName:  p.displayName || user.displayName || 'مستخدم',
+        authorPhoto: p.photoURL || user.photoURL || '',
+        rating: Number(rating),
+        title: String(title || '').trim(),
+        body:  String(body || '').trim(),
+        dealType: dealType || 'other',
+        status: 'pending',      // القاعدة بتتأكد من دي
+        featured: false,
+        imageCount: images.length,
+        images: [],
+        createdAt: F.serverTimestamp(), updatedAt: F.serverTimestamp()
+      });
+
+      if (!images.length) return created.id;
+
+      const uploaded = [];
+      for (let i = 0; i < images.length; i++){
+        onProgress && onProgress(i + 1, images.length);
+        const meta = await uploadOne(user.uid, created.id, images[i].blob, images[i].thumb);
+        uploaded.push(meta);
+        await F.addDoc(F.collection(db, 'review_media'), {
+          reviewId: created.id, uid: user.uid,
+          url: meta.url, thumbUrl: meta.thumbUrl,
+          path: meta.path, thumbPath: meta.thumbPath,
+          bytes: meta.bytes, mime:'image/jpeg',
+          createdAt: F.serverTimestamp()
+        });
+      }
+
+      await F.updateDoc(F.doc(db, 'reviews', created.id), {
+        images: uploaded.map(u => ({ url:u.url, thumbUrl:u.thumbUrl })),
+        updatedAt: F.serverTimestamp()
+      });
+      return created.id;
+    }),
+
+    withdrawMine: (id) => run(() => F.deleteDoc(F.doc(db, 'reviews', id))),
+
+    moderate: (id, status) => run(() => F.updateDoc(F.doc(db, 'reviews', id), {
+      status,
+      moderatedBy: user ? user.uid : null,
+      moderatedAt: F.serverTimestamp(),
+      updatedAt:   F.serverTimestamp()
+    })),
+
+    setFeatured: (id, featured) => run(() => F.updateDoc(F.doc(db, 'reviews', id), {
+      featured: Boolean(featured), updatedAt: F.serverTimestamp()
+    })),
+
+    removeReview: (id) => run(() => F.deleteDoc(F.doc(db, 'reviews', id))),
+
+    resetTestData: null
+  };
+}
+
+/* ===========================  العارض  =================================== */
+let viewerList = [], viewerAt = 0;
+function openViewer(list, at = 0){
+  viewerList = list; viewerAt = at;
+  $('#viewer').classList.add('open');
+  paintViewer();
+}
+function paintViewer(){
+  if (!viewerList.length) return;
+  $('#viewerImg').src = viewerList[viewerAt];
+  $('#viewerCount').textContent = `${viewerAt + 1} / ${viewerList.length}`;
+  const many = viewerList.length > 1;
+  $('[data-vp]').style.display = many ? '' : 'none';
+  $('[data-vn]').style.display = many ? '' : 'none';
+}
+const stepViewer = (d) => {
+  viewerAt = (viewerAt + d + viewerList.length) % viewerList.length;
+  paintViewer();
+};
+const closeViewer = () => $('#viewer').classList.remove('open');
+
+$('[data-vx]').onclick = closeViewer;
+$('[data-vp]').onclick = () => stepViewer(-1);
+$('[data-vn]').onclick = () => stepViewer(1);
+$('#viewer').addEventListener('click', e => { if (e.target.id === 'viewer') closeViewer(); });
+document.addEventListener('keydown', e => {
+  if (!$('#viewer').classList.contains('open')) return;
+  if (e.key === 'Escape') closeViewer();
+  if (e.key === 'ArrowRight') stepViewer(-1);
+  if (e.key === 'ArrowLeft')  stepViewer(1);
+});
+
+/* ===========================  الإقلاع  ================================== */
+const cfg = window.FIREBASE_CONFIG || {};
+const CONFIGURED = Boolean(cfg.apiKey && cfg.projectId);
+let api;
+
+/* ===========================  الشريط والتنقل  =========================== */
+function paintNav(){
+  const u = api.getUser();
+  const owner = api.isOwner();
+  const links = [
+    ['#/reviews', 'التقييمات'],
+    ['#/new',     'اكتب تقييم'],
+    u ? ['#/account', 'حسابي'] : ['#/login', 'دخول / تسجيل']
+  ];
+  if (owner) links.push(['#/admin', 'لوحة المراجعة']);
+
+  const here = location.hash || '#/reviews';
+  $('#navLinks').innerHTML = links
+    .map(([h, t]) => `<li><a href="${h}" class="${here.startsWith(h) ? 'active' : ''}">${t}</a></li>`)
+    .join('') + (u ? `<li><a href="#" id="logoutLink">خروج</a></li>` : '');
+
+  const out = $('#logoutLink');
+  if (out) out.onclick = async (e) => {
+    e.preventDefault();
+    await api.logout();
+    toast('خرجت من الحساب.');
+    location.hash = '#/reviews';
+  };
+  applyKashida($('#navLinks'));
+}
+
+$('#navToggle').onclick = () => $('#navLinks').classList.toggle('open');
+$('#themeBtn').onclick = () => {
+  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('elawaady-theme', next); } catch(e){}
+};
+try {
+  const saved = localStorage.getItem('elawaady-theme');
+  if (saved) document.documentElement.dataset.theme = saved;
+} catch(e){}
+
+function render(html){
+  const v = $('#view');
+  v.innerHTML = html;
+  applyKashida(v);
+  $('#navLinks').classList.remove('open');
+  window.scrollTo(0, 0);
+  return v;
+}
+
+const loading = () => { $('#view').innerHTML = '<div class="spinner"></div>'; };
+
+const emptyState = (icon, text) =>
+  `<div class="empty"><div class="big">${icon}</div><p>${esc(text)}</p></div>`;
+
+/* =======================================================================
+   1) دخول وتسجيل
+======================================================================= */
+function viewLogin(){
+  const next = new URLSearchParams(location.hash.split('?')[1] || '').get('next') || '#/account';
+
+  render(`
+  <div class="container page" style="max-width:520px">
+    <div class="page-head" style="text-align:center">
+      <span class="eyebrow">حسابك</span>
+      <h1 class="title">ادخل أو اعمل حساب</h1>
+      <p class="sub" style="margin-inline:auto">الحساب بيخليك تكتب تقييم وترفع صور إثبات، وتتابع حالة التقييم بعد كده.</p>
+    </div>
+
+    <div class="card">
+      <div class="tabs" role="tablist">
+        <button id="tabLogin" class="on">دخول</button>
+        <button id="tabReg">حساب جديد</button>
+      </div>
+
+      <div class="msg" id="authMsg"></div>
+
+      <form id="authForm">
+        <div class="field" id="nameField" style="display:none">
+          <label for="fName">الاسم <span class="hint">اللي هيظهر جنب تقييمك</span></label>
+          <input class="input" id="fName" autocomplete="name" placeholder="اسمك">
+        </div>
+        <div class="field">
+          <label for="fEmail">الإيميل</label>
+          <input class="input" id="fEmail" type="email" autocomplete="email" required placeholder="name@example.com">
+        </div>
+        <div class="field">
+          <label for="fPass">كلمة السر <span class="hint">6 حروف على الأقل</span></label>
+          <input class="input" id="fPass" type="password" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <button class="btn btn-grad block" id="authSubmit" type="submit">دخول</button>
+      </form>
+
+      <button class="btn btn-ghost btn-sm block" id="forgotBtn" style="margin-block-start:10px">
+        نسيت كلمة السر؟
+      </button>
+
+      <div class="divider">أو</div>
+
+      <button class="btn btn-ghost block" id="googleBtn">الدخول بحساب جوجل</button>
+    </div>
+
+    ${api.mode === 'test' ? `
+      <div class="card" style="margin-block-start:16px">
+        <p style="font-weight:800;margin-block-end:8px">حسابات جاهزة للتجربة</p>
+        <p class="sub" style="font-size:.86rem">
+          عميل: <span data-nokashida>tester@elawaady-db.com</span> / <span data-nokashida>Test#2026</span><br>
+          صاحب الموقع: <span data-nokashida>owner@elawaady-db.com</span> / <span data-nokashida>Owner#2026</span>
+        </p>
+      </div>` : ''}
+  </div>`);
+
+  let mode = 'login';
+  const msg = $('#authMsg');
+  const show = (text, kind = 'err') => { setText(msg, text); msg.className = 'msg show ' + kind; };
+  const hide = () => { msg.className = 'msg'; };
+
+  function setMode(m){
+    mode = m;
+    $('#tabLogin').classList.toggle('on', m === 'login');
+    $('#tabReg').classList.toggle('on', m === 'register');
+    $('#nameField').style.display = m === 'register' ? '' : 'none';
+    setText($('#authSubmit'), m === 'register' ? 'اعمل الحساب' : 'دخول');
+    $('#fPass').autocomplete = m === 'register' ? 'new-password' : 'current-password';
+    $('#forgotBtn').style.display = m === 'register' ? 'none' : '';
+    hide();
+  }
+  $('#tabLogin').onclick = () => setMode('login');
+  $('#tabReg').onclick   = () => setMode('register');
+
+  const done = () => { toast('أهلًا بيك.', 'ok'); location.hash = next; };
+
+  async function attempt(fn, btn){
+    hide();
+    btn.disabled = true;
+    const label = btn.textContent;
+    setText(btn, 'ثانية…');
+    try { await fn(); done(); }
+    catch (e){ show(e.message || 'حصل خطأ.'); }
+    finally { btn.disabled = false; btn.textContent = label; }
+  }
+
+  $('#authForm').onsubmit = (e) => {
+    e.preventDefault();
+    const email = $('#fEmail').value.trim();
+    const pass  = $('#fPass').value;
+    const name  = $('#fName').value.trim();
+    attempt(() => mode === 'register'
+      ? api.register(email, pass, name)
+      : api.login(email, pass), $('#authSubmit'));
+  };
+
+  $('#googleBtn').onclick = () => attempt(() => api.loginWithGoogle(), $('#googleBtn'));
+
+  $('#forgotBtn').onclick = async () => {
+    const email = $('#fEmail').value.trim();
+    if (!email) return show('اكتب إيميلك الأول عشان أبعتلك رابط.');
+    try { await api.resetPassword(email); show('بعتنالك رابط على الإيميل.', 'ok'); }
+    catch (e){ show(e.message || 'حصل خطأ.'); }
+  };
+
+  setMode('login');
+}
+
+/* =======================================================================
+   2) حسابي
+======================================================================= */
+async function viewAccount(){
+  const u = api.getUser();
+  if (!u) return (location.hash = '#/login?next=' + encodeURIComponent('#/account'));
+
+  const p = api.getProfile() || {};
+  const name  = p.displayName || u.displayName || '';
+  const photo = p.photoURL || u.photoURL || '';
+  const bio   = p.bio || '';
+
+  render(`
+  <div class="container page">
+    <div class="page-head">
+      <span class="eyebrow">حسابك</span>
+      <h1 class="title">حسابي</h1>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="rv-head" style="margin-block-end:16px">
+          <span id="avaSlot">${avatarHTML(name, photo)}</span>
+          <div class="rv-who">
+            <div class="rv-name" data-nokashida>${esc(u.email || '')}</div>
+            <div class="rv-meta">${api.isOwner() ? 'صاحب الموقع' : 'عميل'}</div>
+          </div>
+        </div>
+
+        <div class="msg" id="profMsg"></div>
+
+        <div class="field">
+          <label for="pName">الاسم</label>
+          <input class="input" id="pName" value="${esc(name)}" maxlength="40">
+        </div>
+
+        <div class="field">
+          <label for="pPhoto">الصورة الشخصية</label>
+          <input type="file" id="pPhoto" accept="image/jpeg,image/png,image/webp" class="input">
+          <p class="counter">اختيارية — بتتصغّر وبتترفع لوحدها.</p>
+        </div>
+
+        <div class="field">
+          <label for="pBio">نبذة <span class="hint">اختيارية</span></label>
+          <textarea class="input" id="pBio" maxlength="240" style="min-height:90px"
+            placeholder="سطرين عنك">${esc(bio)}</textarea>
+        </div>
+
+        <button class="btn btn-grad block" id="saveProf">حفظ</button>
+      </div>
+
+      <div>
+        <div class="card" style="margin-block-end:16px">
+          <p style="font-weight:800;margin-block-end:6px">تقييماتك</p>
+          <p class="sub" style="font-size:.88rem">كل تقييم بيدخل «قيد المراجعة» لحد ما يتعتمد. تقدر تسحبه طول ما هو لسه قيد المراجعة.</p>
+          <a href="#/new" class="btn btn-grad btn-sm" style="margin-block-start:12px">اكتب تقييم جديد</a>
+        </div>
+        <div id="mine"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>`);
+
+  const msg = $('#profMsg');
+  const show = (t, k = 'err') => { setText(msg, t); msg.className = 'msg show ' + k; };
+
+  let newPhotoBlob = null;
+  $('#pPhoto').onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const bad = checkFile(file);
+    if (bad) { show(bad); e.target.value = ''; return; }
+    newPhotoBlob = await drawScaled(URL.createObjectURL(file), 320, 0.85);
+    $('#avaSlot').innerHTML = `<img class="avatar" src="${URL.createObjectURL(newPhotoBlob)}" alt="">`;
+  };
+
+  $('#saveProf').onclick = async () => {
+    const btn = $('#saveProf');
+    btn.disabled = true;
+    try {
+      const fields = {
+        displayName: $('#pName').value.trim() || 'مستخدم',
+        bio: $('#pBio').value.trim()
+      };
+      if (newPhotoBlob) fields.photoURL = await api.uploadAvatar(newPhotoBlob);
+      await api.updateMyProfile(fields);
+      show('اتحفظ.', 'ok');
+      newPhotoBlob = null;
+      paintNav();
+    } catch (e){ show(e.message || 'حصل خطأ.'); }
+    finally { btn.disabled = false; }
+  };
+
+  paintMine();
+}
+
+async function paintMine(){
+  const box = $('#mine');
+  if (!box) return;
+  try {
+    const list = await api.listMine();
+    if (!list.length){
+      box.innerHTML = `<div class="card">${emptyState('✍️','لسه مكتبتش أي تقييم.')}</div>`;
+      return;
+    }
+    box.innerHTML = `<div class="grid">${list.map(r => reviewCard(r, 'mine')).join('')}</div>`;
+    applyKashida(box);
+    wireCards(box);
+  } catch (e){
+    box.innerHTML = `<div class="card"><div class="msg show err">${esc(e.message)}</div></div>`;
+  }
+}
+
+/* =======================================================================
+   3) + 4) اكتب تقييم وارفع صور
+======================================================================= */
+function viewNew(){
+  const u = api.getUser();
+  if (!u) return (location.hash = '#/login?next=' + encodeURIComponent('#/new'));
+
+  render(`
+  <div class="container page" style="max-width:720px">
+    <div class="page-head">
+      <span class="eyebrow">تقييم جديد</span>
+      <h1 class="title">اكتب تقييمك</h1>
+      <p class="sub">التقييم بيوصلني الأول وبيتراجع، وبعد الموافقة بيظهر في الصفحة العامة باسمك وصورتك.</p>
+    </div>
+
+    <div class="card">
+      <div class="msg" id="newMsg"></div>
+
+      <div class="field">
+        <label>تقييمك</label>
+        <div class="stars" id="stars">
+          ${[5,4,3,2,1].map(n => `<button type="button" data-n="${n}" aria-label="${n} من 5">★</button>`).join('')}
+        </div>
+        <p class="counter" id="starHint" style="text-align:start">اختار من 1 لـ5</p>
+      </div>
+
+      <div class="field">
+        <label for="nTitle">عنوان مختصر</label>
+        <input class="input" id="nTitle" maxlength="90" placeholder="مثلًا: وساطة سريعة وآمنة">
+        <p class="counter"><span id="cTitle">0</span>/90</p>
+      </div>
+
+      <div class="field">
+        <label for="nType">نوع التعامل</label>
+        <select class="input" id="nType">
+          ${DEAL_TYPES.map(d => `<option value="${d.id}">${d.ar}</option>`).join('')}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="nBody">تفاصيل التعامل</label>
+        <textarea class="input" id="nBody" maxlength="1500" placeholder="احكي اللي حصل بالتفصيل."></textarea>
+        <p class="counter"><span id="cBody">0</span>/1500 — الحد الأدنى 10 حروف</p>
+      </div>
+
+      <div class="field">
+        <label>صور الإثبات <span class="hint">حتى 4 صور — اختياري</span></label>
+        <div class="drop" id="drop">
+          <p style="font-weight:700">اضغط هنا أو اسحب الصور</p>
+          <p style="font-size:.82rem">JPG أو PNG أو WEBP — لحد 5 ميجا للصورة</p>
+        </div>
+        <input type="file" id="files" accept="image/jpeg,image/png,image/webp" multiple hidden>
+        <div class="picks" id="picks"></div>
+        <p class="counter" style="text-align:start">
+          كل صورة بتتفتح في أداة التمويه قبل ما تتقبل — امسح الأرقام والأسماء
+          والمبالغ. اللي بيترفع هو الصورة بعد المسح، والأصل مبيخرجش من جهازك.
+        </p>
+      </div>
+
+      <button class="btn btn-grad block btn-lg" id="sendReview">ابعت التقييم للمراجعة</button>
+      <p class="counter" style="text-align:center">التقييم بيفضل «قيد المراجعة» لحد ما أعتمده.</p>
+    </div>
+  </div>`);
+
+  const msg = $('#newMsg');
+  const show = (t, k = 'err') => { setText(msg, t); msg.className = 'msg show ' + k; msg.scrollIntoView({block:'nearest'}); };
+  const hide = () => { msg.className = 'msg'; };
+
+  /* --- النجوم --- */
+  let rating = 0;
+  const paintStars = (n) => $$('#stars button').forEach(b => b.classList.toggle('lit', +b.dataset.n <= n));
+  $$('#stars button').forEach(b => {
+    b.onmouseenter = () => paintStars(+b.dataset.n);
+    b.onclick = () => {
+      rating = +b.dataset.n;
+      paintStars(rating);
+      setText($('#starHint'), `${rating} من 5`);
+    };
+  });
+  $('#stars').onmouseleave = () => paintStars(rating);
+
+  /* --- عدّادات --- */
+  $('#nTitle').oninput = (e) => $('#cTitle').textContent = e.target.value.length;
+  $('#nBody').oninput  = (e) => $('#cBody').textContent  = e.target.value.length;
+
+  /* --- الصور --- */
+  const picks = [];   // { blob, thumb, url }
+
+  function paintPicks(){
+    $('#picks').innerHTML = picks.map((p, i) => `
+      <div class="pick">
+        <img src="${p.url}" alt="">
+        <button class="x" data-rm="${i}" aria-label="حذف">✕</button>
+        <button class="redo" data-redo="${i}">تمويه تاني</button>
+      </div>`).join('');
+    $$('#picks [data-rm]').forEach(b => b.onclick = () => {
+      picks.splice(+b.dataset.rm, 1);
+      paintPicks();
+    });
+    $$('#picks [data-redo]').forEach(b => b.onclick = async () => {
+      const i = +b.dataset.redo;
+      const out = await redactFlow(picks[i].url);
+      if (out){ picks[i] = out; paintPicks(); }
+    });
+    $('#drop').style.display = picks.length >= LIMITS.maxFiles ? 'none' : '';
+  }
+
+  /* أداة التمويه — خطوة إجبارية: الصورة مبتتقبلش غير من هنا.
+     بترجّع Promise بالصورة بعد المسح، أو null لو اتقفلت من غير حفظ —
+     فاللي مستني في addFiles مبيعلّقش لو المستخدم قفل النافذة. */
+  function redactFlow(src){
+   return new Promise((resolve) => {
+    const box = openModal(`
+      <div class="modal-head">
+        <h3>موّه البيانات الحساسة</h3>
+        <button class="icon-btn" data-close>✕</button>
+      </div>
+      <p class="sub" style="font-size:.86rem;margin-block-end:12px">
+        امسح بصباعك أو بالماوس فوق أرقام التليفون والأسماء وأرقام الحسابات
+        والمبالغ. المسح بيمسح البكسلات نفسها — مفيش رجوع بعد الحفظ.
+      </p>
+      <div class="redact-stage"><canvas id="rc"></canvas></div>
+      <div class="redact-bar">
+        <label style="font-size:.84rem;font-weight:700">حجم الفرشاة</label>
+        <input type="range" id="rBrush" min="14" max="90" value="34">
+        <button class="btn btn-ghost btn-sm" id="rUndo">تراجع</button>
+      </div>
+      <div class="msg info show" id="rWarn" style="display:none">
+        متمسحتش أي حاجة. لو الصورة فعلًا مفيهاش بيانات شخصية اضغط «خلصت» تاني.
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-grad" id="rDone" style="flex:1">خلصت — ضيف الصورة</button>
+        <button class="btn btn-ghost" data-close>إلغاء</button>
+      </div>`);
+
+    const red = new Redactor($('#rc', box));
+    let settled = false;
+    const finish = (out) => {
+      if (settled) return;
+      settled = true;
+      red.destroy();
+      closeModal();
+      resolve(out);
+    };
+
+    red.load(src).catch(e => { toast(e.message, 'err'); finish(null); });
+
+    $$('[data-close]', box).forEach(b => b.onclick = () => finish(null));
+    /* الضغط على الخلفية بيقفل النافذة كمان، فلازم يعدّي من نفس المخرج */
+    $('#modal').addEventListener('click', function bg(e){
+      if (e.target.id !== 'modal') return;
+      $('#modal').removeEventListener('click', bg);
+      finish(null);
+    });
+
+    $('#rBrush', box).oninput = (e) => red.brush = +e.target.value;
+    $('#rUndo', box).onclick = () => { if (!red.undo()) toast('مفيش حاجة أتراجع عنها.'); };
+
+    let confirmed = false;
+    $('#rDone', box).onclick = async () => {
+      /* لو مامسحش حاجة بنسأله مرة واحدة — التمويه إجباري كخطوة، بس مش كل
+         صورة بيبقى فيها بيانات. */
+      if (!red.dirty && !confirmed){
+        confirmed = true;
+        $('#rWarn', box).style.display = 'block';
+        return;
+      }
+      const blob  = await red.toBlob();
+      const thumb = await thumbnail(URL.createObjectURL(blob));
+      finish({ blob, thumb, url: URL.createObjectURL(blob) });
+    };
+   });
+  }
+
+  async function addFiles(fileList){
+    hide();
+    for (const file of [...fileList]){
+      if (picks.length >= LIMITS.maxFiles){ show(`الحد ${LIMITS.maxFiles} صور.`); break; }
+      const bad = checkFile(file);
+      if (bad){ show(bad); continue; }
+      /* بننتظر كل صورة تخلص تمويه قبل ما نفتح اللي بعدها */
+      const out = await redactFlow(URL.createObjectURL(file));
+      if (!out) continue;               // قفل النافذة = الصورة مترفعتش
+      picks.push(out);
+      paintPicks();
+    }
+    $('#files').value = '';
+  }
+
+  $('#drop').onclick = () => $('#files').click();
+  $('#files').onchange = (e) => addFiles(e.target.files);
+  $('#drop').ondragover = (e) => { e.preventDefault(); $('#drop').classList.add('over'); };
+  $('#drop').ondragleave = () => $('#drop').classList.remove('over');
+  $('#drop').ondrop = (e) => {
+    e.preventDefault();
+    $('#drop').classList.remove('over');
+    addFiles(e.dataTransfer.files);
+  };
+
+  /* --- الإرسال --- */
+  $('#sendReview').onclick = async () => {
+    const btn = $('#sendReview');
+    const title = $('#nTitle').value.trim();
+    const body  = $('#nBody').value.trim();
+    const dealType = $('#nType').value;
+
+    if (!rating)            return show('اختار تقييم من 1 لـ5 نجوم.');
+    if (body.length < 10)   return show('اكتب 10 حروف على الأقل في التقييم.');
+
+    btn.disabled = true;
+    hide();
+    try {
+      await api.submitReview({ rating, title, body, dealType, images: picks },
+        (i, n) => setText(btn, `بيرفع الصورة ${i} من ${n}…`));
+      toast('وصلني تقييمك — هراجعه.', 'ok');
+      location.hash = '#/account';
+    } catch (e){
+      show(e.message || 'حصل خطأ.');
+      btn.disabled = false;
+      setText(btn, 'ابعت التقييم للمراجعة');
+    }
+  };
+}
+
+/* =======================================================================
+   بطاقة تقييم — بتتستخدم في الصفحة العامة وفي حسابي وفي لوحة المراجعة
+======================================================================= */
+function reviewCard(r, ctx){
+  const imgs = (r.images || []).filter(i => i && (i.thumbUrl || i.url));
+  const shots = imgs.length ? `
+    <div class="shots">
+      ${imgs.map((im, i) => `<img src="${esc(im.thumbUrl || im.url)}"
+        data-full="${esc(im.url || im.thumbUrl)}" data-rid="${esc(r.id)}" data-i="${i}"
+        alt="صورة إثبات" loading="lazy">`).join('')}
+    </div>` : '';
+
+  const statusPill = ctx === 'public' ? '' :
+    `<span class="pill ${r.status}">${STATUS_AR[r.status] || r.status}</span>`;
+  const featPill = r.featured ? `<span class="pill featured">مميز</span>` : '';
+
+  let actions = '';
+  if (ctx === 'admin'){
+    actions = `<div class="rv-actions">
+      ${r.status !== 'approved' ? `<button class="btn btn-ok btn-sm"  data-act="approve" data-id="${esc(r.id)}">اعتماد</button>` : ''}
+      ${r.status !== 'rejected' ? `<button class="btn btn-bad btn-sm" data-act="reject"  data-id="${esc(r.id)}">رفض</button>` : ''}
+      ${r.status !== 'hidden'   ? `<button class="btn btn-ghost btn-sm" data-act="hide"  data-id="${esc(r.id)}">إخفاء</button>` : ''}
+      <button class="btn btn-warn btn-sm" data-act="feature" data-id="${esc(r.id)}"
+        data-on="${r.featured ? '1' : '0'}">${r.featured ? 'إلغاء التمييز' : 'تمييز'}</button>
+      <button class="btn btn-ghost btn-sm" data-act="delete" data-id="${esc(r.id)}">حذف</button>
+    </div>`;
+  } else if (ctx === 'mine' && r.status === 'pending'){
+    actions = `<div class="rv-actions">
+      <button class="btn btn-ghost btn-sm" data-act="withdraw" data-id="${esc(r.id)}">اسحب التقييم</button>
+    </div>`;
+  }
+
+  return `
+  <article class="review ${r.featured ? 'is-featured' : ''}">
+    <div class="rv-head">
+      ${avatarHTML(r.authorName, r.authorPhoto)}
+      <div class="rv-who">
+        <div class="rv-name" data-nokashida>${esc(r.authorName || 'مستخدم')}</div>
+        <div class="rv-meta">
+          <span>${dealLabel(r.dealType)}</span>
+          <span>·</span>
+          <span>${esc(fmtDate(r.createdAt))}</span>
+        </div>
+      </div>
+      <div style="margin-inline-start:auto;display:flex;gap:6px;flex-wrap:wrap">
+        ${featPill}${statusPill}
+      </div>
+    </div>
+
+    <div>
+      ${starsRO(r.rating)}
+      ${r.title ? `<div class="rv-title" data-nokashida>${esc(r.title)}</div>` : ''}
+    </div>
+
+    <p class="rv-body" data-nokashida>${esc(r.body)}</p>
+    ${shots}
+    ${actions}
+  </article>`;
+}
+
+/* الصور والأزرار جوّه البطاقات */
+function wireCards(root){
+  $$('.shots img', root).forEach(img => {
+    img.onclick = () => {
+      const group = $$(`.shots img[data-rid="${img.dataset.rid}"]`, root)
+        .map(x => x.dataset.full);
+      openViewer(group, +img.dataset.i || 0);
+    };
+  });
+
+  $$('[data-act]', root).forEach(btn => {
+    btn.onclick = async () => {
+      const { act, id } = btn.dataset;
+      const label = btn.textContent;
+      btn.disabled = true; btn.textContent = '…';
+      try {
+        if (act === 'approve')  await api.moderate(id, 'approved');
+        if (act === 'reject')   await api.moderate(id, 'rejected');
+        if (act === 'hide')     await api.moderate(id, 'hidden');
+        /* الحالة جاية من data-on مش من نص الزرار — علامات التطويل بتتحط
+           في النص بعد الرسم، فمقارنة الكلام كانت هتفشل. */
+        if (act === 'feature')  await api.setFeatured(id, btn.dataset.on !== '1');
+        if (act === 'delete'){
+          if (!confirm('هيتشال نهائي. متأكد؟')){ btn.disabled = false; btn.textContent = label; return; }
+          await api.removeReview(id);
+        }
+        if (act === 'withdraw'){
+          if (!confirm('هتسحب تقييمك؟')){ btn.disabled = false; btn.textContent = label; return; }
+          await api.withdrawMine(id);
+        }
+        toast('اتعمل.', 'ok');
+        route();
+      } catch (e){
+        toast(e.message || 'حصل خطأ.', 'err');
+        btn.disabled = false; btn.textContent = label;
+      }
+    };
+  });
+}
+
+/* =======================================================================
+   6) الصفحة العامة — المعتمد بس
+======================================================================= */
+async function viewReviews(){
+  loading();
+  let list = [];
+  let error = '';
+  try { list = await api.listApproved(); }
+  catch (e){ error = e.message; }
+
+  const n = list.length;
+  const avg = n ? Math.round((list.reduce((s, r) => s + (r.rating || 0), 0) / n) * 10) / 10 : 0;
+  const breakdown = [0,0,0,0,0];
+  list.forEach(r => { if (r.rating >= 1 && r.rating <= 5) breakdown[r.rating - 1]++; });
+
+  const v = render(`
+  <div class="container page">
+    <div class="page-head">
+      <span class="eyebrow">آراء العملاء</span>
+      <h1 class="title">اللي الناس قالته</h1>
+      <p class="sub">كل تقييم هنا اتراجع واتعتمد يدويًا قبل ما يتنشر، وصور الإثبات بتتموّه من صاحبها قبل الرفع.</p>
+    </div>
+
+    ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
+
+    ${n ? `
+      <div class="card" style="margin-block-end:22px">
+        <div class="summary">
+          <div style="text-align:center">
+            <div class="avg" data-nokashida>${avg}</div>
+            ${starsRO(avg)}
+            <div class="rv-meta" style="justify-content:center">${n} تقييم</div>
+          </div>
+          <div class="bars">
+            ${[5,4,3,2,1].map(s => `
+              <div class="bar-row">
+                <span data-nokashida>${s}★</span>
+                <span class="bar"><i style="width:${n ? (breakdown[s-1]/n*100) : 0}%"></i></span>
+                <span data-nokashida>${breakdown[s-1]}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>` : ''}
+
+    ${n
+      ? `<div class="grid">${list.map(r => reviewCard(r, 'public')).join('')}</div>`
+      : (error ? '' : `<div class="card">${emptyState('⭐','لسه مفيش تقييمات منشورة. كن أول واحد.')}</div>`)}
+
+    <div style="text-align:center;margin-block-start:26px">
+      <a href="#/new" class="btn btn-grad btn-lg">اكتب تقييمك</a>
+    </div>
+  </div>`);
+
+  wireCards(v);
+}
+
+/* =======================================================================
+   5) لوحة المراجعة — للمالك بس
+   -----------------------------------------------------------------------
+   الحراسة دي راحة استخدام مش أمان: حد يقدر يشيل السكربت ويشوف اللوحة
+   فاضية، ومش هيقدر يقرا ولا يكتب حاجة لأن القواعد بترفض العمليات نفسها.
+======================================================================= */
+let adminTab = 'pending';
+
+async function viewAdmin(){
+  const u = api.getUser();
+  if (!u) return (location.hash = '#/login?next=' + encodeURIComponent('#/admin'));
+
+  if (!api.isOwner()){
+    render(`
+      <div class="container page" style="max-width:520px;text-align:center">
+        <div class="card">
+          <div class="empty">
+            <div class="big">🔒</div>
+            <p style="font-weight:800;color:var(--text)">الصفحة دي مش ليك</p>
+            <p>حسابك مسجّل، بس لوحة المراجعة لصاحب الموقع بس.</p>
+            <a href="#/reviews" class="btn btn-ghost" style="margin-block-start:16px">رجوع للتقييمات</a>
+          </div>
+        </div>
+      </div>`);
+    return;
+  }
+
+  loading();
+  let all = [], error = '';
+  try { all = await api.listAll(); }
+  catch (e){ error = e.message; }
+
+  const count = (s) => all.filter(r => r.status === s).length;
+  const TABS = [
+    ['pending',  'قيد المراجعة'],
+    ['approved', 'منشور'],
+    ['rejected', 'مرفوض'],
+    ['hidden',   'مخفي'],
+    ['all',      'الكل']
+  ];
+  const shown = adminTab === 'all' ? all : all.filter(r => r.status === adminTab);
+
+  const v = render(`
+  <div class="container page">
+    <div class="page-head">
+      <span class="eyebrow">إدارة</span>
+      <h1 class="title">لوحة المراجعة</h1>
+      <p class="sub">${count('pending')} تقييم مستني قرارك.</p>
+    </div>
+
+    ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
+
+    <div class="tabs">
+      ${TABS.map(([id, label]) => `
+        <button data-tab="${id}" class="${adminTab === id ? 'on' : ''}">
+          ${label}${id === 'all' ? '' : ` (${count(id)})`}
+        </button>`).join('')}
+    </div>
+
+    ${shown.length
+      ? `<div class="grid">${shown.map(r => reviewCard(r, 'admin')).join('')}</div>`
+      : `<div class="card">${emptyState('📭','مفيش حاجة في القسم ده.')}</div>`}
+
+    ${api.mode === 'test' ? `
+      <div class="card" style="margin-block-start:24px;border-color:rgba(255,197,61,.35)">
+        <p style="font-weight:800;margin-block-end:6px">بيانات التجربة</p>
+        <p class="sub" style="font-size:.86rem">كل اللي فوق متخزن في المتصفح ده بس. الزرار ده بيصفّر كل حاجة ويرجّع الحسابات الجاهزة.</p>
+        <button class="btn btn-bad btn-sm" id="resetTest" style="margin-block-start:10px">تصفير بيانات التجربة</button>
+      </div>` : ''}
+  </div>`);
+
+  $$('[data-tab]', v).forEach(b => b.onclick = () => { adminTab = b.dataset.tab; viewAdmin(); });
+  const rt = $('#resetTest', v);
+  if (rt) rt.onclick = () => { if (confirm('هيتمسح كل شيء. متأكد؟')) api.resetTestData(); };
+
+  wireCards(v);
+}
+
+/* ===========================  التوجيه  ================================== */
+const ROUTES = {
+  '#/reviews': viewReviews,
+  '#/new':     viewNew,
+  '#/login':   viewLogin,
+  '#/account': viewAccount,
+  '#/admin':   viewAdmin
+};
+
+function route(){
+  const path = (location.hash.split('?')[0]) || '#/reviews';
+  paintNav();
+  (ROUTES[path] || viewReviews)();
+}
+window.addEventListener('hashchange', route);
+
+/* ===========================  البداية  ================================== */
+(async function boot(){
+  try {
+    api = CONFIGURED
+      ? await makeFirebaseBackend(cfg, window.OWNER_UID || '')
+      : makeTestBackend();
+    await api.start();
+  } catch (e){
+    /* لو فايربيز نفسه وقع في التحميل، بنقول السبب بدل ما الصفحة تفضل بتلف */
+    $('#view').innerHTML = `<div class="container page"><div class="card">
+      <div class="msg show err">تعذّر الاتصال بـFirebase: ${esc(e.message)}</div>
+      <p class="sub">راجع القيم في firebase-config.js — لازم تكون من مشروع
+      «elawaady-portfolio» نفسه.</p></div></div>`;
+    return;
+  }
+
+  if (api.mode === 'test'){
+    $('#testbar').className = 'testbar';
+    setText($('#testbar'),
+      'نسخة اختبار — البيانات متخزنة في المتصفح ده بس، ومفيش أي اتصال بسيرفر.');
+    if (!window.OWNER_UID) window.OWNER_UID = TEST_OWNER_UID;
+  }
+
+  api.onUser(() => paintNav());
+  route();
+})();
+</script>
+</body>
+</html>
