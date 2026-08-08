@@ -33,6 +33,32 @@ for (const [from, to] of ASSETS) {
   html = html.replace(from, to);
 }
 
+/* ---------------------------------------------------------------------------
+   المعاينة بتتنشر جوّه صفحة جاهزة ليها <head> و<body> بتوعها، فبنشيل هيكل
+   المستند ونسيب المحتوى. المتصفح بيلمّ الباقي لوحده لو الملف اتفتح مباشرة،
+   فنفس الملف بيشتغل في الحالتين.
+--------------------------------------------------------------------------- */
+const SKELETON = [
+  /<!DOCTYPE html>\s*/i,
+  /<html[^>]*>\s*/i,
+  /<head>\s*/i,
+  /<\/head>\s*/i,
+  /<body>\s*/i,
+  /\s*<\/body>/i,
+  /\s*<\/html>\s*/i,
+  /<meta charset="UTF-8">\s*/i,
+  /<meta name="viewport"[^>]*>\s*/i,
+  /<meta name="robots"[^>]*>\s*/i,
+  /<link rel="icon"[^>]*>\s*/i
+];
+for (const re of SKELETON) html = html.replace(re, '');
+html = html.trim();
+
+/* اتجاه الصفحة كان على <html> اللي اتشال. بنرجّعه من أول سطر عشان الصفحة
+   متتفتحش من الشمال للحظة قبل ما الستايل يشتغل. */
+html = `<script>document.documentElement.setAttribute('dir','rtl');` +
+       `document.documentElement.setAttribute('lang','ar');<\/script>\n` + html;
+
 mkdirSync(resolve(root, 'preview'), { recursive: true });
 const out = resolve(root, 'preview/reviews-preview.html');
 writeFileSync(out, html);

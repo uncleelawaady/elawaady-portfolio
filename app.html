@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -29,7 +29,26 @@
   --grad:linear-gradient(135deg,var(--turquoise),var(--cyan) 60%,var(--aqua));
   --glow:0 0 0 1px rgba(32,214,227,.18),0 18px 46px rgba(4,20,27,.6);
   --ok:#2ED47A; --warn:#FFC53D; --bad:#FF6B6B;
+  /* لون الكلام اللي بلون الهوية. الـaqua نفسه بيضيع على الخلفية الفاتحة،
+     فبيتبدّل هناك بدرجة أغمق. */
+  --accent-ink:var(--aqua);
   --radius:22px; --radius-sm:14px; --container:1080px; --nav-h:70px;
+}
+/* الموقع مصمَّم غامق، فالغامق فوق هو الحالة الأساسية. الفاتح بيتطبّق في
+   حالتين: لما نظام الزائر فاتح وهو ماختارش حاجة، أو لما يختار الفاتح
+   صراحةً. القيم متكررة لأن CSS مبيسمحش نشارك بلوك واحد بين
+   @media وselector عادي. */
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+  --bg:#F2F7F9; --bg-2:#FFFFFF; --surface:#FFFFFF; --surface-2:#EAF2F5;
+  --line:#CFE0E6; --line-soft:#DDE9ED;
+  --text:#082A35; --muted:#41707E; --dim:#6C949F;
+  --chip-bg:rgba(8,42,53,.04);
+  --glass:linear-gradient(160deg,#FFFFFF,#EEF6F8);
+  --glow:0 0 0 1px rgba(16,181,191,.16),0 14px 34px rgba(8,42,53,.1);
+  --ok:#15884E; --warn:#9A6B00; --bad:#C43B3B;
+  --accent-ink:#0B6F78;
+  }
 }
 :root[data-theme="light"]{
   --bg:#F2F7F9; --bg-2:#FFFFFF; --surface:#FFFFFF; --surface-2:#EAF2F5;
@@ -39,6 +58,7 @@
   --glass:linear-gradient(160deg,#FFFFFF,#EEF6F8);
   --glow:0 0 0 1px rgba(16,181,191,.16),0 14px 34px rgba(8,42,53,.1);
   --ok:#15884E; --warn:#9A6B00; --bad:#C43B3B;
+  --accent-ink:#0B6F78;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -101,7 +121,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .page-head{margin-block-end:26px}
 .eyebrow{display:inline-flex;align-items:center;gap:7px;padding:6px 15px;border-radius:999px;
   background:rgba(16,181,191,.12);border:1px solid rgba(32,214,227,.32);
-  color:var(--aqua);font-weight:700;font-size:.78rem}
+  color:var(--accent-ink);font-weight:700;font-size:.78rem}
 h1.title{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;line-height:1.3;margin-block:12px 6px}
 .sub{color:var(--muted);font-size:.96rem;max-width:62ch}
 
@@ -157,7 +177,7 @@ textarea.input{resize:vertical;min-height:130px}
 .rv-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .avatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;object-fit:cover;
   background:var(--surface-2);border:1px solid var(--line)}
-.avatar.ph{display:grid;place-items:center;font-weight:800;color:var(--aqua);font-size:1.05rem}
+.avatar.ph{display:grid;place-items:center;font-weight:800;color:var(--accent-ink);font-size:1.05rem}
 .rv-who{min-width:0}
 .rv-name{font-weight:800;font-size:.98rem}
 .rv-meta{color:var(--dim);font-size:.78rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -1139,7 +1159,10 @@ function paintNav(){
 
 $('#navToggle').onclick = () => $('#navLinks').classList.toggle('open');
 $('#themeBtn').onclick = () => {
-  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  /* من غير بصمة الوضع بيبقى بتاع النظام، فبنسأله بدل ما نفترض غامق */
+  const stamped = document.documentElement.dataset.theme;
+  const now = stamped || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  const next = now === 'light' ? 'dark' : 'light';
   document.documentElement.dataset.theme = next;
   try { localStorage.setItem('elawaady-theme', next); } catch(e){}
 };
