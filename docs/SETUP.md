@@ -88,14 +88,24 @@ node scripts/build-preview.mjs     # -> preview/reviews-preview.html
 
 هيطلعلك كود فيه `firebaseConfig`. **انسخه.**
 
-### ٥. ابعتلي حاجتين
+### ٥. ابعتلي الـconfig
 
 ```
-١) الـ config كامل (٦ سطور)
-٢) الـ UID بتاعك
+الـ config كامل (٦ سطور)
 ```
 
-أول ما توصلني، بحطهم في `firebase-config.js` و`firestore.rules` و`storage.rules` وأرفع.
+الـ**UID** وصلني وهو متحطوط خلاص في التلات ملفات:
+
+| الملف | مكانه |
+|---|---|
+| `firebase-config.js` | `window.OWNER_UID` |
+| `firestore.rules` | `ownerUid()` |
+| `storage.rules` | `ownerUid()` |
+
+> الـUID مش سر — هو معرّف حساب، ومعرفته لوحدها مبتديش أي صلاحية. اللي
+> بيدي الصلاحية هو إنك تكون داخل بالحساب ده فعلًا، وده بيتحقق من فايربيز.
+
+فاضل الـconfig بس، وبعدها الموقع بيشتغل على فايربيز الحقيقي.
 
 ---
 

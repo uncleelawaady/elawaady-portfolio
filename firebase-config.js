@@ -26,4 +26,4 @@ window.FIREBASE_CONFIG = {
 /* الـUID بتاعك — نفس اللي في firestore.rules و storage.rules.
    بيتستخدم في الواجهة عشان تظهر أو تخفي أزرار الإدارة وبس؛ الحماية
    الحقيقية في القواعد نفسها، مش هنا. */
-window.OWNER_UID = '';
+window.OWNER_UID = '6tHYcsC5BQOhJVsLL5rOs30YJ7m1';

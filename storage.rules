@@ -5,13 +5,13 @@ rules_version = '2';
    ===========================================================================
    الحدود هنا مكتوبة على السيرفر، فحد يتخطى الواجهة ويرفع مباشرة هيترفض.
 
-   قبل النشر: بدّل OWNER_UID بالـUID بتاعك.
+   الـUID تحت هو نفس اللي في firestore.rules — لازم يفضلوا زي بعض.
 =========================================================================== */
 
 service firebase.storage {
   match /b/{bucket}/o {
 
-    function ownerUid() { return 'OWNER_UID'; }
+    function ownerUid() { return '6tHYcsC5BQOhJVsLL5rOs30YJ7m1'; }
     function isOwner()  { return request.auth != null && request.auth.uid == ownerUid(); }
 
     function isImage() {

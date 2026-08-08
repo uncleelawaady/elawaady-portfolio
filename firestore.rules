@@ -10,7 +10,7 @@ rules_version = '2';
    الملكية مربوطة بـ UID ثابت مش بالإيميل: الإيميل ممكن يتغير أو يتنقل،
    والـUID بيفضل هو هو طول عمر الحساب.
 
-   قبل النشر: بدّل OWNER_UID تحت بالـUID بتاعك من
+   الـUID تحت هو حساب أحمد العوضي، متاخد من
    Firebase Console → Authentication → Users → عمود User UID
 =========================================================================== */
 
@@ -21,7 +21,7 @@ service cloud.firestore {
        الأساسيات
     ------------------------------------------------------------------ */
     function ownerUid() {
-      return 'OWNER_UID';
+      return '6tHYcsC5BQOhJVsLL5rOs30YJ7m1';
     }
 
     function signedIn() {
