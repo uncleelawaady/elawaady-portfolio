@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getBytes } from 'firebase/storage';
 
-const OWNER = '6tHYcsC5BQOhJVsLL5rOs30YJ7m1';
+const OWNER = 'jJPB9z2WISN7yhW1iq99H4ncfi72';
 const USER  = 'user-normal-uid-0001';
 const OTHER = 'user-other-uid-0002';
 
