@@ -168,3 +168,65 @@ window.SITE_LINK_GROUPS = [
   { type:'whatsapp_group',   ar:'جروبات واتساب',   en:'WhatsApp Groups' },
   { type:'whatsapp_channel', ar:'قناة واتساب',     en:'WhatsApp Channel' }
 ];
+
+/* ===========================================================================
+   Portfolio UI integration — SaaS skin + account + previous transactions
+   This runs only on the public portfolio page. The full account/review app
+   remains app.html and is reached from the main portfolio navigation.
+=========================================================================== */
+(function(){
+  if (!document || !document.head) return;
+  var skin=document.createElement('link');
+  skin.rel='stylesheet'; skin.href='saas.css?v=2'; skin.dataset.saasSkin='1';
+  document.head.appendChild(skin);
+
+  function setText(el, ar, en){
+    if(!el) return;
+    el.textContent=ar;
+    el.setAttribute('data-ar',ar);
+    if(en) el.setAttribute('data-en',en);
+  }
+
+  function patchPortfolio(){
+    if(!document.body || !document.querySelector('.hero')) return;
+
+    var theme=document.querySelector('meta[name="theme-color"]');
+    if(theme) theme.setAttribute('content','#0A0307');
+
+    var nav=document.querySelector('.nav-links');
+    if(nav){
+      var proofLink=nav.querySelector('a[href="#proofs"]');
+      setText(proofLink,'تعاملات سابقة','Previous dealings');
+
+      if(!nav.querySelector('.nav-auth')){
+        var li=document.createElement('li');
+        li.className='nav-auth';
+        li.innerHTML='<a class="nav-auth-link" href="app.html#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a>';
+        nav.appendChild(li);
+      }
+    }
+
+    var title=document.querySelector('.proofs-title');
+    setText(title,'تعاملات سابقة','Previous dealings');
+
+    var proofSec=document.querySelector('#proofs');
+    if(proofSec){
+      var badge=proofSec.querySelector('.eyebrow span:last-child');
+      setText(badge,'تجارب العملاء','Client experiences');
+      var sub=proofSec.querySelector('.proofs-sub');
+      setText(sub,'تقييمات موثقة وتجارب تعامل حقيقية تمت مراجعتها قبل النشر.','Verified reviews and real client experiences, reviewed before publishing.');
+      var note=proofSec.querySelector('.proofs-note');
+      setText(note,'استعرض التعاملات السابقة، أو سجّل دخولك واكتب تقييمك وارفع إثباتك من حسابك.','Browse previous dealings, or sign in to post your review and proof from your account.');
+      var firstCta=proofSec.querySelector('.proofs-cta a[href*="#/proofs"] span');
+      setText(firstCta,'تعاملات سابقة','Previous dealings');
+    }
+
+    document.querySelectorAll('img[src*="assets/portraits/"]').forEach(function(img){
+      img.removeAttribute('srcset');
+      img.setAttribute('src','assets/ahmed-portrait.svg');
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',patchPortfolio,{once:true});
+  else patchPortfolio();
+})();
