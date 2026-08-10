@@ -147,17 +147,6 @@ textarea.input{resize:vertical;min-height:130px}
 .msg.ok{background:rgba(46,212,122,.12);border:1px solid rgba(46,212,122,.4);color:var(--ok)}
 .msg.info{background:rgba(255,197,61,.1);border:1px solid rgba(255,197,61,.35);color:var(--warn)}
 
-/* تحذير خصوصية الفيديو. الصور ليها أداة تمويه، الفيديو لأ — فالتحذير
-   ده لازم يبان بجد مش يبقى سطر رمادي تحت الحقل. */
-.warn-box{background:rgba(255,197,61,.1);border:1px solid rgba(255,197,61,.4);
-  border-radius:var(--radius-sm);padding:12px 14px;margin-block-start:10px;font-size:.85rem;line-height:1.75}
-.warn-box b{color:var(--warn);display:block;margin-block-end:4px}
-.warn-box p{margin:0;color:var(--txt)}
-.ack{display:flex;gap:9px;align-items:flex-start;margin-block-start:10px;
-  padding-block-start:10px;border-block-start:1px solid rgba(255,197,61,.28);cursor:pointer}
-.ack input{margin-block-start:3px;flex:0 0 auto;width:16px;height:16px;accent-color:var(--warn)}
-.ack span{font-size:.83rem;color:var(--txt)}
-
 .tabs{display:flex;gap:6px;background:var(--chip-bg);border:1px solid var(--line);
   border-radius:999px;padding:5px;margin-block-end:22px;overflow-x:auto}
 .tabs button{padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;
@@ -217,21 +206,6 @@ textarea.input{resize:vertical;min-height:130px}
   .hero-row{grid-template-columns:1fr}
   .hero-shot{display:none}
 }
-
-/* ===== فيديو الإثبات ===== */
-/* مشغّل حقيقي جوّه البطاقة — مش رابط تنزيل. السقف بيخلّي الفيديو الرأسي
-   ما ياخدش الشاشة كلها. */
-.clip{margin-block-start:12px;max-width:460px}
-.clip video{width:100%;max-height:420px;border-radius:14px;border:1px solid var(--line);
-  background:#000;display:block}
-.pill.clip-pill{background:rgba(93,231,242,.14);color:var(--accent-ink);
-  border-color:rgba(93,231,242,.3)}
-
-.vpick{margin-block-start:14px;border:1px solid var(--line);border-radius:14px;
-  overflow:hidden;max-width:460px}
-.vpick video{width:100%;max-height:360px;background:#000;display:block}
-.vpick-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:10px 12px;font-size:.82rem;color:var(--muted);background:var(--surface)}
 
 /* ===== الروابط ===== */
 .lnk-sec{margin-block-end:34px}
@@ -372,6 +346,7 @@ textarea.input{resize:vertical;min-height:130px}
 <div class="toast" id="toast"></div>
 
 <script src="firebase-config.js"></script>
+<script src="cloudinary-config.js"></script>
 <script src="links.js"></script>
 <script type="module">
 /* ===========================================================================
@@ -513,17 +488,6 @@ const LIMITS = {
   types: ['image/jpeg','image/png','image/webp']
 };
 
-/* فيديو الإثبات — اختياري، واحد بس، وبيتخزن زي ما هو من غير إعادة ترميز.
-   المتصفح ما بيقدرش يضغط فيديو، فالحد الأقصى لازم يبقى صغير كفاية إنه
-   يترفع ويتشغّل على الموبايل. الامتدادات محصورة في اللي المتصفحات بتشغّله
-   أصلاً جوه <video>، عشان ما يبقاش عندنا ملف بيتنزّل بدل ما يتشغّل. */
-const VIDEO = {
-  maxBytes: 25 * 1024 * 1024,
-  maxSeconds: 90,
-  types: ['video/mp4','video/webm'],
-  exts: ['.mp4','.webm']
-};
-
 /* ===========================  الصور  ==================================== */
 function loadImage(src){
   return new Promise((res, rej) => {
@@ -551,56 +515,46 @@ async function drawScaled(source, maxDim, quality){
 }
 const thumbnail = (src) => drawScaled(src, LIMITS.thumbSize, 0.72);
 
-/* ===========================  الفيديو  ================================== */
-const fmtMB = (b) => (b / (1024 * 1024)).toFixed(1);
+/* =========================  رفع الصور — Cloudinary  =====================
+   Firebase Storage محتاج خطة Blaze، فصور الإثبات بتترفع على Cloudinary
+   بـUnsigned Upload Preset. الـpreset ده معرّف عام بطبيعته (مصمّم عشان
+   يتنادى من المتصفح) — مفيش أي API Secret هنا ولا في الريبو.
 
-/* حجم مقروء: كيلو للملفات الصغيرة، ميجا لغيرها */
-const fmtSize = (b) => b < 1024 * 1024
-  ? `${Math.max(1, Math.round(b / 1024))} كيلو`
-  : `${fmtMB(b)} ميجا`;
+   اللي بيترفع هو ناتج أداة التمويه بعد ما اتصغّر واتضغط، مش الملف الأصلي.
+   الروابط اللي بترجع بتتخزن في Firestore، والتقييم بيفضل pending لحد ما
+   المالك يعتمده — Cloudinary بيخزّن الملف بس، مالوش أي علاقة بالنشر.
+======================================================================== */
+const CLD = (typeof window !== 'undefined' && window.CLOUDINARY_CONFIG) || {};
+const CLD_READY = Boolean(CLD.cloudName && CLD.uploadPreset);
+const CLD_OFF_MSG = 'رفع الصور مش متظبط لسه. ابعت التقييم من غير صور، أو استنى شوية.';
 
-function checkVideoFile(file){
-  const name = String(file.name || '').toLowerCase();
-  const okExt = VIDEO.exts.some(e => name.endsWith(e));
-  if (!VIDEO.types.includes(file.type) || !okExt)
-    return 'الفيديو لازم يكون MP4 أو WebM.';
-  if (file.size > VIDEO.maxBytes)
-    return `الفيديو ${fmtMB(file.size)} ميجا — الحد الأقصى ${VIDEO.maxBytes / (1024*1024)} ميجا.`;
-  return null;
+/* Cloudinary بيولّد المقاسات من الرابط نفسه، فمفيش داعي نرفع صورة مصغّرة
+   تانية. بنحقن التحويل بعد /upload/ في الرابط الراجع. */
+function cldThumb(url, w = LIMITS.thumbSize){
+  if (!url || url.indexOf('/upload/') < 0) return url;
+  return url.replace('/upload/', `/upload/c_fill,w_${w},h_${Math.round(w * 4 / 3)},q_auto,f_auto/`);
 }
 
-/* بنقرا المدة من المتصفح نفسه قبل الرفع. لو المتصفح مش قادر يقراها
-   بنعدّي — الحد الحقيقي اللي بيتحاسب عليه هو الحجم. */
-function videoMeta(url){
-  return new Promise((res) => {
-    const v = document.createElement('video');
-    v.preload = 'metadata';
-    v.onloadedmetadata = () => res({ duration: v.duration || 0, width: v.videoWidth, height: v.videoHeight });
-    v.onerror = () => res(null);
-    v.src = url;
-  });
-}
+async function cldUpload(blob, folder){
+  if (!CLD_READY) throw new Error(CLD_OFF_MSG);
+  const form = new FormData();
+  form.append('file', blob);
+  form.append('upload_preset', CLD.uploadPreset);
+  if (folder) form.append('folder', folder);
 
-/* لقطة من أول ثانية عشان تبقى غلاف للفيديو في البطاقة. */
-function videoPoster(url){
-  return new Promise((res) => {
-    const v = document.createElement('video');
-    v.preload = 'metadata'; v.muted = true; v.playsInline = true;
-    const bail = () => res(null);
-    v.onerror = bail;
-    v.onloadeddata = () => {
-      try {
-        const scale = Math.min(1, LIMITS.thumbSize / Math.max(v.videoWidth, v.videoHeight));
-        const c = document.createElement('canvas');
-        c.width  = Math.max(1, Math.round(v.videoWidth  * scale));
-        c.height = Math.max(1, Math.round(v.videoHeight * scale));
-        c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
-        c.toBlob(b => res(b), 'image/jpeg', 0.72);
-      } catch (e){ bail(); }
-    };
-    v.onloadedmetadata = () => { try { v.currentTime = Math.min(1, (v.duration || 1) / 3); } catch(e){ bail(); } };
-    v.src = url;
-  });
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLD.cloudName}/image/upload`,
+    { method:'POST', body: form });
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok || !out.secure_url){
+    throw new Error((out.error && out.error.message) || 'الصورة مرفعتش. جرّب تاني.');
+  }
+  /* بنرجّع الحقول اللي بتتخزن في Firestore بالظبط، ولا حاجة زيادة. */
+  return {
+    url:      out.secure_url,
+    publicId: out.public_id,
+    mime:     'image/jpeg',            // كل صورة بتخرج من التمويه JPEG
+    bytes:    Number(out.bytes) || blob.size
+  };
 }
 
 /* ---------------------------------------------------------------------------
@@ -851,23 +805,13 @@ function makeTestBackend(){
   const requireUser = () => { const u = me(); if (!u) throw new Error('لازم تسجّل دخول الأول.'); return u; };
   const isOwner = () => currentUid === TEST_OWNER_UID;
 
-  /* الصور والفيديو بيرجعوا كروابط مؤقتة من الـBlob */
+  /* الصور بترجع كروابط مؤقتة من الـBlob */
   function hydrate(r){
     const images = (r.imageIds || []).map(id => ({
       url:      urlFor(id, db.media[id] && db.media[id].full),
       thumbUrl: urlFor(id + ':t', db.media[id] && db.media[id].thumb)
     }));
-    let video = null;
-    if (r.videoId && db.media[r.videoId]){
-      const m = db.media[r.videoId];
-      video = {
-        url:       urlFor(r.videoId, m.full),
-        posterUrl: m.thumb ? urlFor(r.videoId + ':p', m.thumb) : '',
-        mime:      m.mime || 'video/mp4',
-        duration:  m.duration || 0
-      };
-    }
-    return { ...r, images, video };
+    return { ...r, images };
   }
 
   return {
@@ -976,7 +920,7 @@ function makeTestBackend(){
       return db.reviews.slice().sort((a,b) => b.createdAt - a.createdAt).map(hydrate);
     },
 
-    async submitReview({ rating, title, body, dealType, images = [], video = null }, onProgress){
+    async submitReview({ rating, title, body, dealType, images = [] }, onProgress){
       const u = requireUser();
 
       /* نفس فحوصات validNewReview() في firestore.rules */
@@ -988,24 +932,15 @@ function makeTestBackend(){
       if (text.length > 1500) throw new Error('التقييم أطول من 1500 حرف.');
       if (!DEAL_TYPES.some(d => d.id === dealType)) throw new Error('نوع التعامل مش مظبوط.');
       if (images.length > LIMITS.maxFiles) throw new Error('4 صور كحد أقصى.');
-      if (video && !VIDEO.types.includes(video.mime)) throw new Error('الفيديو لازم يكون MP4 أو WebM.');
 
       const id = 'r-' + rid();
-      const total = images.length + (video ? 1 : 0);
+      const total = images.length;
       const imageIds = [];
       for (let i = 0; i < images.length; i++){
         onProgress && onProgress(i + 1, total);
         const mid = 'm-' + rid();
         db.media[mid] = { full: images[i].blob, thumb: images[i].thumb || images[i].blob };
         imageIds.push(mid);
-      }
-
-      let videoId = null;
-      if (video){
-        onProgress && onProgress(total, total);
-        videoId = 'v-' + rid();
-        db.media[videoId] = { full: video.blob, thumb: video.poster || null,
-                              mime: video.mime, duration: video.duration || 0 };
       }
 
       db.reviews.push({
@@ -1019,8 +954,6 @@ function makeTestBackend(){
         featured: false,
         imageIds,
         imageCount: imageIds.length,
-        videoId,
-        hasVideo: Boolean(videoId),
         createdAt: Date.now(), updatedAt: Date.now()
       });
       await save();
@@ -1133,17 +1066,17 @@ function makeTestBackend(){
 ======================================================================= */
 async function makeFirebaseBackend(cfg, ownerUid){
   const CDN = 'https://www.gstatic.com/firebasejs/10.12.2';
-  const [{ initializeApp }, A, F, S] = await Promise.all([
+  /* firebase-storage مش بيتحمّل خالص — الصور بتروح Cloudinary لأن Storage
+     محتاج خطة Blaze. Auth وFirestore زي ما هما، مفيش حاجة اتغيرت فيهم. */
+  const [{ initializeApp }, A, F] = await Promise.all([
     import(`${CDN}/firebase-app.js`),
     import(`${CDN}/firebase-auth.js`),
-    import(`${CDN}/firebase-firestore.js`),
-    import(`${CDN}/firebase-storage.js`)
+    import(`${CDN}/firebase-firestore.js`)
   ]);
 
-  const app     = initializeApp(cfg);
-  const auth    = A.getAuth(app);
-  const db      = F.getFirestore(app);
-  const storage = S.getStorage(app);
+  const app  = initializeApp(cfg);
+  const auth = A.getAuth(app);
+  const db   = F.getFirestore(app);
   A.setPersistence(auth, A.browserLocalPersistence).catch(() => {});
 
   const MESSAGES = {
@@ -1208,42 +1141,10 @@ async function makeFirebaseBackend(cfg, ownerUid){
   const col  = () => F.collection(db, 'reviews');
   const rows = (snap) => snap.docs.map(d => ({ id:d.id, ...d.data() }));
 
-  async function uploadOne(uid, reviewId, blob, thumb){
-    const base = `reviews/${uid}/${reviewId}/${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
-    const fullRef = S.ref(storage, `${base}.jpg`);
-    await S.uploadBytes(fullRef, blob, { contentType:'image/jpeg' });
-    const url = await S.getDownloadURL(fullRef);
-
-    let thumbUrl = url, thumbPath = `${base}.jpg`;
-    if (thumb){
-      const tRef = S.ref(storage, `${base}-thumb.jpg`);
-      await S.uploadBytes(tRef, thumb, { contentType:'image/jpeg' });
-      thumbUrl  = await S.getDownloadURL(tRef);
-      thumbPath = `${base}-thumb.jpg`;
-    }
-    return { url, path:`${base}.jpg`, thumbUrl, thumbPath, bytes: blob.size };
-  }
-
-  /* الفيديو بيترفع زي ما هو — المتصفح ما بيقدرش يعيد ترميزه. الغلاف صورة
-     JPEG اتسحبت من أول ثواني الفيديو. */
-  async function uploadVideo(uid, reviewId, video){
-    const ext  = video.mime === 'video/webm' ? 'webm' : 'mp4';
-    const base = `reviews/${uid}/${reviewId}/video-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
-    const vRef = S.ref(storage, `${base}.${ext}`);
-    await S.uploadBytes(vRef, video.blob, { contentType: video.mime });
-    const url = await S.getDownloadURL(vRef);
-
-    let posterUrl = '', posterPath = '';
-    if (video.poster){
-      const pRef = S.ref(storage, `${base}-poster.jpg`);
-      await S.uploadBytes(pRef, video.poster, { contentType:'image/jpeg' });
-      posterUrl  = await S.getDownloadURL(pRef);
-      posterPath = `${base}-poster.jpg`;
-    }
-    return { url, path:`${base}.${ext}`, posterUrl, posterPath,
-             mime: video.mime, bytes: video.blob.size,
-             duration: Math.round(video.duration || 0) };
-  }
+  /* صورة واحدة بعد التمويه والضغط → Cloudinary. المصغّرة مش بتترفع:
+     بتتولّد من نفس الرابط بتحويل، فالرفع نصّه والتخزين نصّه. */
+  const uploadOne = (uid, reviewId, blob) =>
+    cldUpload(blob, `reviews/${uid}/${reviewId}`);
 
   return {
     mode: 'firebase',
@@ -1300,9 +1201,8 @@ async function makeFirebaseBackend(cfg, ownerUid){
 
     uploadAvatar: (blob) => run(async () => {
       if (!user) throw new Error('مش مسجّل دخول.');
-      const r = S.ref(storage, `avatars/${user.uid}/${Date.now()}.jpg`);
-      await S.uploadBytes(r, blob, { contentType:'image/jpeg' });
-      return S.getDownloadURL(r);
+      const up = await cldUpload(blob, `avatars/${user.uid}`);
+      return up.url;
     }),
 
     listApproved: (max = 60) => run(async () =>
@@ -1321,8 +1221,9 @@ async function makeFirebaseBackend(cfg, ownerUid){
     /* الترتيب مقصود: التقييم بيتعمل الأول، وبعدين الصور بترفع تحت مساره.
        لو الرفع فشل في النص، التقييم بيفضل موجود بالصور اللي نجحت — أحسن
        من إننا نضيّع اللي المستخدم كتبه. */
-    submitReview: ({ rating, title, body, dealType, images = [], video = null }, onProgress) => run(async () => {
+    submitReview: ({ rating, title, body, dealType, images = [] }, onProgress) => run(async () => {
       if (!user) throw new Error('لازم تسجّل دخول الأول.');
+      if (images.length && !CLD_READY) throw new Error(CLD_OFF_MSG);
       const p = profile || {};
       const created = await F.addDoc(col(), {
         uid: user.uid,
@@ -1336,46 +1237,31 @@ async function makeFirebaseBackend(cfg, ownerUid){
         featured: false,
         imageCount: images.length,
         images: [],
-        hasVideo: Boolean(video),
-        video: null,
         createdAt: F.serverTimestamp(), updatedAt: F.serverTimestamp()
       });
 
-      const total = images.length + (video ? 1 : 0);
+      const total = images.length;
       if (!total) return created.id;
 
       const uploaded = [];
       for (let i = 0; i < images.length; i++){
         onProgress && onProgress(i + 1, total);
-        const meta = await uploadOne(user.uid, created.id, images[i].blob, images[i].thumb);
+        const meta = await uploadOne(user.uid, created.id, images[i].blob);
         uploaded.push(meta);
+        /* نفس الحقول اللي القواعد بتسمح بيها بالظبط، ولا حاجة زيادة */
         await F.addDoc(F.collection(db, 'review_media'), {
-          reviewId: created.id, uid: user.uid, kind:'image',
-          url: meta.url, thumbUrl: meta.thumbUrl,
-          path: meta.path, thumbPath: meta.thumbPath,
-          bytes: meta.bytes, mime:'image/jpeg',
-          createdAt: F.serverTimestamp()
-        });
-      }
-
-      let videoMetaDoc = null;
-      if (video){
-        onProgress && onProgress(total, total);
-        const meta = await uploadVideo(user.uid, created.id, video);
-        videoMetaDoc = { url: meta.url, posterUrl: meta.posterUrl,
-                         mime: meta.mime, duration: meta.duration };
-        await F.addDoc(F.collection(db, 'review_media'), {
-          reviewId: created.id, uid: user.uid, kind:'video',
-          url: meta.url, thumbUrl: meta.posterUrl,
-          path: meta.path, thumbPath: meta.posterPath,
-          bytes: meta.bytes, mime: meta.mime, duration: meta.duration,
+          url:      meta.url,
+          publicId: meta.publicId,
+          mime:     meta.mime,
+          bytes:    meta.bytes,
+          uid:      user.uid,
+          reviewId: created.id,
           createdAt: F.serverTimestamp()
         });
       }
 
       await F.updateDoc(F.doc(db, 'reviews', created.id), {
-        images: uploaded.map(u => ({ url:u.url, thumbUrl:u.thumbUrl })),
-        video:  videoMetaDoc,
+        images: uploaded.map(u => ({ url:u.url, publicId:u.publicId, mime:u.mime, bytes:u.bytes })),
         updatedAt: F.serverTimestamp()
       });
       return created.id;
@@ -1836,42 +1722,6 @@ function viewNew(){
         </p>
       </div>
 
-      <div class="field">
-        <label>فيديو إثبات قصير <span class="hint">فيديو واحد — اختياري</span></label>
-        <div class="drop" id="vdrop">
-          <p style="font-weight:700">اضغط هنا لاختيار فيديو</p>
-          <p style="font-size:.82rem">MP4 أو WebM — لحد ${VIDEO.maxBytes / (1024*1024)} ميجا و${VIDEO.maxSeconds} ثانية</p>
-        </div>
-        <input type="file" id="vfile" accept="video/mp4,video/webm" hidden>
-        <div id="vpick"></div>
-
-        <div class="warn-box">
-          <b>⚠ تحذير خصوصية — اقراه قبل ما ترفع</b>
-          <p>
-            <b style="display:inline;color:var(--warn)">مفيش أداة تمويه للفيديو.</b>
-            الصور بتعدي على أداة تمسح الأرقام والأسماء قبل ما ترفع، لكن
-            الفيديو بيترفع <b style="display:inline;color:var(--warn)">زي ما هو بالظبط</b> —
-            من غير ضغط ومن غير تمويه ومن غير أي تعديل. المتصفح ما بيقدرش
-            يعدّل فيديو زي ما بيعدّل صورة.
-          </p>
-          <p style="margin-block-start:7px">
-            يعني أي حاجة ظاهرة في الفيديو هترفع معاه: أرقام تليفونات، أسماء،
-            مبالغ، أرقام محافظ أو حسابات، رسايل واتساب، إشعارات تظهر على
-            الشاشة، أو أي بيانات في تسجيل شاشة. راجع الفيديو لآخره بنفسك،
-            واقصّ أو غطّي اللي مش عايزه يبان <b style="display:inline;color:var(--warn)">قبل</b>
-            ما تختاره من هنا.
-          </p>
-          <p style="margin-block-start:7px">
-            الفيديو زيه زي باقي التقييم — بيفضل «قيد المراجعة» وما يظهرش
-            لأي حد غيري لحد ما أعتمده.
-          </p>
-          <label class="ack" for="vack">
-            <input type="checkbox" id="vack">
-            <span>راجعت الفيديو وأنا متأكد إن مفيش فيه بيانات شخصية أو مبالغ أو أرقام مش عايز حد يشوفها.</span>
-          </label>
-        </div>
-      </div>
-
       <button class="btn btn-grad block btn-lg" id="sendReview">ابعت التقييم للمراجعة</button>
       <p class="counter" style="text-align:center">التقييم بيفضل «قيد المراجعة» لحد ما أعتمده.</p>
     </div>
@@ -2002,49 +1852,6 @@ function viewNew(){
     $('#files').value = '';
   }
 
-  /* --- الفيديو --- */
-  let vpick = null;   // { blob, mime, duration, poster, url }
-
-  function paintVideo(){
-    const box = $('#vpick');
-    if (!vpick){ box.innerHTML = ''; $('#vdrop').style.display = ''; return; }
-    $('#vdrop').style.display = 'none';
-    box.innerHTML = `
-      <div class="vpick">
-        <video src="${vpick.url}" controls playsinline preload="metadata"
-               ${vpick.posterUrl ? `poster="${vpick.posterUrl}"` : ''}></video>
-        <div class="vpick-bar">
-          <span>${fmtSize(vpick.blob.size)}${vpick.duration >= 1 ? ` — ${Math.round(vpick.duration)} ثانية` : ''}</span>
-          <button class="btn btn-ghost btn-sm" id="vrm">شيل الفيديو</button>
-        </div>
-      </div>`;
-    $('#vrm').onclick = () => { vpick = null; $('#vack').checked = false; paintVideo(); };
-  }
-
-  async function addVideo(file){
-    hide();
-    if (!file) return;
-    const bad = checkVideoFile(file);
-    if (bad){ show(bad); $('#vfile').value = ''; return; }
-
-    const url  = URL.createObjectURL(file);
-    const meta = await videoMeta(url);
-    if (!meta){ show('مقدرتش أقرا الفيديو ده. جرّب ملف تاني.'); $('#vfile').value = ''; return; }
-    if (meta.duration && meta.duration > VIDEO.maxSeconds){
-      show(`الفيديو ${Math.round(meta.duration)} ثانية — الحد الأقصى ${VIDEO.maxSeconds} ثانية.`);
-      $('#vfile').value = ''; return;
-    }
-
-    const poster = await videoPoster(url);
-    vpick = { blob:file, mime:file.type, duration: meta.duration, url,
-              poster, posterUrl: poster ? URL.createObjectURL(poster) : '' };
-    paintVideo();
-    $('#vfile').value = '';
-  }
-
-  $('#vdrop').onclick = () => $('#vfile').click();
-  $('#vfile').onchange = (e) => addVideo(e.target.files[0]);
-
   $('#drop').onclick = () => $('#files').click();
   $('#files').onchange = (e) => addFiles(e.target.files);
   $('#drop').ondragover = (e) => { e.preventDefault(); $('#drop').classList.add('over'); };
@@ -2064,17 +1871,12 @@ function viewNew(){
 
     if (!rating)            return show('اختار تقييم من 1 لـ5 نجوم.');
     if (body.length < 10)   return show('اكتب 10 حروف على الأقل في التقييم.');
-    /* الفيديو مالوش أداة تمويه، فالإقرار إجباري قبل ما يترفع. */
-    if (vpick && !$('#vack').checked){
-      $('#vack').closest('.warn-box').scrollIntoView({ block:'center', behavior:'smooth' });
-      return show('راجع الفيديو وعلّم على الإقرار — الفيديو مالوش أداة تمويه زي الصور.');
-    }
 
     btn.disabled = true;
     hide();
     try {
-      await api.submitReview({ rating, title, body, dealType, images: picks, video: vpick },
-        (i, n) => setText(btn, `بيرفع الملف ${i} من ${n}…`));
+      await api.submitReview({ rating, title, body, dealType, images: picks },
+        (i, n) => setText(btn, `بيرفع الصورة ${i} من ${n}…`));
       toast('وصلني تقييمك — هراجعه.', 'ok');
       location.hash = '#/account';
     } catch (e){
@@ -2090,28 +1892,18 @@ function viewNew(){
 ======================================================================= */
 function reviewCard(r, ctx){
   const imgs = (r.images || []).filter(i => i && (i.thumbUrl || i.url));
+  /* المصغّرة إما موجودة (الوضع التجريبي) أو بتتولّد من رابط Cloudinary */
+  const thumbOf = (im) => im.thumbUrl || cldThumb(im.url);
   const shots = imgs.length ? `
     <div class="shots">
-      ${imgs.map((im, i) => `<img src="${esc(im.thumbUrl || im.url)}"
+      ${imgs.map((im, i) => `<img src="${esc(thumbOf(im))}"
         data-full="${esc(im.url || im.thumbUrl)}" data-rid="${esc(r.id)}" data-i="${i}"
         alt="صورة إثبات" loading="lazy">`).join('')}
-    </div>` : '';
-
-  /* الفيديو بيتعرض في مشغّل حقيقي — مش رابط تنزيل. controls بس من غير
-     autoplay عشان الصفحة ما تبقاش زحمة صوت. */
-  const vid = r.video && r.video.url ? r.video : null;
-  const clip = vid ? `
-    <div class="clip">
-      <video src="${esc(vid.url)}" controls playsinline preload="metadata"
-        ${vid.posterUrl ? `poster="${esc(vid.posterUrl)}"` : ''}>
-        <a href="${esc(vid.url)}" target="_blank" rel="noopener noreferrer">فيديو الإثبات</a>
-      </video>
     </div>` : '';
 
   const statusPill = ctx === 'public' ? '' :
     `<span class="pill ${r.status}">${STATUS_AR[r.status] || r.status}</span>`;
   const featPill = r.featured ? `<span class="pill featured">مميز</span>` : '';
-  const clipPill = vid ? `<span class="pill clip-pill">فيديو إثبات</span>` : '';
 
   let actions = '';
   if (ctx === 'admin'){
@@ -2142,7 +1934,7 @@ function reviewCard(r, ctx){
         </div>
       </div>
       <div style="margin-inline-start:auto;display:flex;gap:6px;flex-wrap:wrap">
-        ${featPill}${clipPill}${statusPill}
+        ${featPill}${statusPill}
       </div>
     </div>
 
@@ -2153,7 +1945,6 @@ function reviewCard(r, ctx){
 
     <p class="rv-body" data-nokashida>${esc(r.body)}</p>
     ${shots}
-    ${clip}
     ${actions}
   </article>`;
 }

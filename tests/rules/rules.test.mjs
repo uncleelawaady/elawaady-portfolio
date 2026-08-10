@@ -46,8 +46,15 @@ const newReview = (uid, over = {}) => ({
   uid, authorName:'مستخدم', authorPhoto:'',
   rating:5, title:'تعامل ممتاز', body:'اتعاملت معاه وكل حاجة تمام ووصلت في وقتها.',
   dealType:'guarantee', status:'pending', featured:false,
-  imageCount:0, images:[], hasVideo:false, video:null,
+  imageCount:0, images:[],
   createdAt: serverTimestamp(), updatedAt: serverTimestamp(), ...over
+});
+
+/* مستند صورة إثبات: الحقول السبعة اللي القواعد بتسمح بيها بالظبط */
+const newMedia = (uid, reviewId, over = {}) => ({
+  url:'https://res.cloudinary.com/demo/image/upload/v1/reviews/a.jpg',
+  publicId:'reviews/a', mime:'image/jpeg', bytes:120000,
+  uid, reviewId, createdAt: serverTimestamp(), ...over
 });
 
 const newProfile = (uid, over = {}) => ({
@@ -139,6 +146,12 @@ await check('ما يقدرش يبعت تقييم ومعاه moderatedAt', () =>
 await check('حقل زيادة في التقييم بيترفض', () =>
   assertFails(addDoc(collection(userDb,'reviews'), newReview(USER,{ adminNote:'x' }))));
 
+await check('تقييم فيه حقل video بيترفض من الأساس', () =>
+  assertFails(addDoc(collection(userDb,'reviews'), newReview(USER,{ video:{ url:'v' } }))));
+
+await check('تقييم فيه حقل hasVideo بيترفض من الأساس', () =>
+  assertFails(addDoc(collection(userDb,'reviews'), newReview(USER,{ hasVideo:true }))));
+
 await check('تقييم بـ rating=6 بيترفض', () =>
   assertFails(addDoc(collection(userDb,'reviews'), newReview(USER,{ rating:6 }))));
 
@@ -187,10 +200,19 @@ await check('صاحب التقييم يعدّل نصه وهو pending', () =>
     { title:'عنوان جديد', body:'نص جديد طويل كفاية عشان يعدي الحد الأدنى.',
       updatedAt: serverTimestamp() })));
 
-await check('صاحب التقييم يكتب روابط الصور والفيديو بعد الرفع', () =>
+await check('صاحب التقييم يكتب روابط الصور بعد الرفع', () =>
   assertSucceeds(updateDoc(doc(userDb,'reviews',myReviewId),
-    { images:[{ url:'u', thumbUrl:'t' }], video:{ url:'v' },
-      imageCount:1, hasVideo:true, updatedAt: serverTimestamp() })));
+    { images:[{ url:'https://res.cloudinary.com/demo/image/upload/v1/a.jpg',
+                publicId:'a', mime:'image/jpeg', bytes:1000 }],
+      imageCount:1, updatedAt: serverTimestamp() })));
+
+await check('حقل فيديو على تقييم بيترفض (الفيديو اتشال خالص)', () =>
+  assertFails(updateDoc(doc(userDb,'reviews',myReviewId),
+    { video:{ url:'v' }, updatedAt: serverTimestamp() })));
+
+await check('حقل hasVideo على تقييم بيترفض', () =>
+  assertFails(updateDoc(doc(userDb,'reviews',myReviewId),
+    { hasVideo:true, updatedAt: serverTimestamp() })));
 
 await check('صاحب التقييم ما يقدرش يعتمد تقييمه بنفسه', () =>
   assertFails(updateDoc(doc(userDb,'reviews',myReviewId), { status:'approved' })));
@@ -235,7 +257,76 @@ await check('صاحب التقييم يسحب تقييمه وهو لسه pending
   await assertSucceeds(deleteDoc(doc(userDb,'reviews',r.id)));
 });
 
-/* ======================  ٥ — الروابط  ====================== */
+/* ==============  ٥ — صور الإثبات (review_media)  ============== */
+/* الصورة نفسها بتترفع على Cloudinary، لكن اللي بيتخزن هنا في Firestore هو
+   بياناتها — والقواعد بتحصر الحقول وبتربط الصورة بصاحب التقييم. */
+
+let pendingId, mediaId;
+
+await check('تقييم جديد pending عشان نعلّق عليه الصور', async () => {
+  const r = await assertSucceeds(addDoc(collection(userDb,'reviews'), newReview(USER)));
+  pendingId = r.id;
+});
+
+await check('صاحب التقييم يسجّل صورة إثبات', async () => {
+  const m = await assertSucceeds(
+    addDoc(collection(userDb,'review_media'), newMedia(USER, pendingId)));
+  mediaId = m.id;
+});
+
+await check('حقل زيادة في مستند الصورة بيترفض', () =>
+  assertFails(addDoc(collection(userDb,'review_media'),
+    newMedia(USER, pendingId, { adminNote:'x' }))));
+
+await check('مستند صورة من غير publicId بيترفض', async () => {
+  const m = newMedia(USER, pendingId); delete m.publicId;
+  await assertFails(addDoc(collection(userDb,'review_media'), m));
+});
+
+await check('رابط صورة مش https بيترفض', () =>
+  assertFails(addDoc(collection(userDb,'review_media'),
+    newMedia(USER, pendingId, { url:'http://res.cloudinary.com/x.jpg' }))));
+
+await check('نوع فيديو في مستند الصورة بيترفض', () =>
+  assertFails(addDoc(collection(userDb,'review_media'),
+    newMedia(USER, pendingId, { mime:'video/mp4' }))));
+
+await check('نوع SVG بيترفض', () =>
+  assertFails(addDoc(collection(userDb,'review_media'),
+    newMedia(USER, pendingId, { mime:'image/svg+xml' }))));
+
+await check('صورة أكبر من ٥ ميجا بترفض', () =>
+  assertFails(addDoc(collection(userDb,'review_media'),
+    newMedia(USER, pendingId, { bytes: 6 * 1024 * 1024 }))));
+
+await check('مستخدم تاني ما يقدرش يعلّق صورة على تقييم مش بتاعه', () =>
+  assertFails(addDoc(collection(otherDb,'review_media'), newMedia(OTHER, pendingId))));
+
+await check('زائر ما يقدرش يسجّل صورة', () =>
+  assertFails(addDoc(collection(guestDb,'review_media'), newMedia(USER, pendingId))));
+
+await check('صورة تقييم pending ما تظهرش لزائر', () =>
+  assertFails(getDoc(doc(guestDb,'review_media',mediaId))));
+
+await check('صورة تقييم pending ما تظهرش لمستخدم تاني', () =>
+  assertFails(getDoc(doc(otherDb,'review_media',mediaId))));
+
+await check('صاحبها يشوف صورته وهي pending', () =>
+  assertSucceeds(getDoc(doc(userDb,'review_media',mediaId))));
+
+await check('المالك يشوف الصورة وهي pending', () =>
+  assertSucceeds(getDoc(doc(ownerDb,'review_media',mediaId))));
+
+await check('صاحب الصورة ما يقدرش يعدّل رابطها بعد التسجيل', () =>
+  assertFails(updateDoc(doc(userDb,'review_media',mediaId), { url:'https://evil.example/x.jpg' })));
+
+await check('بعد اعتماد التقييم الزائر يشوف الصورة', async () => {
+  await assertSucceeds(updateDoc(doc(ownerDb,'reviews',pendingId),
+    { status:'approved', moderatedBy:OWNER, moderatedAt: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(guestDb,'review_media',mediaId)));
+});
+
+/* ======================  ٦ — الروابط  ====================== */
 
 const link = (over = {}) => ({
   title:'قناة رسمية', platform:'telegram', url:'https://t.me/elawaadyofficial',
@@ -273,7 +364,7 @@ await check('رابط من غير عنوان بيترفض', () =>
 await check('المالك يعيد ترتيب الروابط', () =>
   assertSucceeds(updateDoc(doc(ownerDb,'links','lnk-1'), { order:5 })));
 
-/* ======================  ٦ — محتوى الموقع والإعدادات  ====================== */
+/* ======================  ٧ — محتوى الموقع والإعدادات  ====================== */
 
 await check('الزائر يقرا المحتوى المنشور', () =>
   assertSucceeds(getDoc(doc(guestDb,'content','portfolio'))));
@@ -290,7 +381,7 @@ await check('المستخدم ما يقدرش يكتب في settings', () =>
 await check('المستخدم ما يقدرش يكتب في sections', () =>
   assertFails(setDoc(doc(userDb,'sections','about'), { x:1 })));
 
-/* ======================  ٧ — الرفض الافتراضي  ====================== */
+/* ======================  ٨ — الرفض الافتراضي  ====================== */
 
 await check('مجموعة مش مذكورة في القواعد: القراءة مرفوضة', () =>
   assertFails(getDoc(doc(guestDb,'anything','x'))));
@@ -301,20 +392,22 @@ await check('مجموعة مش مذكورة في القواعد: الكتابة 
 await check('مجموعة admins مش موجودة أصلًا — الكتابة مرفوضة', () =>
   assertFails(setDoc(doc(userDb,'admins',USER), { role:'admin' })));
 
-/* ======================  ٨ — Storage  ====================== */
+/* ======================  ٩ — Storage مقفول  ======================
+   مفيش حاجة في التطبيق بترفع على Firebase Storage خلاص — الصور بتروح
+   Cloudinary. القواعد لازم ترفض كل مسار ما عدا مجلد المالك. */
 
 const p = (uid, name) => `reviews/${uid}/rev1/${name}`;
 
-await check('المستخدم يرفع صورة JPEG تحت مجلده', () =>
-  assertSucceeds(uploadBytes(ref(userSt, p(USER,'a.jpg')), bytes(1024),
+await check('رفع صورة إثبات على Storage بيترفض', () =>
+  assertFails(uploadBytes(ref(userSt, p(USER,'a.jpg')), bytes(1024),
     { contentType:'image/jpeg' })));
 
-await check('المستخدم يرفع فيديو MP4', () =>
-  assertSucceeds(uploadBytes(ref(userSt, p(USER,'v.mp4')), bytes(2048),
+await check('رفع فيديو MP4 بيترفض', () =>
+  assertFails(uploadBytes(ref(userSt, p(USER,'v.mp4')), bytes(2048),
     { contentType:'video/mp4' })));
 
-await check('المستخدم يرفع فيديو WebM', () =>
-  assertSucceeds(uploadBytes(ref(userSt, p(USER,'v.webm')), bytes(2048),
+await check('رفع فيديو WebM بيترفض', () =>
+  assertFails(uploadBytes(ref(userSt, p(USER,'v.webm')), bytes(2048),
     { contentType:'video/webm' })));
 
 await check('رفع ملف PDF بيترفض', () =>
@@ -325,48 +418,28 @@ await check('رفع ملف تنفيذي بيترفض', () =>
   assertFails(uploadBytes(ref(userSt, p(USER,'x.exe')), bytes(1024),
     { contentType:'application/x-msdownload' })));
 
-await check('رفع SVG بيترفض (ممكن يحمل سكربت)', () =>
+await check('رفع SVG بيترفض', () =>
   assertFails(uploadBytes(ref(userSt, p(USER,'x.svg')), bytes(512),
     { contentType:'image/svg+xml' })));
 
-await check('رفع فيديو MOV بيترفض', () =>
-  assertFails(uploadBytes(ref(userSt, p(USER,'x.mov')), bytes(2048),
-    { contentType:'video/quicktime' })));
-
-await check('صورة أكبر من ٥ ميجا بترفض', () =>
-  assertFails(uploadBytes(ref(userSt, p(USER,'big.jpg')), bytes(6 * 1024 * 1024),
-    { contentType:'image/jpeg' })));
-
-await check('فيديو أكبر من ٢٥ ميجا بيترفض', () =>
-  assertFails(uploadBytes(ref(userSt, p(USER,'big.mp4')), bytes(26 * 1024 * 1024),
-    { contentType:'video/mp4' })));
-
-await check('المستخدم ما يقدرش يرفع تحت مجلد حد تاني', () =>
-  assertFails(uploadBytes(ref(otherSt, p(USER,'sneak.jpg')), bytes(1024),
+await check('رفع صورة بروفايل على Storage بيترفض', () =>
+  assertFails(uploadBytes(ref(userSt,`avatars/${USER}/me.jpg`), bytes(1024),
     { contentType:'image/jpeg' })));
 
 await check('زائر غير مسجّل ما يقدرش يرفع', () =>
   assertFails(uploadBytes(ref(guestSt, p(USER,'guest.jpg')), bytes(1024),
     { contentType:'image/jpeg' })));
 
-await check('ما ينفعش يستبدل ملف اترفع خلاص', () =>
-  assertFails(uploadBytes(ref(userSt, p(USER,'a.jpg')), bytes(2048),
-    { contentType:'image/jpeg' })));
-
-await check('المستخدم ما يقدرش يرفع في مجلد الموقع site/', () =>
-  assertFails(uploadBytes(ref(userSt,'site/hero.jpg'), bytes(1024),
+await check('مستخدم تاني ما يقدرش يرفع تحت مجلد غيره', () =>
+  assertFails(uploadBytes(ref(otherSt, p(USER,'sneak.jpg')), bytes(1024),
     { contentType:'image/jpeg' })));
 
 await check('المستخدم ما يقدرش يرفع في مسار مش معرّف', () =>
   assertFails(uploadBytes(ref(userSt,'backups/dump.jpg'), bytes(1024),
     { contentType:'image/jpeg' })));
 
-await check('المستخدم يرفع صورة بروفايل تحت مجلده', () =>
-  assertSucceeds(uploadBytes(ref(userSt,`avatars/${USER}/me.jpg`), bytes(1024),
-    { contentType:'image/jpeg' })));
-
-await check('المستخدم ما يقدرش يرفع صورة بروفايل لحد تاني', () =>
-  assertFails(uploadBytes(ref(userSt,`avatars/${OTHER}/me.jpg`), bytes(1024),
+await check('المستخدم ما يقدرش يرفع في مجلد الموقع site/', () =>
+  assertFails(uploadBytes(ref(userSt,'site/hero.jpg'), bytes(1024),
     { contentType:'image/jpeg' })));
 
 /* ======================  التقرير  ====================== */

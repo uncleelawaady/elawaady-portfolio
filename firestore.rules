@@ -26,13 +26,13 @@ service cloud.firestore {
 
     match /reviews/{reviewId} {
       function isAuthor() { return signedIn() && resource.data.uid == request.auth.uid; }
-      function reviewFieldsOnly() { return request.resource.data.keys().hasOnly(['uid','authorName','authorPhoto','rating','title','body','dealType','status','featured','imageCount','images','hasVideo','video','createdAt','updatedAt']); }
+      function reviewFieldsOnly() { return request.resource.data.keys().hasOnly(['uid','authorName','authorPhoto','rating','title','body','dealType','status','featured','imageCount','images','createdAt','updatedAt']); }
       function validNewReview() {
         let d = request.resource.data;
         return reviewFieldsOnly() && d.uid == request.auth.uid && d.status == 'pending' && d.featured == false && d.rating is int && d.rating >= 1 && d.rating <= 5 && d.title is string && d.title.size() <= 90 && d.body is string && d.body.size() >= 10 && d.body.size() <= 1500 && d.dealType in ['escrow','guarantee','trade','digital','transfer','project','consulting','other'] && !('moderatedBy' in d) && !('moderatedAt' in d);
       }
       function authorEditableOnly() { return onlyChanged(['title','body','rating','dealType','updatedAt']); }
-      function mediaFieldsOnly() { return onlyChanged(['images','video','imageCount','hasVideo','updatedAt']); }
+      function mediaFieldsOnly() { return onlyChanged(['images','imageCount','updatedAt']); }
       allow read: if resource.data.status == 'approved' || isOwner() || isAuthor();
       allow create: if signedIn() && validNewReview();
       allow update: if isOwner() || (isAuthor() && resource.data.status == 'pending' && (authorEditableOnly() || mediaFieldsOnly()));
@@ -42,8 +42,10 @@ service cloud.firestore {
     match /review_media/{mediaId} {
       function parent() { return get(/databases/$(database)/documents/reviews/$(request.resource.data.reviewId)).data; }
       function existingParent() { return get(/databases/$(database)/documents/reviews/$(resource.data.reviewId)).data; }
+      function mediaDocFieldsOnly() { return request.resource.data.keys().hasOnly(['url','publicId','mime','bytes','uid','reviewId','createdAt']); }
+      function validMedia() { let d = request.resource.data; return mediaDocFieldsOnly() && d.url is string && d.url.matches('^https://.*') && d.publicId is string && d.publicId.size() > 0 && d.mime in ['image/jpeg','image/png','image/webp'] && d.bytes is int && d.bytes > 0 && d.bytes <= 5 * 1024 * 1024; }
       allow read: if isOwner() || (signedIn() && resource.data.uid == request.auth.uid) || existingParent().status == 'approved';
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && parent().uid == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && parent().uid == request.auth.uid && validMedia();
       allow update: if isOwner();
       allow delete: if isOwner() || (signedIn() && resource.data.uid == request.auth.uid && existingParent().status == 'pending');
     }

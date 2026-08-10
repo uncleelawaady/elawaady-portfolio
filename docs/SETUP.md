@@ -11,7 +11,7 @@
 كل الرحلة في ملف واحد: `app.html`.
 
 ```
-دخول / تسجيل → حسابي → اكتب تقييم → تمويه الصور + فيديو → pending
+دخول / تسجيل → حسابي → اكتب تقييم → تمويه الصور → pending
                                                               ↓
                                 لوحة المراجعة (إنت بس) → موافقة
                                                               ↓
@@ -24,7 +24,7 @@
 |---|---|---|
 | `#/proofs` | الكل | إثباتات تعاملات العوضي — المعتمد بس |
 | `#/channels` | الكل | القنوات والمجتمعات — 46 رابط |
-| `#/new` | المسجّلين | نموذج التقييم: نجوم + عنوان + نص + نوع + صور + فيديو |
+| `#/new` | المسجّلين | نموذج التقييم: نجوم + عنوان + نص + نوع تعامل + صور |
 | `#/account` | المسجّلين | الاسم والصورة والنبذة وتقييماتك وحالتها |
 | `#/admin` | المالك بس | اعتماد / رفض / إخفاء / تمييز |
 | `#/links` | المالك بس | إضافة وتعديل وحذف وإخفاء وترتيب الروابط |
@@ -44,10 +44,14 @@
 | النوع | الامتدادات | الحد |
 |---|---|---|
 | صور | JPEG / PNG / WEBP | 4 صور، 5 ميجا للصورة (وبتتضغط قبل الرفع) |
-| فيديو | MP4 / WebM | فيديو واحد، 25 ميجا، 90 ثانية |
 
-الفيديو بيتعرض في مشغّل جوّه البطاقة — مش رابط تنزيل. ومبيتضغطش في
-المتصفح، فالحد بتاعه بيتحاسب على الملف زي ما هو.
+**مفيش فيديو.** التقييم صور إثبات وبس: نجوم، عنوان، نص، نوع تعامل، صور.
+
+**الصور بتترفع على Cloudinary مش على Firebase Storage**، لأن Storage محتاج
+خطة Blaze. اللي بيترفع هو ناتج أداة التمويه بعد ما اتصغّر واتضغط، والأصل
+مبيخرجش من جهاز المستخدم. اللي بيتخزن في Firestore لكل صورة:
+`url, publicId, mime, bytes, uid, reviewId, createdAt` — ولا حقل زيادة،
+والقواعد هي اللي بتفرض ده.
 
 **الروابط — مين المرجع؟**
 
@@ -66,7 +70,7 @@
 | الحالة | الوضع | البيانات |
 |---|---|---|
 | `firebase-config.js` فاضي | **اختبار** | في المتصفح (IndexedDB) |
-| `firebase-config.js` متملّي | **حقيقي** | Firestore + Storage |
+| `firebase-config.js` متملّي | **حقيقي** | Firestore (والصور على Cloudinary) |
 
 الوضع التجريبي شغال دلوقتي عشان تجرّب الرحلة كلها. بس **الـconfig لوحده
 مش كفاية للإطلاق** — فيه Checklist تحت لازم يعدّي كله الأول.
@@ -112,9 +116,6 @@ node scripts/build-preview.mjs     # -> preview/reviews-preview.html
 - **Production mode** (مهم — الوضع التاني بيفتح القاعدة للكل)
 - الموقع: `eur3` أو `europe-west` (أقرب لمصر)
 
-**Storage** → Get started:
-- **Production mode**
-- نفس الموقع
 
 ### ٣. اعمل حسابك
 
@@ -164,11 +165,11 @@ node scripts/build-preview.mjs     # -> preview/reviews-preview.html
 | ٢ | **Email/Password** Enabled | Sign-in method | مكتوب جنبه Enabled |
 | ٣ | **Google Provider** Enabled | Sign-in method | Enabled، وإيميل الدعم متحدد |
 | ٤ | **Firestore** موجودة | Firestore Database | فيه قاعدة، ومتعملة **Production mode** |
-| ٥ | **Storage** موجود | Storage | فيه bucket، و**Production mode** |
 | ٦ | **Firestore Rules** منشورة | Firestore → Rules | آخر Publish تاريخه بعد آخر تعديل في `firestore.rules` |
-| ٧ | **Storage Rules** منشورة | Storage → Rules | نفس الحكاية مع `storage.rules` |
+| ٧ | **Cloudinary متظبط** | `cloudinary-config.js` | `cloudName` و`uploadPreset` متملّيين، والـPreset **Unsigned** |
 | ٨ | **Authorized domains** | Authentication → Settings | فيها `elawaady-db.com` (وGitHub Pages لو لسه شغالة) |
 | ٩ | **Owner UID مطابق** | ٣ أماكن | نفس الـUID في `firebase-config.js` و`firestore.rules` و`storage.rules` |
+| ١٣ | **مفيش Secret في Git** | `cloudinary-config.js` | الـPreset بس — ممنوع API Key أو API Secret |
 | ١٠ | **حسابك موجود فعلًا** | Authentication → Users | الـUID اللي في القواعد هو نفسه اللي في الجدول |
 | ١١ | **الروابط اتزرعت** | `#/links` | مفيش تنبيه أصفر بيقول القائمة من `links.js` |
 | ١٢ | **اختبار القواعد عدّى** | محليًا | `node tests/rules/rules.test.mjs` تحت المحاكي |
@@ -189,7 +190,8 @@ node scripts/build-preview.mjs     # -> preview/reviews-preview.html
 
 **Firestore Database** → تبويب **Rules** → امسح اللي موجود → الصق محتوى `firestore.rules` → **Publish**
 
-**Storage** → تبويب **Rules** → نفس الحكاية مع `storage.rules` → **Publish**
+**Storage** مش مستخدم خالص. لو فعّلته أصلاً، الصق `storage.rules` فيه —
+الملف بيقفل كل المسارات ما عدا مجلد المالك.
 
 ### اختبار القواعد نفسها — مش الواجهة
 
@@ -206,23 +208,20 @@ npx firebase emulators:exec --only firestore,storage \
     --project elawaady-rules-test "node rules.test.mjs"
 ```
 
-(محتاج Java عشان المحاكي.) الاختبار فيه **٨٣ حالة** بتغطي:
+(محتاج Java عشان المحاكي.) الاختبار فيه **٩٨ حالة** بتغطي:
 
 | المجموعة | بيتأكد من إيه |
 |---|---|
 | ملفات المستخدمين | ما ينفعش يسجّل بدور admin أو owner، ولا يرقّي نفسه أو غيره، ولا يغيّر status، ولا يقرا ملف حد تاني |
 | إنشاء التقييمات | `uid` لازم يكون بتاعه، و`status` لازم `pending`، و`featured` لازم `false`، ومفيش `moderatedBy`/`moderatedAt`، وأي حقل زيادة بيترفض |
-| قراءة التقييمات | المعلّق ما يظهرش لزائر ولا لمستخدم تاني — لا نص ولا صور ولا فيديو |
+| قراءة التقييمات | المعلّق ما يظهرش لزائر ولا لمستخدم تاني — لا نص ولا صور |
 | تعديل التقييمات | صاحبه ما يقدرش يعتمده ولا يميّزه ولا يغيّر `uid`، وبعد الاعتماد ما يقدرش يعدّله ولا يمسحه |
 | الروابط | القراءة عامة، والكتابة للمالك بس، و`javascript:` بيترفض حتى منه |
+| صور الإثبات | الحقول السبعة بس، ورابط https بس، وأنواع الصور بس (فيديو وSVG بيترفضوا)، والصورة مربوطة بصاحب التقييم، وما تظهرش قبل الاعتماد |
 | الرفض الافتراضي | أي مجموعة مش مكتوبة في القواعد مرفوضة — حتى على المالك |
-| Storage | JPEG/PNG/WEBP و MP4/WebM بس، والحدود مفروضة، ومفيش رفع في مجلد حد تاني، ومفيش استبدال لملف اترفع |
+| Storage | مقفول بالكامل — أي رفع بيترفض ما عدا مجلد المالك |
 
-**نتيجة آخر تشغيل: ٨٣ من ٨٣.**
-
-> ملاحظة اتكشفت من الاختبار ده: في Storage، `allow update: if false` **مش**
-> بيمنع الرفع فوق ملف موجود — Storage بيعامله كـcreate. اللي بيمنعه فعلًا
-> هو `resource == null`، وهو المكتوب دلوقتي في `storage.rules`.
+**نتيجة آخر تشغيل: ٩٨ من ٩٨.**
 
 ### وبعدين اتأكد من الواجهة كمان
 

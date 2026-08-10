@@ -20,14 +20,19 @@ const ASSETS = [
   ["url('assets/fonts/handicrafts-bold.woff2') format('woff2')",
    `url('${dataURI('assets/fonts/handicrafts-bold.woff2', 'font/woff2')}') format('woff2')`],
   ['src="assets/e-logo.png"',  `src="${dataURI('assets/e-logo.png', 'image/png')}"`],
+  /* صور البورتريه اتشالت من الريبو، والموقع بيحطّ الرسمة بدالها وقت التشغيل.
+     المعاينة بتعمل نفس الحاجة، بس من غير ما تستنى جافاسكريبت. */
   ['src="assets/portraits/ahmed-orange-sm.jpg"',
-   `src="${dataURI('assets/portraits/ahmed-orange-sm.jpg', 'image/jpeg')}"`],
+   `src="${dataURI('assets/ahmed-portrait.svg', 'image/svg+xml')}"`],
   ['href="assets/favicon.png"', `href="${dataURI('assets/favicon.png', 'image/png')}"`],
   /* المعاينة مالهاش صفحة رئيسية ترجع لها */
   ['<a href="index.html" class="brand">', '<a href="#/proofs" class="brand">'],
   /* firebase-config.js مش موجود جنب الملف، والمعاينة قصدها الوضع التجريبي */
   ['<script src="firebase-config.js"></script>',
-   '<!-- الوضع التجريبي: مفيش إعداد Firebase، والبيانات بتتخزن في المتصفح -->']
+   '<!-- الوضع التجريبي: مفيش إعداد Firebase، والبيانات بتتخزن في المتصفح -->'],
+  /* والصور في المعاينة بتفضل جوّه المتصفح، مبتترفعش على Cloudinary */
+  ['<script src="cloudinary-config.js"></script>',
+   '<!-- الوضع التجريبي: الصور بتفضل في المتصفح -->']
 ];
 
 for (const [from, to] of ASSETS) {
