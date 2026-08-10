@@ -20,7 +20,10 @@ window.SITE_CONTENT = {
     email:    'elawaady.official@gmail.com',
     linkedin: 'elawaadyofficial',
     name:     { ar: 'أحمد العوضي', en: 'Ahmed Elawaady' },
-    role:     { ar: 'رائد أعمال رقمي ومؤسس منصات', en: 'Digital Entrepreneur & Platform Builder' }
+    /* المسمى الوظيفي الرئيسي. مكتوب هنا وفي hero.accent وفي وسوم index.html.
+       أي مسمى قديم — Media Buyer أو Platform Builder — بقى مهارة فرعية جوّه
+       قائمة المهارات، مش عنوان رئيسي. */
+    role:     { ar: 'مؤسس مشاريع رقمية | متخصص تجارة إلكترونية', en: 'Digital Founder | E-Commerce Specialist' }
   },
 
   /* ---- الشريط المتحرك أعلى الصفحة ---- */
@@ -34,7 +37,7 @@ window.SITE_CONTENT = {
     badge:  { ar: 'بورتفوليو شخصي — أحمد العوضي', en: 'Personal portfolio — Ahmed Elawaady' },
     title:  { ar: 'أحوّل الأفكار', en: 'I turn ideas' },
     title2: { ar: 'إلى منظومات رقمية', en: 'into digital systems' },
-    accent: { ar: 'رائد أعمال رقمي ومؤسس منصات', en: 'Digital entrepreneur & platform builder' },
+    accent: { ar: 'مؤسس مشاريع رقمية | متخصص تجارة إلكترونية', en: 'Digital Founder | E-Commerce Specialist' },
     desc: {
       ar: '١٤ مجال خبرة و٦ منظومات عملية — منصات، تجارة رقمية، ذكاء اصطناعي، أتمتة، تسويق، مجتمعات وأنظمة وساطة. مساحتي لعرض اللي بنيته ورحلتي فيه.',
       en: '14 areas of expertise across 6 working systems — platforms, digital commerce, AI, automation, marketing, communities and escrow. My space for what I have built and the road there.'
@@ -62,12 +65,12 @@ window.SITE_CONTENT = {
   about: {
     paras: {
       ar: [
-        'أنا أحمد العوضي، المعروف باسم Elawaady، رائد أعمال رقمي ومؤسس مشروعات ومنصات رقمية. أعمل على بناء أنظمة تجمع بين التقنية والتجارة والتسويق والأتمتة وتجربة المستخدم، وتحويل الأفكار إلى مشروعات رقمية قابلة للتشغيل والنمو.',
+        'أنا أحمد العوضي، المعروف باسم Elawaady، مؤسس مشاريع رقمية ومتخصص تجارة إلكترونية. أعمل على بناء أنظمة تجمع بين التقنية والتجارة والتسويق والأتمتة وتجربة المستخدم، وتحويل الأفكار إلى مشروعات رقمية قابلة للتشغيل والنمو.',
         'أهتم بصورة خاصة ببناء المنظومات التي تربط بين العميل ومقدم الخدمة والمورد والإدارة والدفع والمتابعة داخل تجربة واحدة منظمة.',
         'رؤيتي ليست مجرد تقديم خدمة منفردة، وإنما تحويل العمليات الرقمية المتفرقة إلى أنظمة ومنصات منظمة يمكن إدارتها وتطويرها والتوسع بها.'
       ],
       en: [
-        "I'm Ahmed Elawaady, known as Elawaady — a digital entrepreneur and the founder of digital projects and platforms. I build systems that bring together technology, commerce, marketing, automation and user experience, turning ideas into digital projects that can actually run and grow.",
+        "I'm Ahmed Elawaady, known as Elawaady — a digital founder and e-commerce specialist. I build systems that bring together technology, commerce, marketing, automation and user experience, turning ideas into digital projects that can actually run and grow.",
         'I care in particular about building the systems that connect customer, service provider, supplier, management, payment and follow-up inside one organised experience.',
         'My aim was never to deliver a single service. It is to turn scattered digital operations into structured systems and platforms that can be managed, developed and scaled.'
       ]
@@ -244,8 +247,9 @@ window.SITE_CONTENT = {
                     en: ['Entering the digital market', 'Marketer & operator', 'Started in digital services, account management and building a first client base.'] },
     { year: '2020', ar: ['بناء المجتمعات', 'مؤسس ومدير مجتمعات', 'إنشاء وإدارة قنوات ومجموعات رقمية وتحويلها إلى شبكة منظمة للعملاء والموردين.'],
                     en: ['Community building', 'Founder & community manager', 'Created and ran digital channels and groups, turning them into an organised client and supplier network.'] },
-    { year: '2022', ar: ['التوسع في التسويق والتشغيل', 'مشتري إعلانات ومدير عمليات', 'إدارة حملات مدفوعة عبر الشبكات الرئيسية وبناء فرق متعددة التخصصات.'],
-                    en: ['Scaling marketing & operations', 'Media buyer & operations lead', 'Ran paid campaigns across major networks and built multidisciplinary teams.'] },
+    /* شراء الإعلانات اتساب هنا كمهارة جوّه الوصف، مش كمسمى وظيفي. */
+    { year: '2022', ar: ['التوسع في التجارة والتشغيل', 'مدير تشغيل ونمو', 'إدارة حملات مدفوعة وشراء وسائط عبر الشبكات الرئيسية، وبناء فرق متعددة التخصصات.'],
+                    en: ['Scaling commerce & operations', 'Operations & growth lead', 'Ran paid campaigns and media buying across major networks and built multidisciplinary teams.'] },
     { year: '2024', ar: ['الأتمتة والذكاء الاصطناعي', 'مطوّر حلول', 'بناء بوتات وأنظمة أتمتة ودمج أدوات الذكاء الاصطناعي داخل سير العمل اليومي.'],
                     en: ['Automation & AI', 'Solutions developer', 'Built bots and automation systems and folded AI tools into day-to-day workflows.'] },
     { year: '2025', ar: ['Elawaady XDigital Platform', 'المؤسس وباني المنصة', 'تطوير منظومة سوق رقمي تجمع الخدمات والدفع والوساطة والمتابعة في نظام واحد.'],

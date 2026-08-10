@@ -140,6 +140,17 @@ textarea.input{resize:vertical;min-height:130px}
 .msg.ok{background:rgba(46,212,122,.12);border:1px solid rgba(46,212,122,.4);color:var(--ok)}
 .msg.info{background:rgba(255,197,61,.1);border:1px solid rgba(255,197,61,.35);color:var(--warn)}
 
+/* تحذير خصوصية الفيديو. الصور ليها أداة تمويه، الفيديو لأ — فالتحذير
+   ده لازم يبان بجد مش يبقى سطر رمادي تحت الحقل. */
+.warn-box{background:rgba(255,197,61,.1);border:1px solid rgba(255,197,61,.4);
+  border-radius:var(--radius-sm);padding:12px 14px;margin-block-start:10px;font-size:.85rem;line-height:1.75}
+.warn-box b{color:var(--warn);display:block;margin-block-end:4px}
+.warn-box p{margin:0;color:var(--txt)}
+.ack{display:flex;gap:9px;align-items:flex-start;margin-block-start:10px;
+  padding-block-start:10px;border-block-start:1px solid rgba(255,197,61,.28);cursor:pointer}
+.ack input{margin-block-start:3px;flex:0 0 auto;width:16px;height:16px;accent-color:var(--warn)}
+.ack span{font-size:.83rem;color:var(--txt)}
+
 .tabs{display:flex;gap:6px;background:var(--chip-bg);border:1px solid var(--line);
   border-radius:999px;padding:5px;margin-block-end:22px;overflow-x:auto}
 .tabs button{padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;
@@ -352,10 +363,21 @@ textarea.input{resize:vertical;min-height:130px}
 <!-- الوضع التجريبي: مفيش إعداد Firebase، والبيانات بتتخزن في المتصفح -->
 <script>
 /* ===========================================================================
-   سجل روابط التواصل والمجتمعات — Source of Truth
+   سجل روابط التواصل والمجتمعات — Seed / Fallback
    ===========================================================================
-   الملف ده هو المرجع الوحيد لكل رابط تواصل في الموقع. أي رابط قديم في أي
-   ملف تاني اتشال، والروابط دي بس هي اللي بتتعرض.
+   مين الـSource of Truth؟
+
+     • قبل تشغيل Firebase  →  الملف ده. الصفحة بتقرا منه على طول.
+     • بعد تشغيل Firebase  →  **Firestore** (مجموعة `links`) هو المرجع.
+       الملف ده بيبقى حاجتين بس: النسخة اللي بتتزرع أول مرة، ونسخة
+       الطوارئ لو المجموعة طلعت فاضية.
+
+   يعني بعد التشغيل، تعديل الرابط بيتم من الداشبورد (app.html#/links) —
+   مش من الملف ده. لو عدّلت هنا بعد الزرع مش هيبان أي حاجة، غير لما تفتح
+   الداشبورد وتضغط «رجّع القائمة الأصلية»، وده بيمسح تعديلاتك من الداشبورد
+   ويرجّع نسخة الملف مكانها.
+
+   أي رابط قديم في أي ملف تاني اتشال، والروابط دي بس هي اللي بتتعرض.
 
    ترتيب العرض ثابت:
      1) official          — القنوات الرسمية
@@ -376,9 +398,6 @@ textarea.input{resize:vertical;min-height:130px}
    ⚠️ الروابط دي مكتوبة حرفيًا زي ما وصلت. أي حرف فيها مقصود — فيه لينكات
    بتستخدم حرف I كبير بدل l صغير. ما تصلّحش حاجة من نفسك.
 
-   التعديل بيتم من الداشبورد (app.html#/links) وبيتخزن في Firestore تحت
-   مجموعة `links`. الملف ده هو النسخة الأساسية اللي بتتزرع أول مرة، وكمان
-   نسخة الطوارئ لو Firestore مش متاح.
 =========================================================================== */
 
 window.SITE_LINKS = [
@@ -1172,7 +1191,10 @@ function makeTestBackend(){
     /* ----------------------------  الروابط  --------------------------- */
     async listLinks({ all = false } = {}){
       const rows = all && isOwner() ? db.links : db.links.filter(l => l.visible !== false);
-      return sortLinks(rows).map(l => ({ ...l }));
+      const out = sortLinks(rows).map(l => ({ ...l }));
+      /* في الوضع التجريبي القائمة دايمًا متزرعة في قاعدة المتصفح */
+      out.fromSeed = false;
+      return out;
     },
 
     async saveLink(link){
@@ -1528,12 +1550,15 @@ async function makeFirebaseBackend(cfg, ownerUid){
     listLinks: ({ all = false } = {}) => run(async () => {
       const snap = await F.getDocs(F.collection(db, 'links'));
       let rows = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-      /* أول مرة قبل ما المالك يزرع الروابط، بنعرض نسخة الملف عشان الصفحة
-         ما تبقاش فاضية. */
-      if (!rows.length) rows = seedLinks();
+      /* Firestore هو المرجع. الملف links.js نسخة زرع/طوارئ بس، وبيتعرض
+         لما المجموعة تكون لسه فاضية عشان الصفحة ما تبقاش بيضا. */
+      const fromSeed = !rows.length;
+      if (fromSeed) rows = seedLinks();
       const owner = Boolean(user && ownerUid && user.uid === ownerUid);
       if (!(all && owner)) rows = rows.filter(l => l.visible !== false);
-      return sortLinks(rows);
+      const out = sortLinks(rows);
+      out.fromSeed = fromSeed;
+      return out;
     }),
 
     saveLink: (link) => run(async () => {
@@ -1980,10 +2005,32 @@ function viewNew(){
         </div>
         <input type="file" id="vfile" accept="video/mp4,video/webm" hidden>
         <div id="vpick"></div>
-        <p class="counter" style="text-align:start">
-          الفيديو بيترفع زي ما هو من غير ضغط ومن غير تمويه تلقائي — اتأكد
-          بنفسك إن مفيش أرقام ولا أسماء ولا مبالغ ظاهرة فيه قبل ما ترفعه.
-        </p>
+
+        <div class="warn-box">
+          <b>⚠ تحذير خصوصية — اقراه قبل ما ترفع</b>
+          <p>
+            <b style="display:inline;color:var(--warn)">مفيش أداة تمويه للفيديو.</b>
+            الصور بتعدي على أداة تمسح الأرقام والأسماء قبل ما ترفع، لكن
+            الفيديو بيترفع <b style="display:inline;color:var(--warn)">زي ما هو بالظبط</b> —
+            من غير ضغط ومن غير تمويه ومن غير أي تعديل. المتصفح ما بيقدرش
+            يعدّل فيديو زي ما بيعدّل صورة.
+          </p>
+          <p style="margin-block-start:7px">
+            يعني أي حاجة ظاهرة في الفيديو هترفع معاه: أرقام تليفونات، أسماء،
+            مبالغ، أرقام محافظ أو حسابات، رسايل واتساب، إشعارات تظهر على
+            الشاشة، أو أي بيانات في تسجيل شاشة. راجع الفيديو لآخره بنفسك،
+            واقصّ أو غطّي اللي مش عايزه يبان <b style="display:inline;color:var(--warn)">قبل</b>
+            ما تختاره من هنا.
+          </p>
+          <p style="margin-block-start:7px">
+            الفيديو زيه زي باقي التقييم — بيفضل «قيد المراجعة» وما يظهرش
+            لأي حد غيري لحد ما أعتمده.
+          </p>
+          <label class="ack" for="vack">
+            <input type="checkbox" id="vack">
+            <span>راجعت الفيديو وأنا متأكد إن مفيش فيه بيانات شخصية أو مبالغ أو أرقام مش عايز حد يشوفها.</span>
+          </label>
+        </div>
       </div>
 
       <button class="btn btn-grad block btn-lg" id="sendReview">ابعت التقييم للمراجعة</button>
@@ -2132,7 +2179,7 @@ function viewNew(){
           <button class="btn btn-ghost btn-sm" id="vrm">شيل الفيديو</button>
         </div>
       </div>`;
-    $('#vrm').onclick = () => { vpick = null; paintVideo(); };
+    $('#vrm').onclick = () => { vpick = null; $('#vack').checked = false; paintVideo(); };
   }
 
   async function addVideo(file){
@@ -2178,6 +2225,11 @@ function viewNew(){
 
     if (!rating)            return show('اختار تقييم من 1 لـ5 نجوم.');
     if (body.length < 10)   return show('اكتب 10 حروف على الأقل في التقييم.');
+    /* الفيديو مالوش أداة تمويه، فالإقرار إجباري قبل ما يترفع. */
+    if (vpick && !$('#vack').checked){
+      $('#vack').closest('.warn-box').scrollIntoView({ block:'center', behavior:'smooth' });
+      return show('راجع الفيديو وعلّم على الإقرار — الفيديو مالوش أداة تمويه زي الصور.');
+    }
 
     btn.disabled = true;
     hide();
@@ -2557,9 +2609,15 @@ async function viewLinks(){
 
     ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
 
+    ${list.fromSeed ? `<div class="msg show info">
+      القائمة دي لسه من ملف <b>links.js</b> — مجموعة <b>links</b> في Firestore فاضية.
+      اضغط «رجّع القائمة الأصلية» مرة واحدة عشان تتزرع، وبعدها Firestore هو المرجع
+      وأي تعديل هنا بيتخزن فيه.
+    </div>` : ''}
+
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-block-end:18px">
       <button class="btn btn-grad" id="addLink">أضف رابط</button>
-      <button class="btn btn-ghost" id="restoreLinks">رجّع القائمة الأصلية</button>
+      <button class="btn btn-ghost" id="restoreLinks">${list.fromSeed ? 'ازرع القائمة في Firestore' : 'رجّع القائمة الأصلية'}</button>
     </div>
 
     ${LINK_GROUPS.map(g => {

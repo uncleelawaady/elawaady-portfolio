@@ -47,13 +47,19 @@ service firebase.storage {
     match /reviews/{uid}/{reviewId}/{fileName} {
       allow read: if true;
 
+      /* مفيش استبدال لملف اترفع — الجديد بيتحط باسم جديد. كده الصورة اللي
+         وافقت عليها متتغيرش من تحت إيدك بعد الاعتماد.
+
+         مهم: `allow update: if false` **مش** كفاية هنا. Storage بيعامل
+         الرفع فوق ملف موجود كـcreate برضه، فالشرط الحقيقي اللي بيمنع
+         الاستبدال هو `resource == null` — يعني المسار لازم يكون فاضي.
+         ده اتأكد بالاختبار على المحاكي، مش افتراض. */
       allow create: if request.auth != null
                     && request.auth.uid == uid
+                    && resource == null
                     && ((isImage() && withinSize())
                         || (isVideo() && withinVideoSize()));
 
-      /* مفيش استبدال لصورة اترفعت — الجديد بيتحط باسم جديد.
-         كده الصورة اللي وافقت عليها متتغيرش من تحت إيدك. */
       allow update: if false;
 
       allow delete: if isOwner() || (request.auth != null && request.auth.uid == uid);

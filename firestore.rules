@@ -89,15 +89,28 @@ service cloud.firestore {
       }
 
       /* الحقول اللي المستخدم مسموح له يلمسها. أي حقل تاني — وأهمهم role
-         و status — بيتحدد من هنا وبس. */
+         و status — بيتحدد من هنا وبس.
+         lastSeenAt جوّه القائمة لأن الكود بيحدّثه كل مرة يفتح فيها الموقع. */
       function userEditableOnly() {
-        return onlyChanged(['displayName', 'photoURL', 'bio', 'updatedAt']);
+        return onlyChanged(['displayName', 'photoURL', 'bio',
+                            'lastSeenAt', 'updatedAt']);
+      }
+
+      /* القائمة الكاملة للحقول المسموح بيها وقت الإنشاء. أي حقل بره القائمة
+         دي بيخلي الإنشاء يترفض — يعني الرفض هو الافتراضي حتى على مستوى
+         الحقل الواحد، مش على مستوى العملية بس. */
+      function userFieldsOnly() {
+        return request.resource.data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'photoURL', 'bio',
+          'role', 'status', 'createdAt', 'updatedAt', 'lastSeenAt'
+        ]);
       }
 
       allow read: if isSelf() || isOwner();
 
       /* عند التسجيل: الدور لازم يكون user، والحساب لازم يبقى باسمه هو */
       allow create: if isSelf()
+                    && userFieldsOnly()
                     && request.resource.data.role == 'user'
                     && request.resource.data.status == 'active'
                     && request.resource.data.uid == uid;
@@ -118,9 +131,20 @@ service cloud.firestore {
         return signedIn() && resource.data.uid == request.auth.uid;
       }
 
+      /* الحقول المسموح بيها وقت الإنشاء، وبس. أي حقل زيادة — حتى لو مالوش
+         معنى عندنا — بيرفض العملية كلها. */
+      function reviewFieldsOnly() {
+        return request.resource.data.keys().hasOnly([
+          'uid', 'authorName', 'authorPhoto', 'rating', 'title', 'body',
+          'dealType', 'status', 'featured', 'imageCount', 'images',
+          'hasVideo', 'video', 'createdAt', 'updatedAt'
+        ]);
+      }
+
       function validNewReview() {
         let d = request.resource.data;
-        return d.uid == request.auth.uid
+        return reviewFieldsOnly()
+            && d.uid == request.auth.uid
             && d.status == 'pending'                    // مفيش نشر ذاتي
             && d.featured == false
             && d.rating is int && d.rating >= 1 && d.rating <= 5
