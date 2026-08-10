@@ -267,24 +267,95 @@ function renderApproach() {
   }).join(''));
 }
 
+/* ---------------------------------------------------------------------------
+   القنوات والمجتمعات
+   ---------------------------------------------------------------------------
+   المصدر الوحيد للروابط هو links.js. الترتيب ثابت — القنوات الرسمية، بعدين
+   جروبات فيسبوك، بعدين جروبات واتساب، وآخر حاجة قناة واتساب — وكل رابط
+   بيفتح في تبويب جديد بـnoopener noreferrer.
+--------------------------------------------------------------------------- */
+const PLATFORM_ICON = {
+  store:'i-store', whatsapp:'i-whatsapp', messenger:'i-chat', instagram:'i-palette',
+  facebook:'i-users', telegram:'i-telegram', x:'i-sparkles', linkedin:'i-linkedin'
+};
+
+/* الاسم اللي بيظهر تحت العنوان — الدومين والمسار من غير https:// */
+function prettyURL(url) {
+  try {
+    const u = new URL(url);
+    return (u.hostname.replace(/^www\./, '') + u.pathname).replace(/\/$/, '');
+  } catch (e) { return url; }
+}
+
+const siteLinks = () => (window.SITE_LINKS || []).filter(l => l.visible !== false);
+
+/* أول رابط في نوع معيّن — بيتستخدم لزراير الواتساب الثابتة */
+function firstLink(id, fallback) {
+  const l = (window.SITE_LINKS || []).find(x => x.id === id);
+  return l ? l.url : fallback;
+}
+
+function renderChannels() {
+  const wrap = document.getElementById('channelsWrap');
+  if (!wrap) return;
+
+  const all = siteLinks();
+  const groups = window.SITE_LINK_GROUPS || [];
+
+  wrap.innerHTML = groups.map(g => {
+    const rows = all.filter(l => l.type === g.type)
+                    .sort((a, b) => (a.order || 0) - (b.order || 0));
+    if (!rows.length) return '';
+    return `
+      <section class="chan-sec">
+        <h3 class="chan-head">
+          <span>${esc(L(g.ar, g.en))}</span>
+          <span class="chan-n" dir="ltr">${rows.length}</span>
+        </h3>
+        <div class="chan-grid">
+          ${rows.map(l => `
+            <a class="chan" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">
+              <svg class="ic"><use href="#${esc(PLATFORM_ICON[l.platform] || 'i-globe')}"/></svg>
+              <span class="chan-txt">
+                <strong>${esc(l.title)}</strong>
+                <span dir="ltr">${esc(prettyURL(l.url))}</span>
+              </span>
+              <svg class="ic chan-go"><use href="#i-arrow"/></svg>
+            </a>`).join('')}
+        </div>
+      </section>`;
+  }).join('');
+}
+
 function renderContact() {
   const m = C.meta;
-  const wa = `https://wa.me/${esc(m.whatsapp)}`;
+  /* الواتساب والتليجرام واللينكدإن بيتاخدوا من سجل الروابط عشان ما يبقاش
+     فيه نسختين من نفس الرابط في المشروع. */
+  const wa = firstLink('off-wa-main', `https://wa.me/${m.whatsapp}`);
+  const tg = firstLink('off-tg-1',    `https://t.me/${m.telegram}`);
+  const ln = firstLink('off-linkedin', `https://www.linkedin.com/in/${m.linkedin}`);
+  const st = firstLink('off-store',    'https://elawaady.com');
   const pretty = '+' + String(m.whatsapp).replace(/^(\d{2})(\d{3})(\d{3})(\d{4}).*$/, '$1 $2 $3 $4');
+
   set('contactLinks', `
-    <a class="contact-card glass wa" href="${wa}" target="_blank" rel="noopener">
+    <a class="contact-card glass wa" href="${esc(wa)}" target="_blank" rel="noopener noreferrer">
       <svg class="ic"><use href="#i-whatsapp"/></svg><div><strong>WhatsApp</strong><span dir="ltr">${esc(pretty)}</span></div></a>
-    <a class="contact-card glass tg" href="https://t.me/${esc(m.telegram)}" target="_blank" rel="noopener">
-      <svg class="ic"><use href="#i-telegram"/></svg><div><strong>Telegram</strong><span dir="ltr">@${esc(m.telegram)}</span></div></a>
+    <a class="contact-card glass tg" href="${esc(tg)}" target="_blank" rel="noopener noreferrer">
+      <svg class="ic"><use href="#i-telegram"/></svg><div><strong>Telegram</strong><span dir="ltr">${esc(prettyURL(tg))}</span></div></a>
     <a class="contact-card glass ml" href="mailto:${esc(m.email)}">
       <svg class="ic"><use href="#i-mail"/></svg><div><strong>${esc(L('البريد', 'Email'))}</strong><span dir="ltr">${esc(m.email)}</span></div></a>
-    <a class="contact-card glass ln" href="https://linkedin.com/in/${esc(m.linkedin)}" target="_blank" rel="noopener">
-      <svg class="ic"><use href="#i-linkedin"/></svg><div><strong>LinkedIn</strong><span dir="ltr">/in/${esc(m.linkedin)}</span></div></a>`);
+    <a class="contact-card glass ln" href="${esc(ln)}" target="_blank" rel="noopener noreferrer">
+      <svg class="ic"><use href="#i-linkedin"/></svg><div><strong>LinkedIn</strong><span dir="ltr">${esc(prettyURL(ln))}</span></div></a>
+    <a class="contact-card glass st" href="${esc(st)}" target="_blank" rel="noopener noreferrer">
+      <svg class="ic"><use href="#i-store"/></svg><div><strong>${esc(L('المتجر الرسمي', 'Official store'))}</strong><span dir="ltr">${esc(prettyURL(st))}</span></div></a>
+    <a class="contact-card glass pr" href="app.html#/proofs">
+      <svg class="ic"><use href="#i-shield"/></svg><div><strong>${esc(L('إثباتات التعاملات', 'Transaction proofs'))}</strong><span>${esc(L('تجارب موثقة', 'Verified experiences'))}</span></div></a>`);
 
   set('footerSocial', `
-    <a href="${wa}" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="ic"><use href="#i-whatsapp"/></svg></a>
-    <a href="https://t.me/${esc(m.telegram)}" target="_blank" rel="noopener" aria-label="Telegram"><svg class="ic"><use href="#i-telegram"/></svg></a>
-    <a href="https://linkedin.com/in/${esc(m.linkedin)}" target="_blank" rel="noopener" aria-label="LinkedIn"><svg class="ic"><use href="#i-linkedin"/></svg></a>
+    <a href="${esc(wa)}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg class="ic"><use href="#i-whatsapp"/></svg></a>
+    <a href="${esc(tg)}" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><svg class="ic"><use href="#i-telegram"/></svg></a>
+    <a href="${esc(ln)}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg class="ic"><use href="#i-linkedin"/></svg></a>
+    <a href="${esc(st)}" target="_blank" rel="noopener noreferrer" aria-label="Store"><svg class="ic"><use href="#i-store"/></svg></a>
     <a href="mailto:${esc(m.email)}" aria-label="Email"><svg class="ic"><use href="#i-mail"/></svg></a>`);
 
   txt('footerDomain', m.domain);
@@ -307,7 +378,7 @@ function render() {
 
   renderHero(); renderStats(); renderAbout(); renderExpertise();
   renderBuilds(); renderCase(); renderJourney(); renderApproach();
-  renderContact(); renderRest();
+  renderChannels(); renderContact(); renderRest();
 
   observeReveals();
   runCounters();

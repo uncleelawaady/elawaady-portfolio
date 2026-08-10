@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>تقييمات العملاء — Elawaady</title>
+<title>إثباتات تعاملات العوضي — Elawaady</title>
 <link rel="icon" href="assets/favicon.png" type="image/png">
 
 <style>
@@ -195,6 +195,67 @@ textarea.input{resize:vertical;min-height:130px}
   cursor:zoom-in;transition:.2s}
 .shots img:hover{transform:scale(1.03);border-color:var(--turquoise)}
 
+/* ===== ترويسة الصفحة العامة ===== */
+.hero-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;
+  margin-block-end:34px}
+.hero-shot{width:210px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);
+  flex:none}
+.hero-shot img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;
+  display:block}
+@media (max-width:760px){
+  .hero-row{grid-template-columns:1fr}
+  .hero-shot{display:none}
+}
+
+/* ===== فيديو الإثبات ===== */
+/* مشغّل حقيقي جوّه البطاقة — مش رابط تنزيل. السقف بيخلّي الفيديو الرأسي
+   ما ياخدش الشاشة كلها. */
+.clip{margin-block-start:12px;max-width:460px}
+.clip video{width:100%;max-height:420px;border-radius:14px;border:1px solid var(--line);
+  background:#000;display:block}
+.pill.clip-pill{background:rgba(93,231,242,.14);color:var(--accent-ink);
+  border-color:rgba(93,231,242,.3)}
+
+.vpick{margin-block-start:14px;border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;max-width:460px}
+.vpick video{width:100%;max-height:360px;background:#000;display:block}
+.vpick-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;font-size:.82rem;color:var(--muted);background:var(--surface)}
+
+/* ===== الروابط ===== */
+.lnk-sec{margin-block-end:34px}
+.lnk-head{font-size:1.05rem;font-weight:800;color:var(--text);margin-block-end:14px;
+  display:flex;align-items:center;gap:10px}
+.lnk-n{font-size:.76rem;font-weight:700;color:var(--accent-ink);
+  background:rgba(16,181,191,.14);border-radius:999px;padding:2px 9px}
+.lnk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:10px}
+.lnk{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  border:1px solid var(--line);background:var(--surface);transition:.2s;min-width:0}
+.lnk:hover{border-color:var(--turquoise);background:var(--surface-2);transform:translateY(-1px)}
+.lnk-ic{font-size:1.15rem;flex:none;line-height:1}
+.lnk-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lnk-txt strong{font-size:.92rem;color:var(--text);font-weight:700}
+.lnk-txt span{font-size:.76rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.lnk-go{margin-inline-start:auto;color:var(--dim);flex:none}
+.lnk:hover .lnk-go{color:var(--accent-ink)}
+
+/* ===== إدارة الروابط ===== */
+.lrows{display:flex;flex-direction:column;gap:8px}
+.lrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 14px;
+  border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.lrow.off{opacity:.5}
+.lrow-main{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 240px}
+.lrow-main strong{font-size:.9rem;color:var(--text)}
+.lrow-main a{font-size:.74rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.lrow-main a:hover{color:var(--accent-ink)}
+.lrow-acts{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-inline-start:auto}
+.lrow-acts .icon-btn[disabled]{opacity:.3;pointer-events:none}
+.check{display:flex;align-items:center;gap:9px;font-size:.9rem;color:var(--muted);
+  cursor:pointer}
+.check input{width:17px;height:17px;accent-color:var(--turquoise)}
+
 /* ===== المرفقات في نموذج الإرسال ===== */
 .drop{border:2px dashed var(--line);border-radius:var(--radius);padding:26px 18px;
   text-align:center;color:var(--muted);transition:.2s;cursor:pointer}
@@ -274,7 +335,7 @@ textarea.input{resize:vertical;min-height:130px}
   <div class="container nav-inner">
     <a href="index.html" class="brand">
       <img src="assets/e-logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
-      <span class="brand-name">Elawaady<em>Client Reviews</em></span>
+      <span class="brand-name">Elawaady<em>Transaction Proofs</em></span>
     </a>
     <ul class="nav-links" id="navLinks"></ul>
     <div class="nav-actions">
@@ -300,6 +361,7 @@ textarea.input{resize:vertical;min-height:130px}
 <div class="toast" id="toast"></div>
 
 <script src="firebase-config.js"></script>
+<script src="links.js"></script>
 <script type="module">
 /* ===========================================================================
    تقييمات العملاء — التطبيق كله في ملف واحد
@@ -384,10 +446,14 @@ function toast(text, kind = ''){
 }
 
 function openModal(html){
-  $('#modalBox').innerHTML = html;
+  const box = $('#modalBox');
+  box.innerHTML = html;
   $('#modal').classList.add('open');
-  applyKashida($('#modalBox'));
-  return $('#modalBox');
+  applyKashida(box);
+  /* أي زرار [data-close] بيقفل النافذة من غير ما كل شاشة تربطه لوحدها.
+     اللي محتاج تصرف مختلف — زي أداة التمويه — بيعيد ربطه بعد الاستدعاء. */
+  $$('[data-close]', box).forEach(b => b.onclick = closeModal);
+  return box;
 }
 const closeModal = () => $('#modal').classList.remove('open');
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
@@ -410,15 +476,20 @@ const starsRO = (n) => {
 };
 
 /* ===========================  ثوابت المجال  ============================= */
+/* أي id بيتضاف هنا لازم يتضاف كمان في قائمة dealType جوه firestore.rules،
+   وإلا الـRule هترفض التقييم. الاتنين لازم يفضلوا متطابقين. */
 const DEAL_TYPES = [
   { id:'escrow',     ar:'وساطة' },
-  { id:'trade',      ar:'بيع أو شراء' },
+  { id:'guarantee',  ar:'ضمان' },
+  { id:'trade',      ar:'بيع وشراء' },
   { id:'digital',    ar:'خدمات رقمية' },
-  { id:'project',    ar:'تعاون أو مشروع' },
+  { id:'transfer',   ar:'تحويلات أو معاملات رقمية' },
+  { id:'project',    ar:'تعاون' },
   { id:'consulting', ar:'استشارة' },
   { id:'other',      ar:'أخرى' }
 ];
-const dealLabel = (id) => (DEAL_TYPES.find(d => d.id === id) || DEAL_TYPES[5]).ar;
+const OTHER_DEAL = DEAL_TYPES[DEAL_TYPES.length - 1];
+const dealLabel = (id) => (DEAL_TYPES.find(d => d.id === id) || OTHER_DEAL).ar;
 
 const STATUS_AR = { pending:'قيد المراجعة', approved:'منشور', rejected:'مرفوض', hidden:'مخفي' };
 
@@ -429,6 +500,17 @@ const LIMITS = {
   thumbSize: 400,
   quality: 0.82,
   types: ['image/jpeg','image/png','image/webp']
+};
+
+/* فيديو الإثبات — اختياري، واحد بس، وبيتخزن زي ما هو من غير إعادة ترميز.
+   المتصفح ما بيقدرش يضغط فيديو، فالحد الأقصى لازم يبقى صغير كفاية إنه
+   يترفع ويتشغّل على الموبايل. الامتدادات محصورة في اللي المتصفحات بتشغّله
+   أصلاً جوه <video>، عشان ما يبقاش عندنا ملف بيتنزّل بدل ما يتشغّل. */
+const VIDEO = {
+  maxBytes: 25 * 1024 * 1024,
+  maxSeconds: 90,
+  types: ['video/mp4','video/webm'],
+  exts: ['.mp4','.webm']
 };
 
 /* ===========================  الصور  ==================================== */
@@ -457,6 +539,58 @@ async function drawScaled(source, maxDim, quality){
   return new Promise(res => c.toBlob(res, 'image/jpeg', quality));
 }
 const thumbnail = (src) => drawScaled(src, LIMITS.thumbSize, 0.72);
+
+/* ===========================  الفيديو  ================================== */
+const fmtMB = (b) => (b / (1024 * 1024)).toFixed(1);
+
+/* حجم مقروء: كيلو للملفات الصغيرة، ميجا لغيرها */
+const fmtSize = (b) => b < 1024 * 1024
+  ? `${Math.max(1, Math.round(b / 1024))} كيلو`
+  : `${fmtMB(b)} ميجا`;
+
+function checkVideoFile(file){
+  const name = String(file.name || '').toLowerCase();
+  const okExt = VIDEO.exts.some(e => name.endsWith(e));
+  if (!VIDEO.types.includes(file.type) || !okExt)
+    return 'الفيديو لازم يكون MP4 أو WebM.';
+  if (file.size > VIDEO.maxBytes)
+    return `الفيديو ${fmtMB(file.size)} ميجا — الحد الأقصى ${VIDEO.maxBytes / (1024*1024)} ميجا.`;
+  return null;
+}
+
+/* بنقرا المدة من المتصفح نفسه قبل الرفع. لو المتصفح مش قادر يقراها
+   بنعدّي — الحد الحقيقي اللي بيتحاسب عليه هو الحجم. */
+function videoMeta(url){
+  return new Promise((res) => {
+    const v = document.createElement('video');
+    v.preload = 'metadata';
+    v.onloadedmetadata = () => res({ duration: v.duration || 0, width: v.videoWidth, height: v.videoHeight });
+    v.onerror = () => res(null);
+    v.src = url;
+  });
+}
+
+/* لقطة من أول ثانية عشان تبقى غلاف للفيديو في البطاقة. */
+function videoPoster(url){
+  return new Promise((res) => {
+    const v = document.createElement('video');
+    v.preload = 'metadata'; v.muted = true; v.playsInline = true;
+    const bail = () => res(null);
+    v.onerror = bail;
+    v.onloadeddata = () => {
+      try {
+        const scale = Math.min(1, LIMITS.thumbSize / Math.max(v.videoWidth, v.videoHeight));
+        const c = document.createElement('canvas');
+        c.width  = Math.max(1, Math.round(v.videoWidth  * scale));
+        c.height = Math.max(1, Math.round(v.videoHeight * scale));
+        c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+        c.toBlob(b => res(b), 'image/jpeg', 0.72);
+      } catch (e){ bail(); }
+    };
+    v.onloadedmetadata = () => { try { v.currentTime = Math.min(1, (v.duration || 1) / 3); } catch(e){ bail(); } };
+    v.src = url;
+  });
+}
 
 /* ---------------------------------------------------------------------------
    لوحة التمويه
@@ -609,6 +743,46 @@ function urlFor(id, blob){
   return blobURLs.get(id);
 }
 
+/* ===========================  الروابط  ================================== */
+/* النسخة الأساسية من links.js. بنعمل منها نسخة جديدة كل مرة عشان التعديل
+   في الداشبورد ما يمسّش المصفوفة الأصلية اللي في الملف. */
+const seedLinks = () => (window.SITE_LINKS || []).map(l => ({ ...l }));
+
+const LINK_GROUPS = window.SITE_LINK_GROUPS || [
+  { type:'official',         ar:'القنوات الرسمية' },
+  { type:'facebook_group',   ar:'جروبات فيسبوك' },
+  { type:'whatsapp_group',   ar:'جروبات واتساب' },
+  { type:'whatsapp_channel', ar:'قناة واتساب' }
+];
+const LINK_TYPES = LINK_GROUPS.map(g => g.type);
+const linkGroupLabel = (t) => (LINK_GROUPS.find(g => g.type === t) || { ar:t }).ar;
+
+/* الترتيب المعروض ثابت: القنوات الرسمية → جروبات فيسبوك → جروبات واتساب →
+   قناة واتساب، وجوّه كل قسم بالـorder. */
+function sortLinks(list){
+  return list.slice().sort((a, b) =>
+    LINK_TYPES.indexOf(a.type) - LINK_TYPES.indexOf(b.type) ||
+    (a.order || 0) - (b.order || 0) ||
+    String(a.title).localeCompare(String(b.title), 'ar'));
+}
+
+/* بس http/https. أي بروتوكول تاني (زي javascript:) بيترفض. */
+function safeURL(raw){
+  const s = String(raw || '').trim();
+  try {
+    const u = new URL(s);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    return s;
+  } catch (e){ return null; }
+}
+
+function validateLink(l){
+  if (!String(l.title || '').trim())      return 'اكتب اسم الرابط.';
+  if (!safeURL(l.url))                    return 'الرابط لازم يبدأ بـ http أو https.';
+  if (!LINK_TYPES.includes(l.type))       return 'نوع الرابط مش مظبوط.';
+  return null;
+}
+
 function makeTestBackend(){
   let db = null;
   let currentUid = null;
@@ -619,7 +793,7 @@ function makeTestBackend(){
   async function load(){
     db = await idbGet('db');
     if (!db){
-      db = { users:{}, reviews:[], media:{} };
+      db = { users:{}, reviews:[], media:{}, links: seedLinks() };
       /* حسابين جاهزين عشان تقدر تجرب الرحلة كاملة من أول لحظة */
       db.users[TEST_OWNER_UID] = {
         uid: TEST_OWNER_UID, email:'owner@elawaady-db.com',
@@ -636,8 +810,11 @@ function makeTestBackend(){
       };
       await save();
     }
+    /* قاعدة قديمة اتخزنت قبل ما الروابط تبقى جزء من النظام */
+    if (!db.links) { db.links = seedLinks(); await save(); }
     currentUid = localStorage.getItem(SESSION_KEY);
     if (currentUid && !db.users[currentUid]) currentUid = null;
+    if (currentUid){ db.users[currentUid].lastSeenAt = Date.now(); await save(); }
   }
 
   const save = () => idbSet('db', db);
@@ -663,13 +840,23 @@ function makeTestBackend(){
   const requireUser = () => { const u = me(); if (!u) throw new Error('لازم تسجّل دخول الأول.'); return u; };
   const isOwner = () => currentUid === TEST_OWNER_UID;
 
-  /* الصور بترجع كروابط مؤقتة من الـBlob */
+  /* الصور والفيديو بيرجعوا كروابط مؤقتة من الـBlob */
   function hydrate(r){
     const images = (r.imageIds || []).map(id => ({
       url:      urlFor(id, db.media[id] && db.media[id].full),
       thumbUrl: urlFor(id + ':t', db.media[id] && db.media[id].thumb)
     }));
-    return { ...r, images };
+    let video = null;
+    if (r.videoId && db.media[r.videoId]){
+      const m = db.media[r.videoId];
+      video = {
+        url:       urlFor(r.videoId, m.full),
+        posterUrl: m.thumb ? urlFor(r.videoId + ':p', m.thumb) : '',
+        mime:      m.mime || 'video/mp4',
+        duration:  m.duration || 0
+      };
+    }
+    return { ...r, images, video };
   }
 
   return {
@@ -778,7 +965,7 @@ function makeTestBackend(){
       return db.reviews.slice().sort((a,b) => b.createdAt - a.createdAt).map(hydrate);
     },
 
-    async submitReview({ rating, title, body, dealType, images = [] }, onProgress){
+    async submitReview({ rating, title, body, dealType, images = [], video = null }, onProgress){
       const u = requireUser();
 
       /* نفس فحوصات validNewReview() في firestore.rules */
@@ -790,14 +977,24 @@ function makeTestBackend(){
       if (text.length > 1500) throw new Error('التقييم أطول من 1500 حرف.');
       if (!DEAL_TYPES.some(d => d.id === dealType)) throw new Error('نوع التعامل مش مظبوط.');
       if (images.length > LIMITS.maxFiles) throw new Error('4 صور كحد أقصى.');
+      if (video && !VIDEO.types.includes(video.mime)) throw new Error('الفيديو لازم يكون MP4 أو WebM.');
 
       const id = 'r-' + rid();
+      const total = images.length + (video ? 1 : 0);
       const imageIds = [];
       for (let i = 0; i < images.length; i++){
-        onProgress && onProgress(i + 1, images.length);
+        onProgress && onProgress(i + 1, total);
         const mid = 'm-' + rid();
         db.media[mid] = { full: images[i].blob, thumb: images[i].thumb || images[i].blob };
         imageIds.push(mid);
+      }
+
+      let videoId = null;
+      if (video){
+        onProgress && onProgress(total, total);
+        videoId = 'v-' + rid();
+        db.media[videoId] = { full: video.blob, thumb: video.poster || null,
+                              mime: video.mime, duration: video.duration || 0 };
       }
 
       db.reviews.push({
@@ -811,10 +1008,62 @@ function makeTestBackend(){
         featured: false,
         imageIds,
         imageCount: imageIds.length,
+        videoId,
+        hasVideo: Boolean(videoId),
         createdAt: Date.now(), updatedAt: Date.now()
       });
       await save();
       return id;
+    },
+
+    /* ----------------------------  الروابط  --------------------------- */
+    async listLinks({ all = false } = {}){
+      const rows = all && isOwner() ? db.links : db.links.filter(l => l.visible !== false);
+      return sortLinks(rows).map(l => ({ ...l }));
+    },
+
+    async saveLink(link){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      const bad = validateLink(link); if (bad) throw new Error(bad);
+      const clean = {
+        id:       link.id || 'lnk-' + rid(),
+        title:    String(link.title).trim(),
+        platform: String(link.platform || 'other').trim(),
+        url:      safeURL(link.url),
+        type:     link.type,
+        order:    Number(link.order) || 0,
+        visible:  link.visible !== false
+      };
+      const at = db.links.findIndex(l => l.id === clean.id);
+      if (at >= 0) db.links[at] = clean; else db.links.push(clean);
+      await save();
+      return clean.id;
+    },
+
+    async removeLink(id){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      db.links = db.links.filter(l => l.id !== id);
+      await save();
+    },
+
+    /* إعادة الترتيب بتتم بتبديل الـorder مع الجار في نفس القسم */
+    async moveLink(id, dir){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      const cur = db.links.find(l => l.id === id);
+      if (!cur) throw new Error('الرابط ده مش موجود.');
+      const peers = db.links.filter(l => l.type === cur.type)
+                            .sort((a,b) => (a.order||0) - (b.order||0));
+      const at = peers.findIndex(l => l.id === id);
+      const swap = peers[at + dir];
+      if (!swap) return;
+      const o = cur.order; cur.order = swap.order; swap.order = o;
+      await save();
+    },
+
+    async restoreLinks(){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      db.links = seedLinks();
+      await save();
     },
 
     async withdrawMine(id){
@@ -917,12 +1166,15 @@ async function makeFirebaseBackend(cfg, ownerUid){
         displayName: u.displayName || (u.email || '').split('@')[0] || 'مستخدم',
         photoURL: u.photoURL || '', bio: '',
         role: 'user', status: 'active',
-        createdAt: F.serverTimestamp(), updatedAt: F.serverTimestamp()
+        createdAt: F.serverTimestamp(), updatedAt: F.serverTimestamp(),
+        lastSeenAt: F.serverTimestamp()
       };
       await F.setDoc(refDoc, p);
       return p;
     }
-    F.updateDoc(refDoc, { updatedAt: F.serverTimestamp() }).catch(() => {});
+    /* آخر ظهور بيتحدّث كل مرة يفتح فيها الموقع — الحساب بيفضل حي في النظام
+       مش بس وقت إرسال تقييم. */
+    F.updateDoc(refDoc, { lastSeenAt: F.serverTimestamp(), updatedAt: F.serverTimestamp() }).catch(() => {});
     return snap.data();
   }
 
@@ -956,6 +1208,27 @@ async function makeFirebaseBackend(cfg, ownerUid){
       thumbPath = `${base}-thumb.jpg`;
     }
     return { url, path:`${base}.jpg`, thumbUrl, thumbPath, bytes: blob.size };
+  }
+
+  /* الفيديو بيترفع زي ما هو — المتصفح ما بيقدرش يعيد ترميزه. الغلاف صورة
+     JPEG اتسحبت من أول ثواني الفيديو. */
+  async function uploadVideo(uid, reviewId, video){
+    const ext  = video.mime === 'video/webm' ? 'webm' : 'mp4';
+    const base = `reviews/${uid}/${reviewId}/video-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
+    const vRef = S.ref(storage, `${base}.${ext}`);
+    await S.uploadBytes(vRef, video.blob, { contentType: video.mime });
+    const url = await S.getDownloadURL(vRef);
+
+    let posterUrl = '', posterPath = '';
+    if (video.poster){
+      const pRef = S.ref(storage, `${base}-poster.jpg`);
+      await S.uploadBytes(pRef, video.poster, { contentType:'image/jpeg' });
+      posterUrl  = await S.getDownloadURL(pRef);
+      posterPath = `${base}-poster.jpg`;
+    }
+    return { url, path:`${base}.${ext}`, posterUrl, posterPath,
+             mime: video.mime, bytes: video.blob.size,
+             duration: Math.round(video.duration || 0) };
   }
 
   return {
@@ -1034,7 +1307,7 @@ async function makeFirebaseBackend(cfg, ownerUid){
     /* الترتيب مقصود: التقييم بيتعمل الأول، وبعدين الصور بترفع تحت مساره.
        لو الرفع فشل في النص، التقييم بيفضل موجود بالصور اللي نجحت — أحسن
        من إننا نضيّع اللي المستخدم كتبه. */
-    submitReview: ({ rating, title, body, dealType, images = [] }, onProgress) => run(async () => {
+    submitReview: ({ rating, title, body, dealType, images = [], video = null }, onProgress) => run(async () => {
       if (!user) throw new Error('لازم تسجّل دخول الأول.');
       const p = profile || {};
       const created = await F.addDoc(col(), {
@@ -1049,18 +1322,21 @@ async function makeFirebaseBackend(cfg, ownerUid){
         featured: false,
         imageCount: images.length,
         images: [],
+        hasVideo: Boolean(video),
+        video: null,
         createdAt: F.serverTimestamp(), updatedAt: F.serverTimestamp()
       });
 
-      if (!images.length) return created.id;
+      const total = images.length + (video ? 1 : 0);
+      if (!total) return created.id;
 
       const uploaded = [];
       for (let i = 0; i < images.length; i++){
-        onProgress && onProgress(i + 1, images.length);
+        onProgress && onProgress(i + 1, total);
         const meta = await uploadOne(user.uid, created.id, images[i].blob, images[i].thumb);
         uploaded.push(meta);
         await F.addDoc(F.collection(db, 'review_media'), {
-          reviewId: created.id, uid: user.uid,
+          reviewId: created.id, uid: user.uid, kind:'image',
           url: meta.url, thumbUrl: meta.thumbUrl,
           path: meta.path, thumbPath: meta.thumbPath,
           bytes: meta.bytes, mime:'image/jpeg',
@@ -1068,14 +1344,88 @@ async function makeFirebaseBackend(cfg, ownerUid){
         });
       }
 
+      let videoMetaDoc = null;
+      if (video){
+        onProgress && onProgress(total, total);
+        const meta = await uploadVideo(user.uid, created.id, video);
+        videoMetaDoc = { url: meta.url, posterUrl: meta.posterUrl,
+                         mime: meta.mime, duration: meta.duration };
+        await F.addDoc(F.collection(db, 'review_media'), {
+          reviewId: created.id, uid: user.uid, kind:'video',
+          url: meta.url, thumbUrl: meta.posterUrl,
+          path: meta.path, thumbPath: meta.posterPath,
+          bytes: meta.bytes, mime: meta.mime, duration: meta.duration,
+          createdAt: F.serverTimestamp()
+        });
+      }
+
       await F.updateDoc(F.doc(db, 'reviews', created.id), {
         images: uploaded.map(u => ({ url:u.url, thumbUrl:u.thumbUrl })),
+        video:  videoMetaDoc,
         updatedAt: F.serverTimestamp()
       });
       return created.id;
     }),
 
     withdrawMine: (id) => run(() => F.deleteDoc(F.doc(db, 'reviews', id))),
+
+    /* ----------------------------  الروابط  --------------------------- */
+    /* الروابط عامة للقراءة. الكتابة للمالك بس — والقاعدة هي اللي بتفرض ده،
+       مش الواجهة. */
+    listLinks: ({ all = false } = {}) => run(async () => {
+      const snap = await F.getDocs(F.collection(db, 'links'));
+      let rows = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      /* أول مرة قبل ما المالك يزرع الروابط، بنعرض نسخة الملف عشان الصفحة
+         ما تبقاش فاضية. */
+      if (!rows.length) rows = seedLinks();
+      const owner = Boolean(user && ownerUid && user.uid === ownerUid);
+      if (!(all && owner)) rows = rows.filter(l => l.visible !== false);
+      return sortLinks(rows);
+    }),
+
+    saveLink: (link) => run(async () => {
+      const bad = validateLink(link); if (bad) throw new Error(bad);
+      const id = link.id || 'lnk-' + rid();
+      await F.setDoc(F.doc(db, 'links', id), {
+        title:    String(link.title).trim(),
+        platform: String(link.platform || 'other').trim(),
+        url:      safeURL(link.url),
+        type:     link.type,
+        order:    Number(link.order) || 0,
+        visible:  link.visible !== false,
+        updatedAt: F.serverTimestamp()
+      }, { merge:true });
+      return id;
+    }),
+
+    removeLink: (id) => run(() => F.deleteDoc(F.doc(db, 'links', id))),
+
+    moveLink: (id, dir) => run(async () => {
+      const snap = await F.getDocs(F.collection(db, 'links'));
+      const all  = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      const cur  = all.find(l => l.id === id);
+      if (!cur) throw new Error('الرابط ده مش موجود.');
+      const peers = all.filter(l => l.type === cur.type)
+                       .sort((a,b) => (a.order||0) - (b.order||0));
+      const at = peers.findIndex(l => l.id === id);
+      const swap = peers[at + dir];
+      if (!swap) return;
+      const batch = F.writeBatch(db);
+      batch.update(F.doc(db, 'links', cur.id),  { order: swap.order || 0 });
+      batch.update(F.doc(db, 'links', swap.id), { order: cur.order  || 0 });
+      await batch.commit();
+    }),
+
+    /* بيرجّع القائمة الأصلية من links.js لفايرستور — ده كمان هو الزرع
+       الأول لما المجموعة تكون فاضية. */
+    restoreLinks: () => run(async () => {
+      const batch = F.writeBatch(db);
+      for (const l of seedLinks()){
+        const { id, ...rest } = l;
+        batch.set(F.doc(db, 'links', id), { ...rest, updatedAt: F.serverTimestamp() });
+      }
+      await batch.commit();
+    }),
 
     moderate: (id, status) => run(() => F.updateDoc(F.doc(db, 'reviews', id), {
       status,
@@ -1136,13 +1486,17 @@ function paintNav(){
   const u = api.getUser();
   const owner = api.isOwner();
   const links = [
-    ['#/reviews', 'التقييمات'],
-    ['#/new',     'اكتب تقييم'],
+    ['#/proofs',   'إثباتات تعاملات العوضي'],
+    ['#/channels', 'قنواتي ومجتمعاتي'],
+    ['#/new',      'اكتب تقييم'],
     u ? ['#/account', 'حسابي'] : ['#/login', 'دخول / تسجيل']
   ];
-  if (owner) links.push(['#/admin', 'لوحة المراجعة']);
+  if (owner){
+    links.push(['#/admin', 'لوحة المراجعة']);
+    links.push(['#/links', 'إدارة الروابط']);
+  }
 
-  const here = location.hash || '#/reviews';
+  const here = location.hash || '#/proofs';
   $('#navLinks').innerHTML = links
     .map(([h, t]) => `<li><a href="${h}" class="${here.startsWith(h) ? 'active' : ''}">${t}</a></li>`)
     .join('') + (u ? `<li><a href="#" id="logoutLink">خروج</a></li>` : '');
@@ -1152,7 +1506,7 @@ function paintNav(){
     e.preventDefault();
     await api.logout();
     toast('خرجت من الحساب.');
-    location.hash = '#/reviews';
+    location.hash = '#/proofs';
   };
   applyKashida($('#navLinks'));
 }
@@ -1465,6 +1819,20 @@ function viewNew(){
         </p>
       </div>
 
+      <div class="field">
+        <label>فيديو إثبات قصير <span class="hint">فيديو واحد — اختياري</span></label>
+        <div class="drop" id="vdrop">
+          <p style="font-weight:700">اضغط هنا لاختيار فيديو</p>
+          <p style="font-size:.82rem">MP4 أو WebM — لحد ${VIDEO.maxBytes / (1024*1024)} ميجا و${VIDEO.maxSeconds} ثانية</p>
+        </div>
+        <input type="file" id="vfile" accept="video/mp4,video/webm" hidden>
+        <div id="vpick"></div>
+        <p class="counter" style="text-align:start">
+          الفيديو بيترفع زي ما هو من غير ضغط ومن غير تمويه تلقائي — اتأكد
+          بنفسك إن مفيش أرقام ولا أسماء ولا مبالغ ظاهرة فيه قبل ما ترفعه.
+        </p>
+      </div>
+
       <button class="btn btn-grad block btn-lg" id="sendReview">ابعت التقييم للمراجعة</button>
       <p class="counter" style="text-align:center">التقييم بيفضل «قيد المراجعة» لحد ما أعتمده.</p>
     </div>
@@ -1595,6 +1963,49 @@ function viewNew(){
     $('#files').value = '';
   }
 
+  /* --- الفيديو --- */
+  let vpick = null;   // { blob, mime, duration, poster, url }
+
+  function paintVideo(){
+    const box = $('#vpick');
+    if (!vpick){ box.innerHTML = ''; $('#vdrop').style.display = ''; return; }
+    $('#vdrop').style.display = 'none';
+    box.innerHTML = `
+      <div class="vpick">
+        <video src="${vpick.url}" controls playsinline preload="metadata"
+               ${vpick.posterUrl ? `poster="${vpick.posterUrl}"` : ''}></video>
+        <div class="vpick-bar">
+          <span>${fmtSize(vpick.blob.size)}${vpick.duration >= 1 ? ` — ${Math.round(vpick.duration)} ثانية` : ''}</span>
+          <button class="btn btn-ghost btn-sm" id="vrm">شيل الفيديو</button>
+        </div>
+      </div>`;
+    $('#vrm').onclick = () => { vpick = null; paintVideo(); };
+  }
+
+  async function addVideo(file){
+    hide();
+    if (!file) return;
+    const bad = checkVideoFile(file);
+    if (bad){ show(bad); $('#vfile').value = ''; return; }
+
+    const url  = URL.createObjectURL(file);
+    const meta = await videoMeta(url);
+    if (!meta){ show('مقدرتش أقرا الفيديو ده. جرّب ملف تاني.'); $('#vfile').value = ''; return; }
+    if (meta.duration && meta.duration > VIDEO.maxSeconds){
+      show(`الفيديو ${Math.round(meta.duration)} ثانية — الحد الأقصى ${VIDEO.maxSeconds} ثانية.`);
+      $('#vfile').value = ''; return;
+    }
+
+    const poster = await videoPoster(url);
+    vpick = { blob:file, mime:file.type, duration: meta.duration, url,
+              poster, posterUrl: poster ? URL.createObjectURL(poster) : '' };
+    paintVideo();
+    $('#vfile').value = '';
+  }
+
+  $('#vdrop').onclick = () => $('#vfile').click();
+  $('#vfile').onchange = (e) => addVideo(e.target.files[0]);
+
   $('#drop').onclick = () => $('#files').click();
   $('#files').onchange = (e) => addFiles(e.target.files);
   $('#drop').ondragover = (e) => { e.preventDefault(); $('#drop').classList.add('over'); };
@@ -1618,8 +2029,8 @@ function viewNew(){
     btn.disabled = true;
     hide();
     try {
-      await api.submitReview({ rating, title, body, dealType, images: picks },
-        (i, n) => setText(btn, `بيرفع الصورة ${i} من ${n}…`));
+      await api.submitReview({ rating, title, body, dealType, images: picks, video: vpick },
+        (i, n) => setText(btn, `بيرفع الملف ${i} من ${n}…`));
       toast('وصلني تقييمك — هراجعه.', 'ok');
       location.hash = '#/account';
     } catch (e){
@@ -1642,9 +2053,21 @@ function reviewCard(r, ctx){
         alt="صورة إثبات" loading="lazy">`).join('')}
     </div>` : '';
 
+  /* الفيديو بيتعرض في مشغّل حقيقي — مش رابط تنزيل. controls بس من غير
+     autoplay عشان الصفحة ما تبقاش زحمة صوت. */
+  const vid = r.video && r.video.url ? r.video : null;
+  const clip = vid ? `
+    <div class="clip">
+      <video src="${esc(vid.url)}" controls playsinline preload="metadata"
+        ${vid.posterUrl ? `poster="${esc(vid.posterUrl)}"` : ''}>
+        <a href="${esc(vid.url)}" target="_blank" rel="noopener noreferrer">فيديو الإثبات</a>
+      </video>
+    </div>` : '';
+
   const statusPill = ctx === 'public' ? '' :
     `<span class="pill ${r.status}">${STATUS_AR[r.status] || r.status}</span>`;
   const featPill = r.featured ? `<span class="pill featured">مميز</span>` : '';
+  const clipPill = vid ? `<span class="pill clip-pill">فيديو إثبات</span>` : '';
 
   let actions = '';
   if (ctx === 'admin'){
@@ -1675,7 +2098,7 @@ function reviewCard(r, ctx){
         </div>
       </div>
       <div style="margin-inline-start:auto;display:flex;gap:6px;flex-wrap:wrap">
-        ${featPill}${statusPill}
+        ${featPill}${clipPill}${statusPill}
       </div>
     </div>
 
@@ -1686,6 +2109,7 @@ function reviewCard(r, ctx){
 
     <p class="rv-body" data-nokashida>${esc(r.body)}</p>
     ${shots}
+    ${clip}
     ${actions}
   </article>`;
 }
@@ -1747,10 +2171,16 @@ async function viewReviews(){
 
   const v = render(`
   <div class="container page">
-    <div class="page-head">
-      <span class="eyebrow">آراء العملاء</span>
-      <h1 class="title">اللي الناس قالته</h1>
-      <p class="sub">كل تقييم هنا اتراجع واتعتمد يدويًا قبل ما يتنشر، وصور الإثبات بتتموّه من صاحبها قبل الرفع.</p>
+    <div class="hero-row">
+      <div class="page-head" style="margin-block-end:0">
+        <span class="eyebrow">إثباتات التعامل</span>
+        <h1 class="title">إثباتات تعاملات العوضي</h1>
+        <p class="sub">تجارب حقيقية، تقييمات موثقة، وإثباتات تعامل وضمان.</p>
+        <p class="sub" style="font-size:.9rem">كل تقييم هنا اتراجع واتعتمد يدويًا قبل ما يتنشر، وصور الإثبات بتتموّه من صاحبها قبل الرفع.</p>
+      </div>
+      <div class="hero-shot">
+        <img src="assets/portraits/ahmed-orange-sm.jpg" alt="أحمد العوضي" width="560" height="739" loading="lazy">
+      </div>
     </div>
 
     ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
@@ -1864,17 +2294,241 @@ async function viewAdmin(){
   wireCards(v);
 }
 
+/* =======================================================================
+   6) القنوات والمجتمعات — صفحة عامة
+   -----------------------------------------------------------------------
+   الترتيب ثابت: القنوات الرسمية → جروبات فيسبوك → جروبات واتساب → قناة
+   واتساب. كل رابط بيفتح في تبويب جديد بـnoopener noreferrer.
+======================================================================= */
+const PLATFORM_ICON = {
+  store:'🛍️', whatsapp:'🟢', messenger:'💬', instagram:'📸',
+  facebook:'🔵', telegram:'✈️', x:'𝕏', linkedin:'💼', other:'🔗'
+};
+
+/* الاسم اللي بيظهر تحت العنوان — الدومين والمسار من غير https:// */
+function prettyURL(url){
+  try {
+    const u = new URL(url);
+    return (u.hostname.replace(/^www\./, '') + u.pathname).replace(/\/$/, '');
+  } catch (e){ return url; }
+}
+
+const linkAnchor = (l) => `
+  <a class="lnk" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">
+    <span class="lnk-ic" aria-hidden="true">${PLATFORM_ICON[l.platform] || PLATFORM_ICON.other}</span>
+    <span class="lnk-txt">
+      <strong data-nokashida>${esc(l.title)}</strong>
+      <span dir="ltr" data-nokashida>${esc(prettyURL(l.url))}</span>
+    </span>
+    <span class="lnk-go" aria-hidden="true">↗</span>
+  </a>`;
+
+async function viewChannels(){
+  loading();
+  let list = [], error = '';
+  try { list = await api.listLinks(); }
+  catch (e){ error = e.message; list = sortLinks(seedLinks().filter(l => l.visible !== false)); }
+
+  const sections = LINK_GROUPS
+    .map(g => [g, list.filter(l => l.type === g.type)])
+    .filter(([, rows]) => rows.length);
+
+  render(`
+  <div class="container page">
+    <div class="page-head">
+      <span class="eyebrow">التواصل الرسمي</span>
+      <h1 class="title">قنواتي ومجتمعاتي</h1>
+      <p class="sub">دي كل قنواتي الرسمية وجروباتي. أي رابط تاني منسوب لي مش مني.</p>
+    </div>
+
+    ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
+
+    ${sections.map(([g, rows]) => `
+      <section class="lnk-sec">
+        <h2 class="lnk-head">${g.ar} <span class="lnk-n" data-nokashida>${rows.length}</span></h2>
+        <div class="lnk-grid">${rows.map(linkAnchor).join('')}</div>
+      </section>`).join('')}
+  </div>`);
+}
+
+/* =======================================================================
+   7) إدارة الروابط — للمالك بس
+   -----------------------------------------------------------------------
+   إضافة وتعديل وحذف وإخفاء وإعادة ترتيب من غير ما حد يلمس الكود. زي لوحة
+   المراجعة، الحراسة دي راحة استخدام — القواعد هي اللي بترفض الكتابة فعليًا.
+======================================================================= */
+async function viewLinks(){
+  const u = api.getUser();
+  if (!u) return (location.hash = '#/login?next=' + encodeURIComponent('#/links'));
+
+  if (!api.isOwner()){
+    render(`
+      <div class="container page" style="max-width:520px;text-align:center">
+        <div class="card"><div class="empty">
+          <div class="big">🔒</div>
+          <p style="font-weight:800;color:var(--text)">الصفحة دي مش ليك</p>
+          <p>إدارة الروابط لصاحب الموقع بس.</p>
+          <a href="#/channels" class="btn btn-ghost" style="margin-block-start:16px">شوف القنوات</a>
+        </div></div>
+      </div>`);
+    return;
+  }
+
+  loading();
+  let list = [], error = '';
+  try { list = await api.listLinks({ all:true }); }
+  catch (e){ error = e.message; }
+
+  const row = (l, i, n) => `
+    <div class="lrow ${l.visible === false ? 'off' : ''}">
+      <div class="lrow-main">
+        <strong data-nokashida>${esc(l.title)}</strong>
+        <a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" dir="ltr" data-nokashida>${esc(l.url)}</a>
+      </div>
+      <div class="lrow-acts">
+        <button class="icon-btn" data-mv="-1" data-id="${esc(l.id)}" ${i === 0 ? 'disabled' : ''} title="فوق">▲</button>
+        <button class="icon-btn" data-mv="1"  data-id="${esc(l.id)}" ${i === n-1 ? 'disabled' : ''} title="تحت">▼</button>
+        <button class="btn btn-ghost btn-sm" data-vis="${l.visible === false ? '1' : '0'}" data-id="${esc(l.id)}">${l.visible === false ? 'إظهار' : 'إخفاء'}</button>
+        <button class="btn btn-ghost btn-sm" data-edit="${esc(l.id)}">تعديل</button>
+        <button class="btn btn-bad btn-sm"   data-del="${esc(l.id)}">حذف</button>
+      </div>
+    </div>`;
+
+  const v = render(`
+  <div class="container page">
+    <div class="page-head">
+      <span class="eyebrow">إدارة</span>
+      <h1 class="title">روابط التواصل والمجتمعات</h1>
+      <p class="sub">${list.length} رابط. التعديل هنا بيظهر في الموقع على طول من غير ما تلمس الكود.</p>
+    </div>
+
+    ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-block-end:18px">
+      <button class="btn btn-grad" id="addLink">أضف رابط</button>
+      <button class="btn btn-ghost" id="restoreLinks">رجّع القائمة الأصلية</button>
+    </div>
+
+    ${LINK_GROUPS.map(g => {
+      const rows = list.filter(l => l.type === g.type);
+      return `
+      <section class="lnk-sec">
+        <h2 class="lnk-head">${g.ar} <span class="lnk-n" data-nokashida>${rows.length}</span></h2>
+        ${rows.length
+          ? `<div class="lrows">${rows.map((l, i) => row(l, i, rows.length)).join('')}</div>`
+          : `<div class="card">${emptyState('🔗','مفيش روابط في القسم ده.')}</div>`}
+      </section>`;
+    }).join('')}
+  </div>`);
+
+  const reload = () => viewLinks();
+
+  function editor(link){
+    const l = link || { id:'', title:'', platform:'other', url:'', type:'official',
+                        order: (list.filter(x => x.type === 'official').length + 1), visible:true };
+    openModal(`
+      <div class="modal-head">
+        <h3>${link ? 'تعديل رابط' : 'رابط جديد'}</h3>
+        <button class="icon-btn" data-close>✕</button>
+      </div>
+      <div class="msg" id="lMsg"></div>
+      <div class="field">
+        <label for="lTitle">الاسم</label>
+        <input class="input" id="lTitle" value="${esc(l.title)}" maxlength="80">
+      </div>
+      <div class="field">
+        <label for="lUrl">الرابط</label>
+        <input class="input" id="lUrl" dir="ltr" value="${esc(l.url)}" placeholder="https://…">
+      </div>
+      <div class="field">
+        <label for="lType">القسم</label>
+        <select class="input" id="lType">
+          ${LINK_GROUPS.map(g => `<option value="${g.type}" ${g.type === l.type ? 'selected' : ''}>${g.ar}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label for="lPlat">المنصة</label>
+        <select class="input" id="lPlat">
+          ${Object.keys(PLATFORM_ICON).map(p => `<option value="${p}" ${p === l.platform ? 'selected' : ''}>${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label for="lOrder">الترتيب جوّه القسم</label>
+        <input class="input" id="lOrder" type="number" min="0" value="${Number(l.order) || 0}">
+      </div>
+      <label class="check"><input type="checkbox" id="lVis" ${l.visible !== false ? 'checked' : ''}> ظاهر في الموقع</label>
+      <button class="btn btn-grad block" id="lSave" style="margin-block-start:14px">حفظ</button>
+    `);
+
+    const m = $('#lMsg');
+    $('#lSave').onclick = async () => {
+      const draft = {
+        id: l.id || '',
+        title: $('#lTitle').value,
+        url:   $('#lUrl').value,
+        type:  $('#lType').value,
+        platform: $('#lPlat').value,
+        order: Number($('#lOrder').value) || 0,
+        visible: $('#lVis').checked
+      };
+      const bad = validateLink(draft);
+      if (bad){ setText(m, bad); m.className = 'msg show err'; return; }
+      try {
+        await api.saveLink(draft);
+        closeModal();
+        toast('اتحفظ.', 'ok');
+        reload();
+      } catch (e){ setText(m, e.message); m.className = 'msg show err'; }
+    };
+  }
+
+  $('#addLink').onclick = () => editor(null);
+
+  $('#restoreLinks').onclick = async () => {
+    if (!confirm('هيترجع كل الروابط للقائمة الأصلية اللي في links.js. متأكد؟')) return;
+    try { await api.restoreLinks(); toast('رجعت القائمة الأصلية.', 'ok'); reload(); }
+    catch (e){ toast(e.message, 'err'); }
+  };
+
+  $$('[data-edit]', v).forEach(b => b.onclick = () =>
+    editor(list.find(l => l.id === b.dataset.edit)));
+
+  $$('[data-mv]', v).forEach(b => b.onclick = async () => {
+    try { await api.moveLink(b.dataset.id, +b.dataset.mv); reload(); }
+    catch (e){ toast(e.message, 'err'); }
+  });
+
+  $$('[data-vis]', v).forEach(b => b.onclick = async () => {
+    const l = list.find(x => x.id === b.dataset.id);
+    try { await api.saveLink({ ...l, visible: b.dataset.vis === '1' }); reload(); }
+    catch (e){ toast(e.message, 'err'); }
+  });
+
+  $$('[data-del]', v).forEach(b => b.onclick = async () => {
+    const l = list.find(x => x.id === b.dataset.del);
+    if (!confirm(`هيتشال «${l ? l.title : ''}». متأكد؟`)) return;
+    try { await api.removeLink(b.dataset.del); toast('اتشال.', 'ok'); reload(); }
+    catch (e){ toast(e.message, 'err'); }
+  });
+}
+
 /* ===========================  التوجيه  ================================== */
+/* #/proofs هو الاسم الأساسي للصفحة العامة. #/reviews و#/transactions
+   بيوصّلوا لنفس المكان عشان أي رابط قديم أو مكتوب بالإيد يفضل شغال. */
 const ROUTES = {
-  '#/reviews': viewReviews,
-  '#/new':     viewNew,
-  '#/login':   viewLogin,
-  '#/account': viewAccount,
-  '#/admin':   viewAdmin
+  '#/proofs':       viewReviews,
+  '#/reviews':      viewReviews,
+  '#/transactions': viewReviews,
+  '#/channels':     viewChannels,
+  '#/links':        viewLinks,
+  '#/new':          viewNew,
+  '#/login':        viewLogin,
+  '#/account':      viewAccount,
+  '#/admin':        viewAdmin
 };
 
 function route(){
-  const path = (location.hash.split('?')[0]) || '#/reviews';
+  const path = (location.hash.split('?')[0]) || '#/proofs';
   paintNav();
   (ROUTES[path] || viewReviews)();
 }

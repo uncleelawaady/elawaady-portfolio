@@ -20,9 +20,11 @@ const ASSETS = [
   ["url('assets/fonts/handicrafts-bold.woff2') format('woff2')",
    `url('${dataURI('assets/fonts/handicrafts-bold.woff2', 'font/woff2')}') format('woff2')`],
   ['src="assets/e-logo.png"',  `src="${dataURI('assets/e-logo.png', 'image/png')}"`],
+  ['src="assets/portraits/ahmed-orange-sm.jpg"',
+   `src="${dataURI('assets/portraits/ahmed-orange-sm.jpg', 'image/jpeg')}"`],
   ['href="assets/favicon.png"', `href="${dataURI('assets/favicon.png', 'image/png')}"`],
   /* المعاينة مالهاش صفحة رئيسية ترجع لها */
-  ['<a href="index.html" class="brand">', '<a href="#/reviews" class="brand">'],
+  ['<a href="index.html" class="brand">', '<a href="#/proofs" class="brand">'],
   /* firebase-config.js مش موجود جنب الملف، والمعاينة قصدها الوضع التجريبي */
   ['<script src="firebase-config.js"></script>',
    '<!-- الوضع التجريبي: مفيش إعداد Firebase، والبيانات بتتخزن في المتصفح -->']
@@ -31,6 +33,15 @@ const ASSETS = [
 for (const [from, to] of ASSETS) {
   if (!html.includes(from)) throw new Error(`مش لاقي في app.html: ${from.slice(0, 60)}`);
   html = html.replace(from, to);
+}
+
+/* سجل الروابط ملف منفصل، فبنحطّه جوّه المعاينة بدل الوسم اللي بيجيبه —
+   من غير كده صفحة القنوات هتطلع فاضية في الملف الواحد. */
+{
+  const tag = '<script src="links.js"></script>';
+  if (!html.includes(tag)) throw new Error('مش لاقي وسم links.js في app.html');
+  html = html.replace(tag,
+    '<script>\n' + readFileSync(resolve(root, 'links.js'), 'utf8') + '\n<\/script>');
 }
 
 /* ---------------------------------------------------------------------------

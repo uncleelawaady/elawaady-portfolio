@@ -24,8 +24,20 @@ service firebase.storage {
       return request.resource.size < 5 * 1024 * 1024;
     }
 
+    /* MP4 وWebM بس — دول اللي المتصفحات بتشغّلهم جوّه <video>. أي امتداد
+       تاني هيبقى ملف بيتنزّل بدل ما يتشغّل، فمش مقبول. */
+    function isVideo() {
+      return request.resource.contentType.matches('video/(mp4|webm)');
+    }
+
+    /* الفيديو مبيتضغطش في المتصفح، فالحد أكبر من الصور — بس لسه محدود
+       عشان يترفع ويتشغّل على الموبايل. */
+    function withinVideoSize() {
+      return request.resource.size < 25 * 1024 * 1024;
+    }
+
     /* ------------------------------------------------------------------
-       صور إثبات التعامل: reviews/{uid}/{reviewId}/{file}
+       صور وفيديوهات إثبات التعامل: reviews/{uid}/{reviewId}/{file}
        كل مستخدم بيرفع تحت مجلده هو وبس.
        ------------------------------------------------------------------
        القراءة عامة — لأن زوار الموقع (وهما مش مسجلين) لازم يشوفوا صور
@@ -37,8 +49,8 @@ service firebase.storage {
 
       allow create: if request.auth != null
                     && request.auth.uid == uid
-                    && isImage()
-                    && withinSize();
+                    && ((isImage() && withinSize())
+                        || (isVideo() && withinVideoSize()));
 
       /* مفيش استبدال لصورة اترفعت — الجديد بيتحط باسم جديد.
          كده الصورة اللي وافقت عليها متتغيرش من تحت إيدك. */

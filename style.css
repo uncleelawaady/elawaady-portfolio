@@ -44,6 +44,10 @@
   --hero-bg:linear-gradient(180deg,#0B2A34 0%,#071F29 70%);
   --icon-well:#071A22;
 
+  /* لون النص التركوازي. --aqua نفسه بيغذّي التدرّج فمينفعش يتغيّر، والنص
+     المكتوب بيه بيبقى باهت على الخلفية الفاتحة — فده بديله للنصوص. */
+  --accent-ink:var(--aqua);
+
   --grad:linear-gradient(135deg,var(--turquoise),var(--cyan) 60%,var(--aqua));
   --grad-metal:linear-gradient(150deg,#FFFFFF,#C7D2D8 40%,#91A6AE 70%,#EDF3F5);
   --glow:0 0 0 1px rgba(32,214,227,.18),0 18px 46px rgba(4,20,27,.6);
@@ -68,6 +72,8 @@
   --text:#082A35;
   --muted:#41707E;
   --dim:#6C949F;
+
+  --accent-ink:#0B6F78;
 
   --chip-bg:rgba(8,42,53,.04);
   --glass:linear-gradient(160deg,#FFFFFF,#EEF6F8);
@@ -502,8 +508,87 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 .contact-card.tg .ic{background:#229ED9}
 .contact-card.ml .ic{background:linear-gradient(135deg,#EA4335,#FBBC05)}
 .contact-card.ln .ic{background:#0A66C2}
+.contact-card.st .ic{background:linear-gradient(135deg,var(--orange),#FFB35C)}
+.contact-card.pr .ic{background:linear-gradient(135deg,var(--turquoise),var(--cyan))}
 .contact-card strong{display:block;font-size:.96rem}
 .contact-card span{font-size:.83rem;color:var(--muted)}
+
+/* ===================== شريط الصور ===================== */
+.shots-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin-block-start:34px}
+.shots-strip figure{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);
+  position:relative}
+.shots-strip img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:top center;
+  display:block;transition:.4s}
+.shots-strip figure:hover img{transform:scale(1.04)}
+/* تدرّج خفيف من تحت عشان الصور تتلحم مع خلفية القسم بدل ما تبان مقصوصة */
+.shots-strip figure::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(7,31,41,.5),transparent 45%)}
+:root[data-theme="light"] .shots-strip figure::after{
+  background:linear-gradient(to top,rgba(8,42,53,.22),transparent 45%)}
+
+@media (max-width:640px){
+  .shots-strip{grid-template-columns:1fr 1fr;gap:10px}
+  .shots-strip figure:last-child{display:none}
+}
+
+/* ===================== إثباتات تعاملات العوضي =====================
+   القسم ده مقصود يبان من أول نظرة — شريط عريض بصورة جنبه، مش بطاقة
+   وسط باقي البطاقات. */
+.proofs-band{
+  display:grid;grid-template-columns:1.25fr .75fr;gap:36px;align-items:center;
+  padding:38px;border-radius:var(--radius-lg);
+  border:1px solid rgba(16,181,191,.28);
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(16,181,191,.13), transparent 58%),
+    var(--surface);
+  position:relative;overflow:hidden}
+.proofs-band::before{
+  content:'';position:absolute;inset-block-start:0;inset-inline:0;height:3px;
+  background:linear-gradient(90deg,var(--turquoise),var(--cyan),var(--orange))}
+.proofs-title{font-size:clamp(1.8rem,4vw,2.9rem);font-weight:900;line-height:1.24;
+  margin-block:14px 10px;text-wrap:balance}
+.proofs-sub{font-size:clamp(1rem,1.9vw,1.22rem);font-weight:700;color:var(--accent-ink);
+  line-height:1.6}
+.proofs-note{color:var(--muted);margin-block-start:12px;font-size:.94rem;line-height:1.85}
+.proofs-cta{display:flex;gap:12px;flex-wrap:wrap;margin-block-start:22px}
+.proofs-list{display:flex;gap:9px;flex-wrap:wrap;margin-block-start:20px;list-style:none}
+.proofs-list li{font-size:.82rem;font-weight:700;color:var(--muted);
+  padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--bg-2)}
+.proofs-shot{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line)}
+.proofs-shot img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;
+  display:block}
+.nav-links a.nav-proofs{color:var(--accent-ink);font-weight:800}
+
+@media (max-width:900px){
+  .proofs-band{grid-template-columns:1fr;padding:26px 22px;gap:26px}
+  .proofs-shot{max-width:340px;margin-inline:auto}
+}
+
+/* ===================== القنوات والمجتمعات ===================== */
+.chan-wrap{display:grid;gap:34px}
+.chan-head{display:flex;align-items:center;gap:11px;font-size:1.08rem;font-weight:800;
+  margin-block-end:15px}
+.chan-n{font-size:.75rem;font-weight:800;color:var(--accent-ink);
+  background:rgba(16,181,191,.14);border-radius:999px;padding:3px 10px}
+.chan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(266px,1fr));gap:10px}
+/* الأسماء بتلف على سطرين أحيانًا لأنها عربي وإنجليزي مع بعض، فالارتفاع
+   الأدنى بيخلي كل البطاقات في الصف بنفس الطول من غير ما نقص أي اسم. */
+.chan{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);
+  border:1px solid var(--line);background:var(--surface);transition:.24s;min-width:0;
+  min-height:76px}
+.chan:hover{border-color:var(--turquoise);background:var(--bg-2);transform:translateY(-2px);
+  box-shadow:var(--glow)}
+.chan>.ic{width:34px;height:34px;padding:8px;box-sizing:border-box;border-radius:11px;
+  flex:none;background:var(--bg-2);color:var(--accent-ink);stroke-width:1.9}
+.chan-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.chan-txt strong{font-size:.9rem;font-weight:700;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chan-txt span{font-size:.75rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.chan-go{width:16px;height:16px;flex:none;margin-inline-start:auto;color:var(--dim);opacity:0;
+  transition:.24s}
+.chan:hover .chan-go{opacity:1;color:var(--accent-ink)}
 
 .contact-form{padding:26px;border-radius:var(--radius)}
 .field{margin-block-end:15px}
