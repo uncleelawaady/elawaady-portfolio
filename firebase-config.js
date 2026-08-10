@@ -26,7 +26,7 @@ window.FIREBASE_CONFIG = {
 /* الـUID بتاعك — نفس اللي في firestore.rules و storage.rules.
    بيتستخدم في الواجهة عشان تظهر أو تخفي أزرار الإدارة وبس؛ الحماية
    الحقيقية في القواعد نفسها، مش هنا. */
-window.OWNER_UID = '6tHYcsC5BQOhJVsLL5rOs30YJ7m1';
+window.OWNER_UID = 'jJPB9z2WISN7yhW1iq99H4ncfi72';
 
 /* SaaS visual skin + wording sync for app.html.
    The review/account app remains functional as-is; this layer only makes it
