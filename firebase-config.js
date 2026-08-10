@@ -15,12 +15,12 @@
 =========================================================================== */
 
 window.FIREBASE_CONFIG = {
-  apiKey:            '',
-  authDomain:        '',
-  projectId:         '',
-  storageBucket:     '',
-  messagingSenderId: '',
-  appId:             ''
+  apiKey:            'AIzaSyArFgfE-qaRRY4NtmuGXxCj_eOGekEAZlY',
+  authDomain:        'elawaady-portfolio.firebaseapp.com',
+  projectId:         'elawaady-portfolio',
+  storageBucket:     'elawaady-portfolio.firebasestorage.app',
+  messagingSenderId: '560876347955',
+  appId:             '1:560876347955:web:b97e81229906b8d9957946'
 };
 
 /* الـUID بتاعك — نفس اللي في firestore.rules و storage.rules.
