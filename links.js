@@ -98,20 +98,15 @@ window.SITE_LINK_GROUPS = [
       var proofLink=nav.querySelector('a[href="#proofs"]');
       setText(proofLink,'تعاملات سابقة','Previous dealings');
 
+      /* «أضف تقييمك» بقى في الـmarkup نفسه، مكانه الثابت جنب «خبراتي».
+         مش بنحقنه من هنا عشان ما يتحطش في آخر الشريط. */
       var oldAuth=nav.querySelector('.nav-auth');
       if(oldAuth) oldAuth.remove();
-      var oldReview=nav.querySelector('.nav-review');
-      if(oldReview) oldReview.remove();
 
       var loginLi=document.createElement('li');
       loginLi.className='nav-auth';
       loginLi.innerHTML='<a class="nav-auth-link" href="app.html?v=7#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a>';
       nav.appendChild(loginLi);
-
-      var reviewLi=document.createElement('li');
-      reviewLi.className='nav-review';
-      reviewLi.innerHTML='<a class="nav-review-link" href="app.html?v=7#/new" data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</a>';
-      nav.appendChild(reviewLi);
     }
 
     var title=document.querySelector('.proofs-title');
