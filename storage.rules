@@ -1,81 +1,29 @@
 rules_version = '2';
 
-/* ===========================================================================
-   قواعد Firebase Storage — elawaady-db.com
-   ===========================================================================
-   الحدود هنا مكتوبة على السيرفر، فحد يتخطى الواجهة ويرفع مباشرة هيترفض.
-
-   الـUID تحت هو نفس اللي في firestore.rules — لازم يفضلوا زي بعض.
-=========================================================================== */
-
 service firebase.storage {
   match /b/{bucket}/o {
-
-    function ownerUid() { return '6tHYcsC5BQOhJVsLL5rOs30YJ7m1'; }
+    function ownerUid() { return 'jJPB9z2WISN7yhW1iq99H4ncfi72'; }
     function isOwner()  { return request.auth != null && request.auth.uid == ownerUid(); }
+    function isImage() { return request.resource.contentType.matches('image/(jpeg|png|webp)'); }
+    function withinSize() { return request.resource.size < 5 * 1024 * 1024; }
+    function isVideo() { return request.resource.contentType.matches('video/(mp4|webm)'); }
+    function withinVideoSize() { return request.resource.size < 25 * 1024 * 1024; }
 
-    function isImage() {
-      return request.resource.contentType.matches('image/(jpeg|png|webp)');
-    }
-
-    /* بعد الضغط في المتصفح الصورة بتبقى أصغر من ده بكتير. الحد موجود عشان
-       اللي بيرفع مباشرة من غير ما يعدي على الضغط. */
-    function withinSize() {
-      return request.resource.size < 5 * 1024 * 1024;
-    }
-
-    /* MP4 وWebM بس — دول اللي المتصفحات بتشغّلهم جوّه <video>. أي امتداد
-       تاني هيبقى ملف بيتنزّل بدل ما يتشغّل، فمش مقبول. */
-    function isVideo() {
-      return request.resource.contentType.matches('video/(mp4|webm)');
-    }
-
-    /* الفيديو مبيتضغطش في المتصفح، فالحد أكبر من الصور — بس لسه محدود
-       عشان يترفع ويتشغّل على الموبايل. */
-    function withinVideoSize() {
-      return request.resource.size < 25 * 1024 * 1024;
-    }
-
-    /* ------------------------------------------------------------------
-       صور وفيديوهات إثبات التعامل: reviews/{uid}/{reviewId}/{file}
-       كل مستخدم بيرفع تحت مجلده هو وبس.
-       ------------------------------------------------------------------
-       القراءة عامة — لأن زوار الموقع (وهما مش مسجلين) لازم يشوفوا صور
-       التقييمات المعتمدة. الروابط عشوائية ومش قابلة للتخمين، ومبتتنشرش
-       غير بعد ما توافق على التقييم.
-    ------------------------------------------------------------------ */
     match /reviews/{uid}/{reviewId}/{fileName} {
       allow read: if true;
-
-      /* مفيش استبدال لملف اترفع — الجديد بيتحط باسم جديد. كده الصورة اللي
-         وافقت عليها متتغيرش من تحت إيدك بعد الاعتماد.
-
-         مهم: `allow update: if false` **مش** كفاية هنا. Storage بيعامل
-         الرفع فوق ملف موجود كـcreate برضه، فالشرط الحقيقي اللي بيمنع
-         الاستبدال هو `resource == null` — يعني المسار لازم يكون فاضي.
-         ده اتأكد بالاختبار على المحاكي، مش افتراض. */
       allow create: if request.auth != null
                     && request.auth.uid == uid
                     && resource == null
-                    && ((isImage() && withinSize())
-                        || (isVideo() && withinVideoSize()));
-
+                    && ((isImage() && withinSize()) || (isVideo() && withinVideoSize()));
       allow update: if false;
-
       allow delete: if isOwner() || (request.auth != null && request.auth.uid == uid);
     }
 
-    /* ------------------------------------------------------------------
-       وسائط الموقع: صورك وصور المشاريع — إنت بس
-    ------------------------------------------------------------------ */
     match /site/{allPaths=**} {
-      allow read:  if true;
+      allow read: if true;
       allow write: if isOwner() && isImage() && withinSize();
     }
 
-    /* ------------------------------------------------------------------
-       صور البروفايل: avatars/{uid}/{file}
-    ------------------------------------------------------------------ */
     match /avatars/{uid}/{fileName} {
       allow read: if true;
       allow write: if request.auth != null
@@ -84,9 +32,6 @@ service firebase.storage {
                    && request.resource.size < 2 * 1024 * 1024;
     }
 
-    /* أي مسار تاني ممنوع */
-    match /{allPaths=**} {
-      allow read, write: if false;
-    }
+    match /{allPaths=**} { allow read, write: if false; }
   }
 }
