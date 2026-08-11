@@ -633,7 +633,34 @@ async function loadLiveContent() {
     return Boolean(ar || en);
   };
 
+  /* Images uploaded in the dashboard land on Cloudinary; the document only
+     carries the URL. Empty means "keep the file that ships with the site".
+     Cloudinary resizes on the fly from the URL, so we ask for a width that
+     suits the slot instead of pushing the full upload down the wire. */
+  const cld = (url, w) => url.includes('/upload/')
+    ? url.replace('/upload/', `/upload/c_limit,w_${w},q_auto,f_auto/`)
+    : url;
+
+  const picture = (key, id, w) => {
+    const el = document.getElementById(id);
+    const url = (fields[`img_${key}`] || {}).stringValue;
+    if (!el || !url) return false;
+    el.removeAttribute('srcset');
+    el.removeAttribute('sizes');
+    el.src = cld(String(url).trim(), w);
+    return true;
+  };
+
+  const logo = (fields.img_logo || {}).stringValue;
+  if (logo) document.querySelectorAll('[data-siteimg="logo"]')
+    .forEach(el => { el.src = cld(logo.trim(), 512); });
+
   const hits = [
+    picture('portrait', 'imgPortrait', 900),
+    picture('shot1',    'imgShot1',    700),
+    picture('shot2',    'imgShot2',    700),
+    picture('shot3',    'imgShot3',    700),
+    picture('proofs',   'imgProofs',   900),
     put('name',        C.meta.name),
     put('role',        C.meta.role),
     put('role',        C.hero.accent),

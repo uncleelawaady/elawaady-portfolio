@@ -80,8 +80,8 @@ ok(navClean.filter(t => /لوحة|إدارة/.test(t)).length === 1,
 
 await go('#/admin');
 const secs = (await page.locator('[data-sec]').allTextContents()).map(t => t.replace(/ـ/g,'').trim());
-ok(secs.length === 5, 'خمس أقسام في اللوحة', secs.join(' | '));
-for (const want of ['مراجعة التقييمات','المستخدمين','الروابط','محتوى البورتفوليو','إعدادات الموقع'])
+ok(secs.length === 6, 'ست أقسام في اللوحة', secs.join(' | '));
+for (const want of ['مراجعة التقييمات','المستخدمين','الروابط','محتوى البورتفوليو','صور الموقع','إعدادات الموقع'])
   ok(secs.includes(want), `قسم «${want}» موجود`);
 
 /* ---------- 4. قسم مراجعة التقييمات بيعرض كل المطلوب ---------- */
@@ -169,6 +169,10 @@ await page.waitForTimeout(900);
 ok(bare(await page.textContent('#cMsg')).includes('اتحفظ'), 'المحتوى اتحفظ');
 await go('#/admin?s=content');
 ok(await page.inputValue('#c_heroTitle_ar') === 'عنوان اتغيّر من اللوحة', 'المحتوى فضل محفوظ بعد إعادة الفتح');
+
+await go('#/admin?s=images');
+ok(await page.locator('#f_portrait').count() === 1, 'قسم صور الموقع بيفتح');
+ok(await page.locator('.imgrow').count() === 6, 'فيه ست خانات صور', String(await page.locator('.imgrow').count()));
 
 await go('#/admin?s=settings');
 ok(await page.locator('#s_whatsapp').count() === 1, 'قسم الإعدادات بيفتح');

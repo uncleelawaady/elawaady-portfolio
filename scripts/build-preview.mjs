@@ -20,8 +20,10 @@ const ASSETS = [
   ["url('assets/fonts/handicrafts-bold.woff2') format('woff2')",
    `url('${dataURI('assets/fonts/handicrafts-bold.woff2', 'font/woff2')}') format('woff2')`],
   ['src="assets/e-logo.png"',  `src="${dataURI('assets/e-logo.png', 'image/png')}"`],
-  ['src="assets/ahmed-portrait.svg"',
-   `src="${dataURI('assets/ahmed-portrait.svg', 'image/svg+xml')}"`],
+  /* الصورة بقت قيمة في الكود مش في الوسم، عشان المالك يقدر يبدّلها من
+     اللوحة. المعاينة بتحط الرسمة نفسها جوّه الملف. */
+  [`let shot = 'assets/ahmed-portrait.svg';`,
+   `let shot = '${dataURI('assets/ahmed-portrait.svg', 'image/svg+xml')}';`],
   ['href="assets/favicon.png"', `href="${dataURI('assets/favicon.png', 'image/png')}"`],
   /* المعاينة مالهاش صفحة رئيسية ترجع لها */
   ['<a href="index.html" class="brand">', '<a href="#/proofs" class="brand">'],

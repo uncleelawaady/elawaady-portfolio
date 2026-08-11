@@ -201,6 +201,17 @@ textarea.input{resize:vertical;min-height:130px}
 .mod-v{font-size:.9rem;color:var(--text);word-break:break-word}
 .mod-shots{display:flex;flex-direction:column;gap:8px}
 
+/* ===== قسم صور الموقع في اللوحة ===== */
+.imgrow{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-block-end:12px}
+.imgrow-pic{flex:0 0 108px;width:108px}
+.imgrow-pic img{width:108px;aspect-ratio:3/4;object-fit:cover;border-radius:12px;
+  border:1px solid var(--line);cursor:zoom-in}
+.imgrow-ph{width:108px;aspect-ratio:3/4;border-radius:12px;border:1px dashed var(--line);
+  display:grid;place-items:center;color:var(--dim);font-size:.76rem;background:var(--chip-bg)}
+.imgrow-main{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.imgrow-acts{display:flex;gap:8px;flex-wrap:wrap;margin-block-start:8px}
+.imgrow-acts label{cursor:pointer}
+
 /* ===== شبكة الصور ===== */
 /* أربع صور كحد أقصى، فالسقف ده بيمنع الصورة الواحدة إنها تتمطط على عرض
    البطاقة كله */
@@ -563,6 +574,13 @@ const CLD_OFF_MSG = 'رفع الصور مش متظبط لسه. ابعت التق
 
 /* Cloudinary بيولّد المقاسات من الرابط نفسه، فمفيش داعي نرفع صورة مصغّرة
    تانية. بنحقن التحويل بعد /upload/ في الرابط الراجع. */
+/* نفس فكرة المصغّرة بس من غير قص — بيحدّد العرض وبيسيب النسبة زي ما هي.
+   بيتستخدم لصور الموقع اللي المالك بيرفعها من اللوحة. */
+function cldFit(url, w){
+  if (!url || url.indexOf('/upload/') < 0) return url;
+  return url.replace('/upload/', `/upload/c_limit,w_${w},q_auto,f_auto/`);
+}
+
 function cldThumb(url, w = LIMITS.thumbSize){
   if (!url || url.indexOf('/upload/') < 0) return url;
   return url.replace('/upload/', `/upload/c_fill,w_${w},h_${Math.round(w * 4 / 3)},q_auto,f_auto/`);
@@ -2180,6 +2198,14 @@ async function viewReviews(){
   try { list = await api.listApproved(); }
   catch (e){ error = e.message; }
 
+  /* صورة القسم بيغيّرها المالك من «صور الموقع» في اللوحة. لو مرفعش حاجة،
+     بترجع للصورة اللي شايلها الموقع نفسه. */
+  let shot = 'assets/ahmed-portrait.svg';
+  try {
+    const up = (await api.getContent()).img_proofs;
+    if (up) shot = cldFit(up, 700);
+  } catch (e){}
+
   const n = list.length;
   const avg = n ? Math.round((list.reduce((s, r) => s + (r.rating || 0), 0) / n) * 10) / 10 : 0;
   const breakdown = [0,0,0,0,0];
@@ -2195,7 +2221,7 @@ async function viewReviews(){
         <p class="sub" style="font-size:.9rem">كل تقييم هنا اتراجع واتعتمد يدويًا قبل ما يتنشر، وصور الإثبات بتتموّه من صاحبها قبل الرفع.</p>
       </div>
       <div class="hero-shot">
-        <img src="assets/ahmed-portrait.svg" alt="أحمد العوضي" width="560" height="739" loading="lazy">
+        <img src="${esc(shot)}" alt="أحمد العوضي" width="560" height="739" loading="lazy">
       </div>
     </div>
 
@@ -2250,6 +2276,7 @@ const ADMIN_SECTIONS = [
   ['users',    'المستخدمين'],
   ['links',    'الروابط'],
   ['content',  'محتوى البورتفوليو'],
+  ['images',   'صور الموقع'],
   ['settings', 'إعدادات الموقع']
 ];
 
@@ -2568,6 +2595,103 @@ async function panelContent(){
   };
 }
 
+/* ========================  قسم: صور الموقع  =========================== */
+/* الصور اللي في `assets/` هي الافتراضي. أي صورة ترفعها هنا بتروح
+   Cloudinary، ورابطها بيتخزن في نفس مستند المحتوى (`content/portfolio`)
+   تحت مفتاح `img_<الخانة>`. الصفحة الرئيسية والتطبيق بيقروا المستند ده
+   وبيحطّوا الروابط مكان الافتراضي.
+
+   «رجّع الافتراضي» بيمسح الرابط من المستند وبس — الملف بيفضل على
+   Cloudinary، فتقدر ترجع له لو غيّرت رأيك. مفيش أي حذف نهائي من هنا. */
+const SITE_IMAGES = [
+  ['portrait', 'الصورة الشخصية — «من أنا»',        'بتظهر جنب نص «من أنا» في الصفحة الرئيسية'],
+  ['shot1',    'شريط الصور — الأولى',              'تلات صور جنب بعض تحت «من أنا»'],
+  ['shot2',    'شريط الصور — التانية',             ''],
+  ['shot3',    'شريط الصور — التالتة',             ''],
+  ['proofs',   'صورة قسم «تعاملات سابقة»',         'في الصفحة الرئيسية وفي صفحة التعاملات'],
+  ['logo',     'اللوجو',                           'في الشريط العلوي والفوتر — يفضل مربّع وبخلفية شفافة']
+];
+
+async function panelImages(){
+  const c = await api.getContent();
+  const urlOf = (key) => c[`img_${key}`] || '';
+
+  const box = ([key, label, hint]) => {
+    const url = urlOf(key);
+    return `
+    <div class="card imgrow">
+      <div class="imgrow-pic">
+        ${url
+          ? `<img src="${esc(cldThumb(url, 300))}" alt="" data-full="${esc(url)}">`
+          : `<div class="imgrow-ph">الافتراضي</div>`}
+      </div>
+      <div class="imgrow-main">
+        <p style="font-weight:800">${label}</p>
+        ${hint ? `<p class="sub" style="font-size:.82rem">${hint}</p>` : ''}
+        <p class="sub" style="font-size:.8rem">${url ? 'صورة مرفوعة من اللوحة' : 'لسه بالصورة الأصلية اللي في الموقع'}</p>
+        <div class="imgrow-acts">
+          <label class="btn btn-grad btn-sm">
+            ${url ? 'غيّر الصورة' : 'ارفع صورة'}
+            <input type="file" id="f_${key}" accept="image/jpeg,image/png,image/webp" hidden>
+          </label>
+          ${url ? `<button class="btn btn-ghost btn-sm" data-imgclear="${key}">رجّع الافتراضي</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  };
+
+  return {
+    sub: 'الصور اللي بتظهر في الصفحة الرئيسية.',
+    html: `
+      <p class="sub" style="font-size:.86rem;margin-block-end:14px">
+        الصورة بتتصغّر وبتتضغط في المتصفح قبل ما ترفع، والحد ٥ ميجا —
+        JPG أو PNG أو WEBP. مفيش تمويه هنا، دي صورك إنت مش صور إثبات.
+      </p>
+      ${CLD_READY ? '' : `<div class="msg show err">${esc(CLD_OFF_MSG)}</div>`}
+      <div class="msg" id="iMsg"></div>
+      ${SITE_IMAGES.map(box).join('')}`,
+
+    wire(v){
+      const m = $('#iMsg', v);
+      const say = (t, k = 'err') => { setText(m, t); m.className = 'msg show ' + k; };
+
+      $$('.imgrow-pic img', v).forEach(img => {
+        img.onclick = () => openViewer([img.dataset.full], 0);
+      });
+
+      for (const [key, label] of SITE_IMAGES){
+        const input = $(`#f_${key}`, v);
+        if (!input) continue;
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const bad = checkFile(file);
+          if (bad){ say(bad); e.target.value = ''; return; }
+          input.disabled = true;
+          say(`بيرفع «${label}»…`, 'info');
+          try {
+            /* نفس الضغط اللي بيحصل لصور الإثبات — الأصل مبيخرجش من الجهاز */
+            const blob = await drawScaled(URL.createObjectURL(file), LIMITS.maxDimension, LIMITS.quality);
+            const up = await cldUpload(blob, 'site');
+            await api.saveContent({ [`img_${key}`]: up.url });
+            toast('اترفعت.', 'ok');
+            viewAdmin();
+          } catch (err){ say(err.message || 'الصورة مرفعتش.'); input.disabled = false; }
+        };
+      }
+
+      $$('[data-imgclear]', v).forEach(b => b.onclick = async () => {
+        b.disabled = true;
+        try {
+          await api.saveContent({ [`img_${b.dataset.imgclear}`]: '' });
+          toast('رجعت الافتراضي.', 'ok');
+          viewAdmin();
+        } catch (err){ say(err.message); b.disabled = false; }
+      });
+    }
+  };
+}
+
 /* =====================  قسم: إعدادات الموقع  ========================== */
 /* بيتخزن في settings/site — قراءته عامة وكتابته للمالك بس. */
 const SETTING_FIELDS = [
@@ -2840,6 +2964,7 @@ const ADMIN_PANELS = {
   users:    panelUsers,
   links:    panelLinks,
   content:  panelContent,
+  images:   panelImages,
   settings: panelSettings
 };
 

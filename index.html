@@ -103,7 +103,7 @@
 <nav class="nav" id="nav">
   <div class="container nav-inner">
     <a href="#hero" class="brand">
-      <img src="assets/e-logo.png" alt="Elawaady" class="brand-logo">
+      <img src="assets/e-logo.png" alt="Elawaady" class="brand-logo" data-siteimg="logo">
       <span class="brand-name">Elawaady<em>Digital Portfolio</em></span>
     </a>
 
@@ -140,7 +140,7 @@
   <div class="container hero-inner">
     <span class="eyebrow"><span class="dot"></span><span id="heroBadge"></span></span>
 
-    <div class="hero-mark"><img src="assets/e-logo.png" alt="E — Elawaady" loading="eager" width="512" height="512"></div>
+    <div class="hero-mark"><img src="assets/e-logo.png" alt="E — Elawaady" loading="eager" width="512" height="512" data-siteimg="logo"></div>
 
     <h1 class="hero-title">
       <span class="metal-text" id="heroTitle"></span><br>
@@ -193,7 +193,7 @@
 
       <div class="about-side reveal">
         <div class="portrait">
-          <img src="assets/ahmed-portrait.svg"
+          <img src="assets/ahmed-portrait.svg" id="imgPortrait"
                sizes="(max-width:900px) 90vw, 380px"
                alt="Ahmed Elawaady" width="1024" height="1280">
         </div>
@@ -297,9 +297,9 @@
     </div>
 
     <div class="shots-strip reveal" aria-label="صور">
-      <figure><img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="560" height="700" loading="lazy"></figure>
-      <figure><img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="560" height="567" loading="lazy"></figure>
-      <figure><img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="560" height="739" loading="lazy"></figure>
+      <figure><img src="assets/ahmed-portrait.svg" id="imgShot1" alt="Ahmed Elawaady" width="560" height="700" loading="lazy"></figure>
+      <figure><img src="assets/ahmed-portrait.svg" id="imgShot2" alt="Ahmed Elawaady" width="560" height="567" loading="lazy"></figure>
+      <figure><img src="assets/ahmed-portrait.svg" id="imgShot3" alt="Ahmed Elawaady" width="560" height="739" loading="lazy"></figure>
     </div>
   </div>
 </section>
@@ -339,7 +339,7 @@
       </div>
 
       <div class="proofs-shot">
-        <img src="assets/ahmed-portrait.svg"
+        <img src="assets/ahmed-portrait.svg" id="imgProofs"
              sizes="(max-width:900px) 90vw, 420px"
              alt="أحمد العوضي" width="1200" height="1600" loading="lazy">
       </div>
@@ -409,7 +409,7 @@
 <!-- ===== Footer ===== -->
 <footer class="footer">
   <div class="container footer-inner">
-    <a href="#hero"><img src="assets/e-logo.png" alt="E — Elawaady" class="footer-logo" width="512" height="512"></a>
+    <a href="#hero"><img src="assets/e-logo.png" alt="E — Elawaady" class="footer-logo" width="512" height="512" data-siteimg="logo"></a>
     <p class="footer-name">Ahmed Elawaady</p>
     <p class="footer-tag" data-ar="بورتفوليو شخصي رقمي" data-en="Personal Digital Portfolio">بورتفوليو شخصي رقمي</p>
     <p class="footer-domain" dir="ltr" id="footerDomain"></p>
