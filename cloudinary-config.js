@@ -5,5 +5,5 @@
 =========================================================================== */
 window.CLOUDINARY_CONFIG = {
   cloudName:    'usc7hrc5',
-  uploadPreset: 'ml_default'
+  uploadPreset: 'Alawaadyqp'
 };
