@@ -442,6 +442,113 @@ await check('المستخدم ما يقدرش يرفع في مجلد الموق�
   assertFails(uploadBytes(ref(userSt,'site/hero.jpg'), bytes(1024),
     { contentType:'image/jpeg' })));
 
+
+/* ==============  حدود صلاحية المالك نفسه  ==============
+   المالك بيراجع، مش بيعيد كتابة كلام الناس. الحالات دي بتثبت إن حتى هو
+   محدود بالقواعد، وإن حالات التقييم الأربعة كلها معروفة. */
+
+let modId;
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const d = doc(ctx.firestore(), 'reviews', 'mod-limits-review');
+  await setDoc(d, newReview(USER));
+  modId = 'mod-limits-review';
+});
+
+await check('المالك يرفض تقييم', () =>
+  assertSucceeds(updateDoc(doc(ownerDb,'reviews',modId),
+    { status:'rejected', moderatedBy:OWNER, moderatedAt: serverTimestamp(), updatedAt: serverTimestamp() })));
+
+await check('التقييم المرفوض ما يظهرش لزائر', () =>
+  assertFails(getDoc(doc(guestDb,'reviews',modId))));
+
+await check('صاحب التقييم بيشوف تقييمه المرفوض', () =>
+  assertSucceeds(getDoc(doc(userDb,'reviews',modId))));
+
+await check('المالك يخفي تقييم', () =>
+  assertSucceeds(updateDoc(doc(ownerDb,'reviews',modId),
+    { status:'hidden', moderatedBy:OWNER, moderatedAt: serverTimestamp(), updatedAt: serverTimestamp() })));
+
+await check('التقييم المخفي ما يظهرش لزائر', () =>
+  assertFails(getDoc(doc(guestDb,'reviews',modId))));
+
+await check('المالك يثبّت تقييم', () =>
+  assertSucceeds(updateDoc(doc(ownerDb,'reviews',modId), { featured:true, updatedAt: serverTimestamp() })));
+
+await check('المالك يلغي التثبيت', () =>
+  assertSucceeds(updateDoc(doc(ownerDb,'reviews',modId), { featured:false, updatedAt: serverTimestamp() })));
+
+await check('المالك ما يقدرش يحط حالة مش من الأربعة', () =>
+  assertFails(updateDoc(doc(ownerDb,'reviews',modId), { status:'published', updatedAt: serverTimestamp() })));
+
+await check('المالك ما يقدرش يعيد كتابة نص التقييم', () =>
+  assertFails(updateDoc(doc(ownerDb,'reviews',modId), { body:'كلام أنا كتبته بدل صاحبه.' })));
+
+await check('المالك ما يقدرش يغيّر نجوم التقييم', () =>
+  assertFails(updateDoc(doc(ownerDb,'reviews',modId), { rating:1 })));
+
+await check('المالك ما يقدرش يغيّر عنوان التقييم', () =>
+  assertFails(updateDoc(doc(ownerDb,'reviews',modId), { title:'عنوان من عندي' })));
+
+await check('المالك ما يقدرش ينسب التقييم لحد تاني', () =>
+  assertFails(updateDoc(doc(ownerDb,'reviews',modId), { uid:OTHER, updatedAt: serverTimestamp() })));
+
+await check('المالك ما يقدرش يزوّد صور على تقييم غيره', () =>
+  assertFails(updateDoc(doc(ownerDb,'reviews',modId),
+    { images:[{ url:'https://x/y.jpg', publicId:'p', mime:'image/jpeg', bytes:10 }], updatedAt: serverTimestamp() })));
+
+await check('المالك ما يقدرش يكتب moderatedBy باسم حد تاني', () =>
+  assertFails(updateDoc(doc(ownerDb,'reviews',modId),
+    { status:'approved', moderatedBy:OTHER, moderatedAt: serverTimestamp(), updatedAt: serverTimestamp() })));
+
+/* ==============  المالك وإدارة المستخدمين  ============== */
+
+await check('المالك يوقف حساب', () =>
+  assertSucceeds(updateDoc(doc(ownerDb,'users',USER), { status:'blocked', updatedAt: serverTimestamp() })));
+
+await check('المالك يرجّع الحساب نشط', () =>
+  assertSucceeds(updateDoc(doc(ownerDb,'users',USER), { status:'active', updatedAt: serverTimestamp() })));
+
+await check('المالك ما يقدرش يحط حالة حساب مخترعة', () =>
+  assertFails(updateDoc(doc(ownerDb,'users',USER), { status:'vip', updatedAt: serverTimestamp() })));
+
+await check('المالك ما يقدرش يغيّر اسم المستخدم', () =>
+  assertFails(updateDoc(doc(ownerDb,'users',USER), { displayName:'اسم من عندي' })));
+
+await check('المالك ما يقدرش يرقّي حساب لدور تاني', () =>
+  assertFails(updateDoc(doc(ownerDb,'users',USER), { role:'owner', updatedAt: serverTimestamp() })));
+
+await check('المالك ما يقدرش يغيّر إيميل المستخدم', () =>
+  assertFails(updateDoc(doc(ownerDb,'users',USER), { email:'me@example.com', updatedAt: serverTimestamp() })));
+
+await check('المالك بيقرا لستة المستخدمين', () =>
+  assertSucceeds(getDocs(collection(ownerDb,'users'))));
+
+await check('المستخدم ما يقدرش يقرا لستة المستخدمين', () =>
+  assertFails(getDocs(collection(userDb,'users'))));
+
+await check('الزائر ما يقدرش يقرا لستة المستخدمين', () =>
+  assertFails(getDocs(collection(guestDb,'users'))));
+
+/* ==============  إعدادات الموقع ومحتواه  ============== */
+
+await check('المالك يحفظ إعدادات الموقع', () =>
+  assertSucceeds(setDoc(doc(ownerDb,'settings','site'),
+    { whatsapp:'201055578777', reviewsOpen:true, updatedAt: serverTimestamp() }, { merge:true })));
+
+await check('الزائر يقرا إعدادات الموقع', () =>
+  assertSucceeds(getDoc(doc(guestDb,'settings','site'))));
+
+await check('المستخدم ما يقدرش يقفل استقبال التقييمات', () =>
+  assertFails(setDoc(doc(userDb,'settings','site'), { reviewsOpen:false }, { merge:true })));
+
+await check('المالك يحفظ محتوى البورتفوليو', () =>
+  assertSucceeds(setDoc(doc(ownerDb,'content','portfolio'),
+    { heroTitle_ar:'أحوّل الأفكار', heroTitle_en:'I turn ideas', updatedAt: serverTimestamp() }, { merge:true })));
+
+await check('الزائر يقرا محتوى البورتفوليو', () =>
+  assertSucceeds(getDoc(doc(guestDb,'content','portfolio'))));
+
+
 /* ======================  التقرير  ====================== */
 
 await env.cleanup();

@@ -28,6 +28,6 @@
    لو الحقلين فاضيين، التقييم النصي بيشتغل عادي، والصور بس هي اللي بتتقفل.
 =========================================================================== */
 window.CLOUDINARY_CONFIG = {
-  cloudName:    '',
-  uploadPreset: ''
+  cloudName:    'usc7hrc5',
+  uploadPreset: 'Alawaadyqp'
 };

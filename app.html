@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>إثباتات تعاملات العوضي — Elawaady</title>
+<title>تعاملات سابقة — Elawaady</title>
 <link rel="icon" href="assets/favicon.png" type="image/png">
+<!-- نفس الهوية الفيروزية بتاعة البورتفوليو. كانت بتتحقن من جافاسكريبت،
+     وبقت وسم عادي عشان الصفحة ما ترسمش بلون وبعدين تقفز للتاني. -->
+<link rel="stylesheet" href="app-saas.css?v=3">
 
 <style>
 /* ===========================================================================
@@ -185,6 +188,18 @@ textarea.input{resize:vertical;min-height:130px}
 .rv-body{color:var(--muted);font-size:.94rem;white-space:pre-wrap;word-break:break-word}
 .rv-actions{display:flex;gap:8px;flex-wrap:wrap;padding-block-start:4px;
   border-block-start:1px solid var(--line-soft)}
+
+/* ===== بطاقة المراجعة في لوحة التحكم ===== */
+/* نفس بطاقة التقييم، بس بتفتح كل البيانات اللي القرار متوقف عليها بدل ما
+   تسيب المالك يخمّن. */
+.sub-tabs{margin-block-end:14px}
+.review.mod{gap:15px}
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;
+  padding:12px 14px;border-radius:14px;background:var(--chip-bg);border:1px solid var(--line-soft)}
+.mod-f{display:flex;flex-direction:column;gap:3px;min-width:0}
+.mod-k{font-size:.72rem;font-weight:700;color:var(--dim);letter-spacing:.02em}
+.mod-v{font-size:.9rem;color:var(--text);word-break:break-word}
+.mod-shots{display:flex;flex-direction:column;gap:8px}
 
 /* ===== شبكة الصور ===== */
 /* أربع صور كحد أقصى، فالسقف ده بيمنع الصورة الواحدة إنها تتمطط على عرض
@@ -374,6 +389,9 @@ textarea.input{resize:vertical;min-height:130px}
    نفس المنطق الموجود في script.js عشان الشكل يفضل واحد في الموقع كله.
 ======================================================================== */
 const TATWEEL = 'ـ';
+/* العلامة دي بتتحط وقت العرض بس. أي نص المستخدم أو المالك بيكتبه بيتخزن
+   من غيرها، عشان اللي في قاعدة البيانات يفضل النص الأصلي. */
+const stripTatweel = (s) => String(s == null ? '' : s).split(TATWEEL).join('');
 const AR_LETTER = /[ء-غف-ي]/;
 const NO_FORWARD_JOIN = new Set([...'اأإآٱدذرزوؤةىء']);
 const KASHIDA_SKIP = new Set(['SCRIPT','STYLE','SVG','TEXTAREA','INPUT','CODE']);
@@ -444,10 +462,25 @@ function openModal(html){
 const closeModal = () => $('#modal').classList.remove('open');
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
 
+/* التواريخ جاية من مصدرين: رقم ملي ثانية في الوضع التجريبي، وTimestamp
+   من فايرستور في الوضع الحقيقي. الاتنين بيعدّوا من هنا. */
+const asDate = (v) =>
+  v instanceof Date ? v : (v && v.toDate ? v.toDate() : (v ? new Date(v) : null));
+
+const ms = (v) => { const d = asDate(v); return d && !isNaN(d) ? d.getTime() : 0; };
+
 const fmtDate = (v) => {
-  const d = v instanceof Date ? v : (v && v.toDate ? v.toDate() : (v ? new Date(v) : null));
+  const d = asDate(v);
   if (!d || isNaN(d)) return '';
   return d.toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' });
+};
+
+/* تاريخ الإرسال في لوحة المراجعة — بالساعة، عشان تعرف ترتيب الوصول */
+const fmtDateTime = (v) => {
+  const d = asDate(v);
+  if (!d || isNaN(d)) return '—';
+  return d.toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) +
+         ' · ' + d.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
 };
 
 const initials = (name) => (String(name || '؟').trim()[0] || '؟').toUpperCase();
@@ -758,7 +791,7 @@ function makeTestBackend(){
   async function load(){
     db = await idbGet('db');
     if (!db){
-      db = { users:{}, reviews:[], media:{}, links: seedLinks() };
+      db = { users:{}, reviews:[], media:{}, links: seedLinks(), content:{}, settings:{} };
       /* حسابين جاهزين عشان تقدر تجرب الرحلة كاملة من أول لحظة */
       db.users[TEST_OWNER_UID] = {
         uid: TEST_OWNER_UID, email:'owner@elawaady-db.com',
@@ -777,6 +810,8 @@ function makeTestBackend(){
     }
     /* قاعدة قديمة اتخزنت قبل ما الروابط تبقى جزء من النظام */
     if (!db.links) { db.links = seedLinks(); await save(); }
+    if (!db.content)  { db.content = {};  await save(); }
+    if (!db.settings) { db.settings = {}; await save(); }
     currentUid = localStorage.getItem(SESSION_KEY);
     if (currentUid && !db.users[currentUid]) currentUid = null;
     if (currentUid){ db.users[currentUid].lastSeenAt = Date.now(); await save(); }
@@ -1045,6 +1080,49 @@ function makeTestBackend(){
     async removeReview(id){
       if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
       db.reviews = db.reviews.filter(x => x.id !== id);
+      await save();
+    },
+
+    /* ---------------------------  المستخدمين  ------------------------- */
+    /* pass مش بيطلع من هنا خالص — اللوحة مش محتاجاه ولا المفروض تشوفه */
+    async listUsers(){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      return Object.values(db.users)
+        .map(({ pass, ...u }) => ({ ...u, reviewCount: db.reviews.filter(r => r.uid === u.uid).length }))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    },
+
+    async setUserStatus(uid, status){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      if (uid === TEST_OWNER_UID) throw new Error('مش هينفع تقفل حسابك.');
+      const u = db.users[uid];
+      if (!u) throw new Error('الحساب ده مش موجود.');
+      u.status = status; u.updatedAt = Date.now();
+      await save();
+    },
+
+    async removeUser(uid){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      if (uid === TEST_OWNER_UID) throw new Error('مش هينفع تمسح حسابك.');
+      delete db.users[uid];
+      db.reviews = db.reviews.filter(r => r.uid !== uid);
+      await save();
+    },
+
+    /* ------------------------  المحتوى والإعدادات  -------------------- */
+    async getContent(){ return { ...(db.content || {}) }; },
+
+    async saveContent(patch){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      db.content = { ...(db.content || {}), ...patch, updatedAt: Date.now() };
+      await save();
+    },
+
+    async getSettings(){ return { ...(db.settings || {}) }; },
+
+    async saveSettings(patch){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      db.settings = { ...(db.settings || {}), ...patch, updatedAt: Date.now() };
       await save();
     },
 
@@ -1343,6 +1421,57 @@ async function makeFirebaseBackend(cfg, ownerUid){
 
     removeReview: (id) => run(() => F.deleteDoc(F.doc(db, 'reviews', id))),
 
+    /* ---------------------------  المستخدمين  ------------------------- */
+    /* القاعدة: allow read: if isSelf() || isOwner(). الفرع الأول بيعتمد على
+       مسار المستند، فاللستة كاملة بتعدّي للمالك بس — أي حد تاني بيترفض. */
+    listUsers: () => run(async () => {
+      const snap  = await F.getDocs(F.collection(db, 'users'));
+      const users = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      /* عدد تقييمات كل حساب من نسخة واحدة من التقييمات بدل استعلام لكل حساب */
+      const revs = await F.getDocs(F.collection(db, 'reviews'));
+      const per  = {};
+      revs.docs.forEach(d => { const uid = d.data().uid; per[uid] = (per[uid] || 0) + 1; });
+      return users
+        .map(u => ({ ...u, reviewCount: per[u.uid || u.id] || 0 }))
+        .sort((a, b) => (ms(b.createdAt) || 0) - (ms(a.createdAt) || 0));
+    }),
+
+    setUserStatus: (uid, status) => run(async () => {
+      if (uid === ownerUid) throw new Error('مش هينفع تقفل حسابك.');
+      await F.updateDoc(F.doc(db, 'users', uid), { status, updatedAt: F.serverTimestamp() });
+    }),
+
+    /* بيمسح مستند المستخدم من Firestore وتقييماته. حساب الدخول نفسه في
+       Firebase Authentication مبيتمسحش من المتصفح — ده محتاج صلاحية أدمن
+       من السيرفر، ومفيش سيرفر في المشروع ده. */
+    removeUser: (uid) => run(async () => {
+      if (uid === ownerUid) throw new Error('مش هينفع تمسح حسابك.');
+      const mine = await F.getDocs(F.query(col(), F.where('uid','==',uid)));
+      const batch = F.writeBatch(db);
+      mine.docs.forEach(d => batch.delete(d.ref));
+      batch.delete(F.doc(db, 'users', uid));
+      await batch.commit();
+    }),
+
+    /* ------------------------  المحتوى والإعدادات  -------------------- */
+    /* المستندين دول قراءتهم عامة (الصفحة الرئيسية بتقراهم)، وكتابتهم
+       للمالك بس — والقاعدة هي اللي بتفرض ده مش الواجهة. */
+    getContent: () => run(async () => {
+      const s = await F.getDoc(F.doc(db, 'content', 'portfolio'));
+      return s.exists() ? s.data() : {};
+    }),
+
+    saveContent: (patch) => run(() => F.setDoc(F.doc(db, 'content', 'portfolio'),
+      { ...patch, updatedAt: F.serverTimestamp() }, { merge:true })),
+
+    getSettings: () => run(async () => {
+      const s = await F.getDoc(F.doc(db, 'settings', 'site'));
+      return s.exists() ? s.data() : {};
+    }),
+
+    saveSettings: (patch) => run(() => F.setDoc(F.doc(db, 'settings', 'site'),
+      { ...patch, updatedAt: F.serverTimestamp() }, { merge:true })),
+
     resetTestData: null
   };
 }
@@ -1389,15 +1518,13 @@ function paintNav(){
   const u = api.getUser();
   const owner = api.isOwner();
   const links = [
-    ['#/proofs',   'إثباتات تعاملات العوضي'],
+    ['#/proofs',   'تعاملات سابقة'],
     ['#/channels', 'قنواتي ومجتمعاتي'],
     ['#/new',      'اكتب تقييم'],
     u ? ['#/account', 'حسابي'] : ['#/login', 'دخول / تسجيل']
   ];
-  if (owner){
-    links.push(['#/admin', 'لوحة المراجعة']);
-    links.push(['#/links', 'إدارة الروابط']);
-  }
+  /* لوحة واحدة بس — إدارة الروابط والمستخدمين والمحتوى كلها أقسام جوّاها */
+  if (owner) links.push(['#/admin', 'لوحة التحكم']);
 
   const here = location.hash || '#/proofs';
   $('#navLinks').innerHTML = links
@@ -1655,7 +1782,17 @@ async function paintMine(){
       box.innerHTML = `<div class="card">${emptyState('✍️','لسه مكتبتش أي تقييم.')}</div>`;
       return;
     }
-    box.innerHTML = `<div class="grid">${list.map(r => reviewCard(r, 'mine')).join('')}</div>`;
+    /* حالة كل تقييم ظاهرة على بطاقته، والسطر ده بيلخّصها من غير ما تعدّ */
+    const n = (s) => list.filter(r => r.status === s).length;
+    const strip = `
+      <div class="card" style="margin-block-end:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <span class="pill pending">قيد المراجعة <span dir="ltr">${n('pending')}</span></span>
+        <span class="pill approved">منشور <span dir="ltr">${n('approved')}</span></span>
+        <span class="pill rejected">مرفوض <span dir="ltr">${n('rejected')}</span></span>
+        ${n('hidden') ? `<span class="pill hidden">مخفي <span dir="ltr">${n('hidden')}</span></span>` : ''}
+      </div>`;
+
+    box.innerHTML = strip + `<div class="grid">${list.map(r => reviewCard(r, 'mine')).join('')}</div>`;
     applyKashida(box);
     wireCards(box);
   } catch (e){
@@ -1666,9 +1803,26 @@ async function paintMine(){
 /* =======================================================================
    3) + 4) اكتب تقييم وارفع صور
 ======================================================================= */
-function viewNew(){
+async function viewNew(){
   const u = api.getUser();
   if (!u) return (location.hash = '#/login?next=' + encodeURIComponent('#/new'));
+
+  /* قفل الاستقبال من إعدادات الموقع. ده قفل واجهة — اللي بيمنع الكتابة
+     فعليًا هو قواعد فايرستور، وهي شغالة زي ما هي في الحالتين. */
+  let open = true;
+  try { open = (await api.getSettings()).reviewsOpen !== false; } catch (e){}
+  if (!open){
+    render(`
+      <div class="container page" style="max-width:520px;text-align:center">
+        <div class="card"><div class="empty">
+          <div class="big">⏸️</div>
+          <p style="font-weight:800;color:var(--text)">استقبال التقييمات متوقف مؤقتًا</p>
+          <p>ارجع تاني قريب. التقييمات المنشورة موجودة زي ما هي.</p>
+          <a href="#/proofs" class="btn btn-ghost" style="margin-block-start:16px">شوف التعاملات السابقة</a>
+        </div></div>
+      </div>`);
+    return;
+  }
 
   render(`
   <div class="container page" style="max-width:720px">
@@ -2008,13 +2162,13 @@ async function viewReviews(){
   <div class="container page">
     <div class="hero-row">
       <div class="page-head" style="margin-block-end:0">
-        <span class="eyebrow">إثباتات التعامل</span>
-        <h1 class="title">إثباتات تعاملات العوضي</h1>
+        <span class="eyebrow">تعاملات موثقة</span>
+        <h1 class="title">تعاملات سابقة</h1>
         <p class="sub">تجارب حقيقية، تقييمات موثقة، وإثباتات تعامل وضمان.</p>
         <p class="sub" style="font-size:.9rem">كل تقييم هنا اتراجع واتعتمد يدويًا قبل ما يتنشر، وصور الإثبات بتتموّه من صاحبها قبل الرفع.</p>
       </div>
       <div class="hero-shot">
-        <img src="assets/portraits/ahmed-orange-sm.jpg" alt="أحمد العوضي" width="560" height="739" loading="lazy">
+        <img src="assets/ahmed-portrait.svg" alt="أحمد العوضي" width="560" height="739" loading="lazy">
       </div>
     </div>
 
@@ -2052,12 +2206,42 @@ async function viewReviews(){
 }
 
 /* =======================================================================
-   5) لوحة المراجعة — للمالك بس
+   5) لوحة التحكم — للمالك بس، وواحدة بس
    -----------------------------------------------------------------------
-   الحراسة دي راحة استخدام مش أمان: حد يقدر يشيل السكربت ويشوف اللوحة
-   فاضية، ومش هيقدر يقرا ولا يكتب حاجة لأن القواعد بترفض العمليات نفسها.
+   ده المكان الوحيد للإدارة في المشروع كله. admin.html القديمة بقت تحويلة
+   للمسار ده، ومفيش أي نظام إدارة تاني ولا كلمة سر في المتصفح.
+
+   اللوحة فيها خمس أقسام: مراجعة التقييمات، المستخدمين، الروابط، محتوى
+   البورتفوليو، وإعدادات الموقع.
+
+   الحراسة اللي تحت دي راحة استخدام مش أمان: حد يقدر يشيل السكربت ويشوف
+   اللوحة فاضية، ومش هيقدر يقرا ولا يكتب حاجة لأن القواعد بترفض العمليات
+   نفسها على السيرفر.
 ======================================================================= */
-let adminTab = 'pending';
+const ADMIN_SECTIONS = [
+  ['reviews',  'مراجعة التقييمات'],
+  ['users',    'المستخدمين'],
+  ['links',    'الروابط'],
+  ['content',  'محتوى البورتفوليو'],
+  ['settings', 'إعدادات الموقع']
+];
+
+let adminSection = 'reviews';
+let adminTab     = 'pending';
+
+/* القسم بيتقري من الهاش: #/admin?s=links — عشان الرابط يتحفظ ويتبعت */
+function adminSectionFromHash(){
+  const s = new URLSearchParams(location.hash.split('?')[1] || '').get('s');
+  return ADMIN_SECTIONS.some(([id]) => id === s) ? s : null;
+}
+
+function goAdmin(section){
+  adminSection = section;
+  /* بنغيّر الهاش من غير ما نشغّل التوجيه مرتين — replaceState مش بيبعت
+     hashchange، فبننادي العرض بإيدينا. */
+  history.replaceState(null, '', location.pathname + location.search + '#/admin?s=' + section);
+  viewAdmin();
+}
 
 async function viewAdmin(){
   const u = api.getUser();
@@ -2070,18 +2254,125 @@ async function viewAdmin(){
           <div class="empty">
             <div class="big">🔒</div>
             <p style="font-weight:800;color:var(--text)">الصفحة دي مش ليك</p>
-            <p>حسابك مسجّل، بس لوحة المراجعة لصاحب الموقع بس.</p>
-            <a href="#/reviews" class="btn btn-ghost" style="margin-block-start:16px">رجوع للتقييمات</a>
+            <p>حسابك مسجّل، بس لوحة التحكم لصاحب الموقع بس.</p>
+            <a href="#/account" class="btn btn-ghost" style="margin-block-start:16px">روح لحسابك</a>
           </div>
         </div>
       </div>`);
     return;
   }
 
+  const fromHash = adminSectionFromHash();
+  if (fromHash) adminSection = fromHash;
+
   loading();
-  let all = [], error = '';
-  try { all = await api.listAll(); }
-  catch (e){ error = e.message; }
+
+  let panel;
+  try { panel = await ADMIN_PANELS[adminSection](); }
+  catch (e){ panel = { html:`<div class="msg show err">${esc(e.message || 'حصل خطأ.')}</div>`, wire(){} }; }
+
+  const v = render(`
+  <div class="container page">
+    <div class="page-head">
+      <span class="eyebrow">إدارة</span>
+      <h1 class="title">لوحة التحكم</h1>
+      <p class="sub">${esc(panel.sub || 'كل إدارة الموقع من هنا.')}</p>
+    </div>
+
+    <div class="tabs" id="adminNav">
+      ${ADMIN_SECTIONS.map(([id, label]) => `
+        <button data-sec="${id}" class="${adminSection === id ? 'on' : ''}">${label}</button>`).join('')}
+    </div>
+
+    <div id="apanel">${panel.html}</div>
+
+    ${api.mode === 'test' ? `
+      <div class="card" style="margin-block-start:24px;border-color:rgba(255,197,61,.35)">
+        <p style="font-weight:800;margin-block-end:6px">بيانات التجربة</p>
+        <p class="sub" style="font-size:.86rem">كل اللي فوق متخزن في المتصفح ده بس. الزرار ده بيصفّر كل حاجة ويرجّع الحسابات الجاهزة.</p>
+        <button class="btn btn-bad btn-sm" id="resetTest" style="margin-block-start:10px">تصفير بيانات التجربة</button>
+      </div>` : ''}
+  </div>`);
+
+  $$('[data-sec]', v).forEach(b => b.onclick = () => goAdmin(b.dataset.sec));
+
+  const rt = $('#resetTest', v);
+  if (rt) rt.onclick = () => { if (confirm('هيتمسح كل شيء. متأكد؟')) api.resetTestData(); };
+
+  panel.wire(v);
+}
+
+/* =======================  قسم: مراجعة التقييمات  ======================= */
+
+/* بطاقة المراجعة بتعرض كل اللي محتاجه القرار في مكان واحد: مين كتبه،
+   إيميله، النجوم، العنوان، النص كامل، نوع التعامل، صور الإثبات، وقت
+   الإرسال، والحالة الحالية. */
+function moderationCard(r, who){
+  const imgs = (r.images || []).filter(i => i && (i.thumbUrl || i.url));
+  const thumbOf = (im) => im.thumbUrl || cldThumb(im.url);
+
+  const shots = imgs.length ? `
+    <div class="shots">
+      ${imgs.map((im, i) => `<img src="${esc(thumbOf(im))}"
+        data-full="${esc(im.url || im.thumbUrl)}" data-rid="${esc(r.id)}" data-i="${i}"
+        alt="صورة إثبات" loading="lazy">`).join('')}
+    </div>` : `<p class="sub" style="font-size:.86rem">مفيش صور إثبات مع التقييم ده.</p>`;
+
+  const field = (label, value) => `
+    <div class="mod-f">
+      <span class="mod-k">${label}</span>
+      <span class="mod-v" data-nokashida>${value}</span>
+    </div>`;
+
+  return `
+  <article class="review mod ${r.featured ? 'is-featured' : ''}">
+    <div class="rv-head">
+      ${avatarHTML(r.authorName, r.authorPhoto)}
+      <div class="rv-who">
+        <div class="rv-name" data-nokashida>${esc(r.authorName || 'مستخدم')}</div>
+        <div class="rv-meta"><span dir="ltr" data-nokashida>${esc((who && who.email) || '—')}</span></div>
+      </div>
+      <div style="margin-inline-start:auto;display:flex;gap:6px;flex-wrap:wrap">
+        ${r.featured ? `<span class="pill featured">مميز</span>` : ''}
+        <span class="pill ${r.status}">${STATUS_AR[r.status] || r.status}</span>
+      </div>
+    </div>
+
+    <div class="mod-grid">
+      ${field('النجوم', starsRO(r.rating) + ` <span dir="ltr">${Number(r.rating) || 0}/5</span>`)}
+      ${field('نوع التعامل', esc(dealLabel(r.dealType)))}
+      ${field('تاريخ الإرسال', esc(fmtDateTime(r.createdAt)))}
+      ${field('الحالة', esc(STATUS_AR[r.status] || r.status))}
+    </div>
+
+    ${r.title ? `<div class="rv-title" data-nokashida>${esc(r.title)}</div>` : ''}
+    <p class="rv-body" data-nokashida>${esc(r.body)}</p>
+
+    <div class="mod-shots">
+      <span class="mod-k">صور الإثبات <span dir="ltr">(${imgs.length})</span></span>
+      ${shots}
+    </div>
+
+    <div class="rv-actions">
+      ${r.status !== 'approved' ? `<button class="btn btn-ok btn-sm"    data-act="approve" data-id="${esc(r.id)}">اعتماد</button>` : ''}
+      ${r.status !== 'rejected' ? `<button class="btn btn-bad btn-sm"   data-act="reject"  data-id="${esc(r.id)}">رفض</button>` : ''}
+      ${r.status !== 'hidden'   ? `<button class="btn btn-ghost btn-sm" data-act="hide"    data-id="${esc(r.id)}">إخفاء</button>` : ''}
+      <button class="btn btn-warn btn-sm" data-act="feature" data-id="${esc(r.id)}"
+        data-on="${r.featured ? '1' : '0'}">${r.featured ? 'إلغاء التثبيت' : 'تثبيت'}</button>
+      <button class="btn btn-ghost btn-sm" data-act="delete" data-id="${esc(r.id)}">حذف</button>
+    </div>
+  </article>`;
+}
+
+async function panelReviews(){
+  const all = await api.listAll();
+
+  /* الإيميلات جاية من مستندات المستخدمين — التقييم نفسه مبيخزّنش إيميل.
+     لو القراءة فشلت لأي سبب، البطاقات بتفضل شغالة من غير إيميل. */
+  let byUid = {};
+  try {
+    (await api.listUsers()).forEach(x => { byUid[x.uid || x.id] = x; });
+  } catch (e){ byUid = {}; }
 
   const count = (s) => all.filter(r => r.status === s).length;
   const TABS = [
@@ -2093,40 +2384,229 @@ async function viewAdmin(){
   ];
   const shown = adminTab === 'all' ? all : all.filter(r => r.status === adminTab);
 
-  const v = render(`
-  <div class="container page">
-    <div class="page-head">
-      <span class="eyebrow">إدارة</span>
-      <h1 class="title">لوحة المراجعة</h1>
-      <p class="sub">${count('pending')} تقييم مستني قرارك.</p>
-    </div>
+  return {
+    sub: `${count('pending')} تقييم مستني قرارك.`,
+    html: `
+      <div class="tabs sub-tabs">
+        ${TABS.map(([id, label]) => `
+          <button data-tab="${id}" class="${adminTab === id ? 'on' : ''}">
+            ${label}${id === 'all' ? '' : ` (${count(id)})`}
+          </button>`).join('')}
+      </div>
 
-    ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
+      <p class="sub" style="font-size:.86rem;margin-block-end:14px">
+        التقييم المعتمد بيظهر للعامة في صفحة «تعاملات سابقة». المرفوض والمخفي
+        ما بيظهروش لحد غيرك وغير صاحبهم.
+      </p>
 
-    <div class="tabs">
-      ${TABS.map(([id, label]) => `
-        <button data-tab="${id}" class="${adminTab === id ? 'on' : ''}">
-          ${label}${id === 'all' ? '' : ` (${count(id)})`}
-        </button>`).join('')}
-    </div>
+      ${shown.length
+        ? `<div class="grid">${shown.map(r => moderationCard(r, byUid[r.uid])).join('')}</div>`
+        : `<div class="card">${emptyState('📭','مفيش حاجة في القسم ده.')}</div>`}`,
 
-    ${shown.length
-      ? `<div class="grid">${shown.map(r => reviewCard(r, 'admin')).join('')}</div>`
-      : `<div class="card">${emptyState('📭','مفيش حاجة في القسم ده.')}</div>`}
+    wire(v){
+      $$('[data-tab]', v).forEach(b => b.onclick = () => { adminTab = b.dataset.tab; viewAdmin(); });
+      wireCards(v);
+    }
+  };
+}
 
-    ${api.mode === 'test' ? `
-      <div class="card" style="margin-block-start:24px;border-color:rgba(255,197,61,.35)">
-        <p style="font-weight:800;margin-block-end:6px">بيانات التجربة</p>
-        <p class="sub" style="font-size:.86rem">كل اللي فوق متخزن في المتصفح ده بس. الزرار ده بيصفّر كل حاجة ويرجّع الحسابات الجاهزة.</p>
-        <button class="btn btn-bad btn-sm" id="resetTest" style="margin-block-start:10px">تصفير بيانات التجربة</button>
-      </div>` : ''}
-  </div>`);
+/* =========================  قسم: المستخدمين  ========================== */
+async function panelUsers(){
+  const users = await api.listUsers();
 
-  $$('[data-tab]', v).forEach(b => b.onclick = () => { adminTab = b.dataset.tab; viewAdmin(); });
-  const rt = $('#resetTest', v);
-  if (rt) rt.onclick = () => { if (confirm('هيتمسح كل شيء. متأكد؟')) api.resetTestData(); };
+  const row = (x) => {
+    const uid = x.uid || x.id;
+    const blocked = x.status === 'blocked';
+    const isMe = uid === api.OWNER_UID;
+    return `
+    <div class="lrow ${blocked ? 'off' : ''}">
+      <div class="lrow-main">
+        <strong data-nokashida>${esc(x.displayName || 'مستخدم')}${isMe ? ' — أنت' : ''}</strong>
+        <span dir="ltr" data-nokashida>${esc(x.email || '')}</span>
+        <span class="sub" style="font-size:.8rem">
+          ${esc(fmtDate(x.createdAt) || '—')} ·
+          <span dir="ltr">${x.reviewCount || 0}</span> تقييم ·
+          ${blocked ? 'موقوف' : 'نشط'}
+        </span>
+      </div>
+      <div class="lrow-acts">
+        ${isMe ? '<span class="pill approved">صاحب الموقع</span>' : `
+          <button class="btn btn-ghost btn-sm" data-ublock="${esc(uid)}" data-to="${blocked ? 'active' : 'blocked'}">
+            ${blocked ? 'تفعيل' : 'إيقاف'}
+          </button>
+          <button class="btn btn-bad btn-sm" data-udel="${esc(uid)}">حذف</button>`}
+      </div>
+    </div>`;
+  };
 
-  wireCards(v);
+  return {
+    sub: `${users.length} حساب مسجّل.`,
+    html: `
+      <p class="sub" style="font-size:.86rem;margin-block-end:14px">
+        «إيقاف» بيعلّم الحساب موقوف في قاعدة البيانات. «حذف» بيشيل ملف
+        المستخدم وكل تقييماته — بس حساب الدخول نفسه في Firebase
+        Authentication بيتشال من كونسول فايربيز، لأن ده محتاج صلاحية سيرفر
+        مش موجودة في المتصفح.
+      </p>
+      ${users.length
+        ? `<div class="lrows">${users.map(row).join('')}</div>`
+        : `<div class="card">${emptyState('👤','مفيش حسابات لسه.')}</div>`}`,
+
+    wire(v){
+      $$('[data-ublock]', v).forEach(b => b.onclick = async () => {
+        b.disabled = true;
+        try { await api.setUserStatus(b.dataset.ublock, b.dataset.to); toast('اتعمل.', 'ok'); viewAdmin(); }
+        catch (e){ toast(e.message, 'err'); b.disabled = false; }
+      });
+      $$('[data-udel]', v).forEach(b => b.onclick = async () => {
+        if (!confirm('هيتشال الحساب وكل تقييماته. متأكد؟')) return;
+        b.disabled = true;
+        try { await api.removeUser(b.dataset.udel); toast('اتشال.', 'ok'); viewAdmin(); }
+        catch (e){ toast(e.message, 'err'); b.disabled = false; }
+      });
+    }
+  };
+}
+
+/* =====================  قسم: محتوى البورتفوليو  ======================= */
+/* الحقول دي بتتخزن في مستند واحد عام القراءة: content/portfolio. الصفحة
+   الرئيسية بتقراه بعد ما ترسم وبتستبدل النصوص اللي فيه، فالملف content.js
+   بيفضل هو الأساس واللي هنا بيعلوّ عليه. أي حقل تسيبه فاضي بيرجّع النص
+   الأصلي بتاع content.js. */
+const CONTENT_FIELDS = [
+  ['name',       'الاسم',                       'input'],
+  ['role',       'المسمى الوظيفي',              'input'],
+  ['heroTitle',  'عنوان الواجهة — السطر الأول', 'input'],
+  ['heroTitle2', 'عنوان الواجهة — السطر التاني','input'],
+  ['heroDesc',   'وصف الواجهة',                 'area'],
+  ['heroCta1',   'زرار الواجهة الأول',          'input'],
+  ['proofsTitle','عنوان قسم الإثباتات',         'input'],
+  ['proofsSub',  'وصف قسم الإثباتات',           'area']
+];
+
+async function panelContent(){
+  const c = await api.getContent();
+  const val = (k, lang) => esc(c[`${k}_${lang}`] || '');
+
+  const pair = ([key, label, kind]) => `
+    <div class="card" style="margin-block-end:12px">
+      <p style="font-weight:800;margin-block-end:10px">${label}</p>
+      <div class="grid two">
+        <div class="field">
+          <label for="c_${key}_ar">عربي</label>
+          ${kind === 'area'
+            ? `<textarea class="input" id="c_${key}_ar" maxlength="400" style="min-height:88px">${val(key,'ar')}</textarea>`
+            : `<input class="input" id="c_${key}_ar" maxlength="160" value="${val(key,'ar')}">`}
+        </div>
+        <div class="field">
+          <label for="c_${key}_en">English</label>
+          ${kind === 'area'
+            ? `<textarea class="input" id="c_${key}_en" dir="ltr" maxlength="400" style="min-height:88px">${val(key,'en')}</textarea>`
+            : `<input class="input" id="c_${key}_en" dir="ltr" maxlength="160" value="${val(key,'en')}">`}
+        </div>
+      </div>
+    </div>`;
+
+  return {
+    sub: 'نصوص الصفحة الرئيسية.',
+    html: `
+      <p class="sub" style="font-size:.86rem;margin-block-end:14px">
+        أي حقل تسيبه فاضي بيرجّع للنص الأصلي اللي في <b>content.js</b>.
+        التعديل بيبان في الصفحة الرئيسية على طول من غير ما تلمس الكود.
+      </p>
+      <div class="msg" id="cMsg"></div>
+      ${CONTENT_FIELDS.map(pair).join('')}
+      <button class="btn btn-grad" id="cSave">حفظ المحتوى</button>`,
+
+    wire(v){
+      const m = $('#cMsg', v);
+      $('#cSave', v).onclick = async () => {
+        const btn = $('#cSave', v);
+        btn.disabled = true;
+        const patch = {};
+        for (const [key] of CONTENT_FIELDS){
+          for (const lang of ['ar','en']){
+            const el = $(`#c_${key}_${lang}`, v);
+            /* النص بيتخزن من غير علامات التطويل — دي بتتحط وقت العرض بس */
+            patch[`${key}_${lang}`] = stripTatweel(el ? el.value.trim() : '');
+          }
+        }
+        try {
+          await api.saveContent(patch);
+          setText(m, 'اتحفظ. افتح الصفحة الرئيسية عشان تشوفه.'); m.className = 'msg show ok';
+        } catch (e){ setText(m, e.message); m.className = 'msg show err'; }
+        finally { btn.disabled = false; }
+      };
+    }
+  };
+}
+
+/* =====================  قسم: إعدادات الموقع  ========================== */
+/* بيتخزن في settings/site — قراءته عامة وكتابته للمالك بس. */
+const SETTING_FIELDS = [
+  ['whatsapp', 'رقم الواتساب',        'مثال: 201055578777'],
+  ['telegram', 'يوزر تليجرام',        'من غير @'],
+  ['email',    'الإيميل',             'name@example.com'],
+  ['linkedin', 'يوزر لينكدإن',        'من غير الرابط']
+];
+
+async function panelSettings(){
+  const s = await api.getSettings();
+  const open = s.reviewsOpen !== false;
+
+  return {
+    sub: 'بيانات التواصل وقفل التقييمات.',
+    html: `
+      <div class="msg" id="sMsg"></div>
+
+      <div class="card" style="margin-block-end:12px">
+        <p style="font-weight:800;margin-block-end:10px">بيانات التواصل</p>
+        ${SETTING_FIELDS.map(([k, label, ph]) => `
+          <div class="field">
+            <label for="s_${k}">${label}</label>
+            <input class="input" id="s_${k}" dir="ltr" maxlength="120"
+              placeholder="${esc(ph)}" value="${esc(s[k] || '')}">
+          </div>`).join('')}
+      </div>
+
+      <div class="card" style="margin-block-end:12px">
+        <p style="font-weight:800;margin-block-end:6px">استقبال التقييمات</p>
+        <p class="sub" style="font-size:.86rem">
+          لما تقفلها، صفحة «أضف تقييمك» بتقول إن الاستقبال متوقف مؤقتًا.
+          ده قفل واجهة للراحة — اللي بيمنع أي حد يتخطاه فعليًا هو قواعد
+          فايرستور، وهي بتفضل شغالة زي ما هي في الحالتين.
+        </p>
+        <label class="check" style="margin-block-start:10px">
+          <input type="checkbox" id="s_open" ${open ? 'checked' : ''}> مفتوح لاستقبال تقييمات جديدة
+        </label>
+      </div>
+
+      <div class="card" style="margin-block-end:12px">
+        <p style="font-weight:800;margin-block-end:6px">ثابت مش بيتغيّر من هنا</p>
+        <p class="sub" style="font-size:.86rem">
+          صاحب الموقع محدّد بمعرّف حساب ثابت جوّه قواعد فايرستور، ومفيش أي
+          شاشة في الموقع بتغيّره — لا هنا ولا في أي مكان تاني. رفع الصور
+          على Cloudinary، ومفيش فيديو خالص.
+        </p>
+      </div>
+
+      <button class="btn btn-grad" id="sSave">حفظ الإعدادات</button>`,
+
+    wire(v){
+      const m = $('#sMsg', v);
+      $('#sSave', v).onclick = async () => {
+        const btn = $('#sSave', v);
+        btn.disabled = true;
+        const patch = { reviewsOpen: $('#s_open', v).checked };
+        for (const [k] of SETTING_FIELDS) patch[k] = ($(`#s_${k}`, v).value || '').trim();
+        try {
+          await api.saveSettings(patch);
+          setText(m, 'اتحفظ.'); m.className = 'msg show ok';
+        } catch (e){ setText(m, e.message); m.className = 'msg show err'; }
+        finally { btn.disabled = false; }
+      };
+    }
+  };
 }
 
 /* =======================================================================
@@ -2186,33 +2666,11 @@ async function viewChannels(){
   </div>`);
 }
 
-/* =======================================================================
-   7) إدارة الروابط — للمالك بس
-   -----------------------------------------------------------------------
-   إضافة وتعديل وحذف وإخفاء وإعادة ترتيب من غير ما حد يلمس الكود. زي لوحة
-   المراجعة، الحراسة دي راحة استخدام — القواعد هي اللي بترفض الكتابة فعليًا.
-======================================================================= */
-async function viewLinks(){
-  const u = api.getUser();
-  if (!u) return (location.hash = '#/login?next=' + encodeURIComponent('#/links'));
-
-  if (!api.isOwner()){
-    render(`
-      <div class="container page" style="max-width:520px;text-align:center">
-        <div class="card"><div class="empty">
-          <div class="big">🔒</div>
-          <p style="font-weight:800;color:var(--text)">الصفحة دي مش ليك</p>
-          <p>إدارة الروابط لصاحب الموقع بس.</p>
-          <a href="#/channels" class="btn btn-ghost" style="margin-block-start:16px">شوف القنوات</a>
-        </div></div>
-      </div>`);
-    return;
-  }
-
-  loading();
-  let list = [], error = '';
-  try { list = await api.listLinks({ all:true }); }
-  catch (e){ error = e.message; }
+/* =======================  قسم: إدارة الروابط  ========================= */
+/* إضافة وتعديل وحذف وإخفاء وإعادة ترتيب من غير ما حد يلمس الكود. زي باقي
+   اللوحة، الحراسة راحة استخدام — القواعد هي اللي بترفض الكتابة فعليًا. */
+async function panelLinks(){
+  const list = await api.listLinks({ all:true });
 
   const row = (l, i, n) => `
     <div class="lrow ${l.visible === false ? 'off' : ''}">
@@ -2229,139 +2687,153 @@ async function viewLinks(){
       </div>
     </div>`;
 
-  const v = render(`
-  <div class="container page">
-    <div class="page-head">
-      <span class="eyebrow">إدارة</span>
-      <h1 class="title">روابط التواصل والمجتمعات</h1>
-      <p class="sub">${list.length} رابط. التعديل هنا بيظهر في الموقع على طول من غير ما تلمس الكود.</p>
-    </div>
+  return {
+    sub: `${list.length} رابط. التعديل هنا بيظهر في الموقع على طول.`,
+    html: `
+      ${list.fromSeed ? `<div class="msg show info">
+        القائمة دي لسه من ملف <b>links.js</b> — مجموعة <b>links</b> في Firestore فاضية.
+        اضغط «ازرع القائمة في Firestore» مرة واحدة عشان تتزرع، وبعدها Firestore هو المرجع
+        وأي تعديل هنا بيتخزن فيه.
+      </div>` : ''}
 
-    ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
-
-    ${list.fromSeed ? `<div class="msg show info">
-      القائمة دي لسه من ملف <b>links.js</b> — مجموعة <b>links</b> في Firestore فاضية.
-      اضغط «رجّع القائمة الأصلية» مرة واحدة عشان تتزرع، وبعدها Firestore هو المرجع
-      وأي تعديل هنا بيتخزن فيه.
-    </div>` : ''}
-
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-block-end:18px">
-      <button class="btn btn-grad" id="addLink">أضف رابط</button>
-      <button class="btn btn-ghost" id="restoreLinks">${list.fromSeed ? 'ازرع القائمة في Firestore' : 'رجّع القائمة الأصلية'}</button>
-    </div>
-
-    ${LINK_GROUPS.map(g => {
-      const rows = list.filter(l => l.type === g.type);
-      return `
-      <section class="lnk-sec">
-        <h2 class="lnk-head">${g.ar} <span class="lnk-n" data-nokashida>${rows.length}</span></h2>
-        ${rows.length
-          ? `<div class="lrows">${rows.map((l, i) => row(l, i, rows.length)).join('')}</div>`
-          : `<div class="card">${emptyState('🔗','مفيش روابط في القسم ده.')}</div>`}
-      </section>`;
-    }).join('')}
-  </div>`);
-
-  const reload = () => viewLinks();
-
-  function editor(link){
-    const l = link || { id:'', title:'', platform:'other', url:'', type:'official',
-                        order: (list.filter(x => x.type === 'official').length + 1), visible:true };
-    openModal(`
-      <div class="modal-head">
-        <h3>${link ? 'تعديل رابط' : 'رابط جديد'}</h3>
-        <button class="icon-btn" data-close>✕</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-block-end:18px">
+        <button class="btn btn-grad" id="addLink">أضف رابط</button>
+        <button class="btn btn-ghost" id="restoreLinks">${list.fromSeed ? 'ازرع القائمة في Firestore' : 'رجّع القائمة الأصلية'}</button>
       </div>
-      <div class="msg" id="lMsg"></div>
-      <div class="field">
-        <label for="lTitle">الاسم</label>
-        <input class="input" id="lTitle" value="${esc(l.title)}" maxlength="80">
-      </div>
-      <div class="field">
-        <label for="lUrl">الرابط</label>
-        <input class="input" id="lUrl" dir="ltr" value="${esc(l.url)}" placeholder="https://…">
-      </div>
-      <div class="field">
-        <label for="lType">القسم</label>
-        <select class="input" id="lType">
-          ${LINK_GROUPS.map(g => `<option value="${g.type}" ${g.type === l.type ? 'selected' : ''}>${g.ar}</option>`).join('')}
-        </select>
-      </div>
-      <div class="field">
-        <label for="lPlat">المنصة</label>
-        <select class="input" id="lPlat">
-          ${Object.keys(PLATFORM_ICON).map(p => `<option value="${p}" ${p === l.platform ? 'selected' : ''}>${p}</option>`).join('')}
-        </select>
-      </div>
-      <div class="field">
-        <label for="lOrder">الترتيب جوّه القسم</label>
-        <input class="input" id="lOrder" type="number" min="0" value="${Number(l.order) || 0}">
-      </div>
-      <label class="check"><input type="checkbox" id="lVis" ${l.visible !== false ? 'checked' : ''}> ظاهر في الموقع</label>
-      <button class="btn btn-grad block" id="lSave" style="margin-block-start:14px">حفظ</button>
-    `);
 
-    const m = $('#lMsg');
-    $('#lSave').onclick = async () => {
-      const draft = {
-        id: l.id || '',
-        title: $('#lTitle').value,
-        url:   $('#lUrl').value,
-        type:  $('#lType').value,
-        platform: $('#lPlat').value,
-        order: Number($('#lOrder').value) || 0,
-        visible: $('#lVis').checked
+      ${LINK_GROUPS.map(g => {
+        const rows = list.filter(l => l.type === g.type);
+        return `
+        <section class="lnk-sec">
+          <h2 class="lnk-head">${g.ar} <span class="lnk-n" data-nokashida>${rows.length}</span></h2>
+          ${rows.length
+            ? `<div class="lrows">${rows.map((l, i) => row(l, i, rows.length)).join('')}</div>`
+            : `<div class="card">${emptyState('🔗','مفيش روابط في القسم ده.')}</div>`}
+        </section>`;
+      }).join('')}`,
+
+    wire(v){
+      const reload = () => viewAdmin();
+
+      function editor(link){
+        const l = link || { id:'', title:'', platform:'other', url:'', type:'official',
+                            order: (list.filter(x => x.type === 'official').length + 1), visible:true };
+        openModal(`
+          <div class="modal-head">
+            <h3>${link ? 'تعديل رابط' : 'رابط جديد'}</h3>
+            <button class="icon-btn" data-close>✕</button>
+          </div>
+          <div class="msg" id="lMsg"></div>
+          <div class="field">
+            <label for="lTitle">الاسم</label>
+            <input class="input" id="lTitle" value="${esc(l.title)}" maxlength="80">
+          </div>
+          <div class="field">
+            <label for="lUrl">الرابط</label>
+            <input class="input" id="lUrl" dir="ltr" value="${esc(l.url)}" placeholder="https://…">
+          </div>
+          <div class="field">
+            <label for="lType">القسم</label>
+            <select class="input" id="lType">
+              ${LINK_GROUPS.map(g => `<option value="${g.type}" ${g.type === l.type ? 'selected' : ''}>${g.ar}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label for="lPlat">المنصة</label>
+            <select class="input" id="lPlat">
+              ${Object.keys(PLATFORM_ICON).map(p => `<option value="${p}" ${p === l.platform ? 'selected' : ''}>${p}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label for="lOrder">الترتيب جوّه القسم</label>
+            <input class="input" id="lOrder" type="number" min="0" value="${Number(l.order) || 0}">
+          </div>
+          <label class="check"><input type="checkbox" id="lVis" ${l.visible !== false ? 'checked' : ''}> ظاهر في الموقع</label>
+          <button class="btn btn-grad block" id="lSave" style="margin-block-start:14px">حفظ</button>
+        `);
+
+        const m = $('#lMsg');
+        $('#lSave').onclick = async () => {
+          const draft = {
+            id: l.id || '',
+            title: $('#lTitle').value,
+            url:   $('#lUrl').value,
+            type:  $('#lType').value,
+            platform: $('#lPlat').value,
+            order: Number($('#lOrder').value) || 0,
+            visible: $('#lVis').checked
+          };
+          const bad = validateLink(draft);
+          if (bad){ setText(m, bad); m.className = 'msg show err'; return; }
+          try {
+            await api.saveLink(draft);
+            closeModal();
+            toast('اتحفظ.', 'ok');
+            reload();
+          } catch (e){ setText(m, e.message); m.className = 'msg show err'; }
+        };
+      }
+
+      $('#addLink', v).onclick = () => editor(null);
+
+      $('#restoreLinks', v).onclick = async () => {
+        if (!confirm('هيترجع كل الروابط للقائمة الأصلية اللي في links.js. متأكد؟')) return;
+        try { await api.restoreLinks(); toast('رجعت القائمة الأصلية.', 'ok'); reload(); }
+        catch (e){ toast(e.message, 'err'); }
       };
-      const bad = validateLink(draft);
-      if (bad){ setText(m, bad); m.className = 'msg show err'; return; }
-      try {
-        await api.saveLink(draft);
-        closeModal();
-        toast('اتحفظ.', 'ok');
-        reload();
-      } catch (e){ setText(m, e.message); m.className = 'msg show err'; }
-    };
-  }
 
-  $('#addLink').onclick = () => editor(null);
+      $$('[data-edit]', v).forEach(b => b.onclick = () =>
+        editor(list.find(l => l.id === b.dataset.edit)));
 
-  $('#restoreLinks').onclick = async () => {
-    if (!confirm('هيترجع كل الروابط للقائمة الأصلية اللي في links.js. متأكد؟')) return;
-    try { await api.restoreLinks(); toast('رجعت القائمة الأصلية.', 'ok'); reload(); }
-    catch (e){ toast(e.message, 'err'); }
+      $$('[data-mv]', v).forEach(b => b.onclick = async () => {
+        try { await api.moveLink(b.dataset.id, +b.dataset.mv); reload(); }
+        catch (e){ toast(e.message, 'err'); }
+      });
+
+      $$('[data-vis]', v).forEach(b => b.onclick = async () => {
+        const l = list.find(x => x.id === b.dataset.id);
+        try { await api.saveLink({ ...l, visible: b.dataset.vis === '1' }); reload(); }
+        catch (e){ toast(e.message, 'err'); }
+      });
+
+      $$('[data-del]', v).forEach(b => b.onclick = async () => {
+        const l = list.find(x => x.id === b.dataset.del);
+        if (!confirm(`هيتشال «${l ? l.title : ''}». متأكد؟`)) return;
+        try { await api.removeLink(b.dataset.del); toast('اتشال.', 'ok'); reload(); }
+        catch (e){ toast(e.message, 'err'); }
+      });
+    }
   };
-
-  $$('[data-edit]', v).forEach(b => b.onclick = () =>
-    editor(list.find(l => l.id === b.dataset.edit)));
-
-  $$('[data-mv]', v).forEach(b => b.onclick = async () => {
-    try { await api.moveLink(b.dataset.id, +b.dataset.mv); reload(); }
-    catch (e){ toast(e.message, 'err'); }
-  });
-
-  $$('[data-vis]', v).forEach(b => b.onclick = async () => {
-    const l = list.find(x => x.id === b.dataset.id);
-    try { await api.saveLink({ ...l, visible: b.dataset.vis === '1' }); reload(); }
-    catch (e){ toast(e.message, 'err'); }
-  });
-
-  $$('[data-del]', v).forEach(b => b.onclick = async () => {
-    const l = list.find(x => x.id === b.dataset.del);
-    if (!confirm(`هيتشال «${l ? l.title : ''}». متأكد؟`)) return;
-    try { await api.removeLink(b.dataset.del); toast('اتشال.', 'ok'); reload(); }
-    catch (e){ toast(e.message, 'err'); }
-  });
 }
+
+/* كل أقسام اللوحة في مكان واحد — الترتيب هنا مش مهم، ADMIN_SECTIONS هي
+   اللي بتحدد ترتيب الأزرار. */
+const ADMIN_PANELS = {
+  reviews:  panelReviews,
+  users:    panelUsers,
+  links:    panelLinks,
+  content:  panelContent,
+  settings: panelSettings
+};
 
 /* ===========================  التوجيه  ================================== */
 /* #/proofs هو الاسم الأساسي للصفحة العامة. #/reviews و#/transactions
-   بيوصّلوا لنفس المكان عشان أي رابط قديم أو مكتوب بالإيد يفضل شغال. */
+   بيوصّلوا لنفس المكان عشان أي رابط قديم أو مكتوب بالإيد يفضل شغال.
+
+   #/links كان صفحة إدارة لوحدها. بقى قسم جوّه اللوحة الواحدة، والمسار
+   القديم بيحوّل عليه عشان أي رابط محفوظ يفضل شغال. */
+function viewLinksRedirect(){
+  adminSection = 'links';
+  location.replace(location.pathname + location.search + '#/admin?s=links');
+  viewAdmin();
+}
+
 const ROUTES = {
   '#/proofs':       viewReviews,
   '#/reviews':      viewReviews,
   '#/transactions': viewReviews,
   '#/channels':     viewChannels,
-  '#/links':        viewLinks,
+  '#/links':        viewLinksRedirect,
   '#/new':          viewNew,
   '#/login':        viewLogin,
   '#/account':      viewAccount,

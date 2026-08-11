@@ -1,6 +1,6 @@
 /* ===== Ahmed Elawaady — elawaady-db.com =====
    All copy lives in content.js. This file only renders it and runs the page.
-   A draft saved from admin.html overrides content.js when one is present.
+   Copy saved in the owner dashboard overrides content.js when present.
 */
 
 /* ---------------------------------------------------------------------------
@@ -56,8 +56,9 @@ function applyKashida(root) {
 }
 
 /* ===================== Content ===================== */
-/* admin.html writes a draft here; it only ever affects the browser it was
-   saved in, and export is what makes a change real. */
+/* Left over from the old standalone admin page, which saved drafts here.
+   Nothing writes this key any more; it is still read so a draft left in
+   someone's browser keeps working until they clear it. */
 function loadContent() {
   try {
     const draft = localStorage.getItem('elawaadyDraft');
@@ -349,7 +350,7 @@ function renderContact() {
     <a class="contact-card glass st" href="${esc(st)}" target="_blank" rel="noopener noreferrer">
       <svg class="ic"><use href="#i-store"/></svg><div><strong>${esc(L('المتجر الرسمي', 'Official store'))}</strong><span dir="ltr">${esc(prettyURL(st))}</span></div></a>
     <a class="contact-card glass pr" href="app.html#/proofs">
-      <svg class="ic"><use href="#i-shield"/></svg><div><strong>${esc(L('إثباتات التعاملات', 'Transaction proofs'))}</strong><span>${esc(L('تجارب موثقة', 'Verified experiences'))}</span></div></a>`);
+      <svg class="ic"><use href="#i-shield"/></svg><div><strong>${esc(L('تعاملات سابقة', 'Past transactions'))}</strong><span>${esc(L('تجارب موثقة', 'Verified experiences'))}</span></div></a>`);
 
   set('footerSocial', `
     <a href="${esc(wa)}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg class="ic"><use href="#i-whatsapp"/></svg></a>
@@ -586,3 +587,65 @@ document.addEventListener('DOMContentLoaded', () => {
     window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
   });
 });
+
+/* ===================== Live content from the dashboard ===================== */
+/* The owner dashboard (app.html#/admin → محتوى البورتفوليو) saves copy into a
+   publicly-readable Firestore document, content/portfolio. One plain REST call
+   fetches it — no SDK, no bundle. The page has already painted from content.js
+   by the time this lands, so a slow or failed call changes nothing, and an
+   empty field means "keep what content.js says". */
+async function loadLiveContent() {
+  const fb = window.FIREBASE_CONFIG || {};
+  if (!fb.projectId || !fb.apiKey) return;
+
+  let fields;
+  try {
+    const res = await fetch(
+      `https://firestore.googleapis.com/v1/projects/${fb.projectId}` +
+      `/databases/(default)/documents/content/portfolio?key=${fb.apiKey}`);
+    if (!res.ok) return;                  // 404 = nothing saved yet
+    fields = (await res.json()).fields;
+  } catch (e) { return; }
+  if (!fields) return;
+
+  const val = (key, l) => {
+    const f = fields[`${key}_${l}`];
+    const v = f && typeof f.stringValue === 'string' ? f.stringValue.trim() : '';
+    return v || null;
+  };
+
+  /* content.js entries are { ar, en } pairs — overwrite only what was filled in */
+  const put = (key, target) => {
+    const ar = val(key, 'ar'), en = val(key, 'en');
+    if (ar) target.ar = ar;
+    if (en) target.en = en;
+    return Boolean(ar || en);
+  };
+
+  /* Two headings live in the markup rather than content.js; render() reads them
+     back off the data-attributes, so writing there is enough. */
+  const attr = (key, id) => {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    const ar = val(key, 'ar'), en = val(key, 'en');
+    if (ar) el.setAttribute('data-ar', ar);
+    if (en) el.setAttribute('data-en', en);
+    return Boolean(ar || en);
+  };
+
+  const hits = [
+    put('name',        C.meta.name),
+    put('role',        C.meta.role),
+    put('role',        C.hero.accent),
+    put('heroTitle',   C.hero.title),
+    put('heroTitle2',  C.hero.title2),
+    put('heroDesc',    C.hero.desc),
+    put('heroCta1',    C.hero.cta1),
+    attr('proofsTitle', 'proofsTitle'),
+    attr('proofsSub',   'proofsSub')
+  ];
+
+  if (hits.some(Boolean)) render();
+}
+
+document.addEventListener('DOMContentLoaded', () => { loadLiveContent(); }, { once: true });

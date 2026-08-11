@@ -20,13 +20,14 @@ const ASSETS = [
   ["url('assets/fonts/handicrafts-bold.woff2') format('woff2')",
    `url('${dataURI('assets/fonts/handicrafts-bold.woff2', 'font/woff2')}') format('woff2')`],
   ['src="assets/e-logo.png"',  `src="${dataURI('assets/e-logo.png', 'image/png')}"`],
-  /* صور البورتريه اتشالت من الريبو، والموقع بيحطّ الرسمة بدالها وقت التشغيل.
-     المعاينة بتعمل نفس الحاجة، بس من غير ما تستنى جافاسكريبت. */
-  ['src="assets/portraits/ahmed-orange-sm.jpg"',
+  ['src="assets/ahmed-portrait.svg"',
    `src="${dataURI('assets/ahmed-portrait.svg', 'image/svg+xml')}"`],
   ['href="assets/favicon.png"', `href="${dataURI('assets/favicon.png', 'image/png')}"`],
   /* المعاينة مالهاش صفحة رئيسية ترجع لها */
   ['<a href="index.html" class="brand">', '<a href="#/proofs" class="brand">'],
+  /* الثيم ملف منفصل، والمعاينة ملف واحد — فبيتحطّ جوّه وقت البناء */
+  ['<link rel="stylesheet" href="app-saas.css?v=3">',
+   '<style>\n' + readFileSync(resolve(root, 'app-saas.css'), 'utf8') + '\n</style>'],
   /* firebase-config.js مش موجود جنب الملف، والمعاينة قصدها الوضع التجريبي */
   ['<script src="firebase-config.js"></script>',
    '<!-- الوضع التجريبي: مفيش إعداد Firebase، والبيانات بتتخزن في المتصفح -->'],
@@ -54,6 +55,9 @@ for (const [from, to] of ASSETS) {
    المستند ونسيب المحتوى. المتصفح بيلمّ الباقي لوحده لو الملف اتفتح مباشرة،
    فنفس الملف بيشتغل في الحالتين.
 --------------------------------------------------------------------------- */
+/* <meta charset> بيفضل مكانه عن قصد: المعاينة بتتفتح من الملف مباشرة أو
+   من سيرفر بسيط مبيبعتش ترويسة ترميز، ومن غير الوسم ده المتصفح بيقرا
+   العربي بترميز غلط ويطلّع طلاسم. */
 const SKELETON = [
   /<!DOCTYPE html>\s*/i,
   /<html[^>]*>\s*/i,
@@ -62,7 +66,6 @@ const SKELETON = [
   /<body>\s*/i,
   /\s*<\/body>/i,
   /\s*<\/html>\s*/i,
-  /<meta charset="UTF-8">\s*/i,
   /<meta name="viewport"[^>]*>\s*/i,
   /<meta name="robots"[^>]*>\s*/i,
   /<link rel="icon"[^>]*>\s*/i
@@ -72,7 +75,11 @@ html = html.trim();
 
 /* اتجاه الصفحة كان على <html> اللي اتشال. بنرجّعه من أول سطر عشان الصفحة
    متتفتحش من الشمال للحظة قبل ما الستايل يشتغل. */
-html = `<script>document.documentElement.setAttribute('dir','rtl');` +
+/* الترميز لازم يسبق أي حاجة تانية عشان المتصفح ما يبدأش يقرا بترميز غلط
+   وبعدين يرجع يعيد التحليل. */
+html = html.replace(/<meta charset="UTF-8">\s*/i, '');
+html = `<meta charset="UTF-8">\n` +
+       `<script>document.documentElement.setAttribute('dir','rtl');` +
        `document.documentElement.setAttribute('lang','ar');<\/script>\n` + html;
 
 mkdirSync(resolve(root, 'preview'), { recursive: true });

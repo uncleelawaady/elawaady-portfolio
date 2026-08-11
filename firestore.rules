@@ -18,9 +18,12 @@ service cloud.firestore {
       function isSelf() { return signedIn() && request.auth.uid == uid; }
       function userEditableOnly() { return onlyChanged(['displayName','photoURL','bio','lastSeenAt','updatedAt']); }
       function userFieldsOnly() { return request.resource.data.keys().hasOnly(['uid','email','displayName','photoURL','bio','role','status','createdAt','updatedAt','lastSeenAt']); }
+      /* المالك بيوقف حساب أو يفعّله، وبس. حتى هو ما بيقدرش يغيّر الدور —
+         مفيش أي طريقة في المشروع كله ترقّي حساب لأدمن. */
+      function ownerUserUpdate() { return onlyChanged(['status','updatedAt']) && request.resource.data.status in ['active','blocked']; }
       allow read: if isSelf() || isOwner();
       allow create: if isSelf() && userFieldsOnly() && request.resource.data.role == 'user' && request.resource.data.status == 'active' && request.resource.data.uid == uid;
-      allow update: if isOwner() || (isSelf() && userEditableOnly());
+      allow update: if (isOwner() && ownerUserUpdate()) || (isSelf() && userEditableOnly());
       allow delete: if isOwner();
     }
 
@@ -33,9 +36,19 @@ service cloud.firestore {
       }
       function authorEditableOnly() { return onlyChanged(['title','body','rating','dealType','updatedAt']); }
       function mediaFieldsOnly() { return onlyChanged(['images','imageCount','updatedAt']); }
+      /* المالك بيراجع بس: يعتمد، يرفض، يخفي، يثبّت. مش بيقدر يعيد كتابة
+         نص المستخدم ولا نجومه ولا ينسب التقييم لحد تاني — ولا حتى هو.
+         moderatedBy لو اتغيّر لازم يبقى هو نفسه، عشان السجل يفضل صادق. */
+      function ownerModerationOnly() {
+        let d = request.resource.data;
+        return onlyChanged(['status','featured','moderatedBy','moderatedAt','updatedAt'])
+          && d.status in ['pending','approved','rejected','hidden']
+          && d.featured is bool
+          && (!changed().hasAny(['moderatedBy']) || d.moderatedBy == request.auth.uid);
+      }
       allow read: if resource.data.status == 'approved' || isOwner() || isAuthor();
       allow create: if signedIn() && validNewReview();
-      allow update: if isOwner() || (isAuthor() && resource.data.status == 'pending' && (authorEditableOnly() || mediaFieldsOnly()));
+      allow update: if (isOwner() && ownerModerationOnly()) || (isAuthor() && resource.data.status == 'pending' && (authorEditableOnly() || mediaFieldsOnly()));
       allow delete: if isOwner() || (isAuthor() && resource.data.status == 'pending');
     }
 

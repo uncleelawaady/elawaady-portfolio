@@ -115,9 +115,10 @@
       <li><a href="#projects"  data-ar="مشاريعي"  data-en="Projects">مشاريعي</a></li>
       <li><a href="#journey"   data-ar="رحلتي"    data-en="Journey">رحلتي</a></li>
       <li><a href="#network"   data-ar="شبكتي"    data-en="Network">شبكتي</a></li>
-      <li><a href="#proofs" class="nav-proofs" data-ar="إثباتات التعاملات" data-en="Proofs">إثباتات التعاملات</a></li>
+      <li><a href="#proofs" class="nav-proofs" data-ar="تعاملات سابقة" data-en="Past transactions">تعاملات سابقة</a></li>
       <li><a href="#channels"  data-ar="قنواتي"   data-en="Channels">قنواتي</a></li>
       <li><a href="#contact"   data-ar="تواصل"    data-en="Contact">تواصل</a></li>
+      <li class="nav-auth"><a class="nav-auth-link" href="app.html#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a></li>
     </ul>
 
     <div class="nav-actions">
@@ -158,7 +159,8 @@
 
     <div class="hero-cta">
       <a href="#expertise" class="btn btn-grad btn-lg"><svg class="ic"><use href="#i-layers"/></svg> <span id="heroCta1"></span></a>
-      <a href="#contact" class="btn btn-signature btn-lg"><svg class="ic"><use href="#i-send"/></svg> <span id="heroCta2"></span></a>
+      <a href="app.html#/new" class="btn btn-signature btn-lg"><svg class="ic"><use href="#i-shield"/></svg> <span data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</span></a>
+      <a href="#contact" class="btn btn-ghost btn-lg"><svg class="ic"><use href="#i-send"/></svg> <span id="heroCta2"></span></a>
     </div>
 
     <div class="hero-features" id="heroFeatures"></div>
@@ -191,8 +193,7 @@
 
       <div class="about-side reveal">
         <div class="portrait">
-          <img src="assets/portraits/ahmed-gray.jpg"
-               srcset="assets/portraits/ahmed-gray-sm.jpg 560w, assets/portraits/ahmed-gray.jpg 1024w"
+          <img src="assets/ahmed-portrait.svg"
                sizes="(max-width:900px) 90vw, 380px"
                alt="Ahmed Elawaady" width="1024" height="1280">
         </div>
@@ -296,21 +297,21 @@
     </div>
 
     <div class="shots-strip reveal" aria-label="صور">
-      <figure><img src="assets/portraits/ahmed-red-sm.jpg" alt="Ahmed Elawaady" width="560" height="700" loading="lazy"></figure>
-      <figure><img src="assets/portraits/ahmed-brown-sm.jpg" alt="Ahmed Elawaady" width="560" height="567" loading="lazy"></figure>
-      <figure><img src="assets/portraits/ahmed-orange-sm.jpg" alt="Ahmed Elawaady" width="560" height="739" loading="lazy"></figure>
+      <figure><img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="560" height="700" loading="lazy"></figure>
+      <figure><img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="560" height="567" loading="lazy"></figure>
+      <figure><img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="560" height="739" loading="lazy"></figure>
     </div>
   </div>
 </section>
 
-<!-- ===== Proofs — إثباتات تعاملات العوضي ===== -->
+<!-- ===== تعاملات سابقة — التقييمات المعتمدة ===== -->
 <section class="section proofs-sec" id="proofs">
   <div class="container">
     <div class="proofs-band reveal">
       <div class="proofs-copy">
-        <span class="eyebrow"><span class="dot"></span><span data-ar="إثباتات التعامل" data-en="Transaction proofs">إثباتات التعامل</span></span>
-        <h2 class="proofs-title" data-ar="إثباتات تعاملات العوضي" data-en="Elawaady transaction proofs">إثباتات تعاملات العوضي</h2>
-        <p class="proofs-sub"
+        <span class="eyebrow"><span class="dot"></span><span data-ar="تعاملات موثقة" data-en="Verified transactions">تعاملات موثقة</span></span>
+        <h2 class="proofs-title" id="proofsTitle" data-ar="تعاملات سابقة" data-en="Past transactions">تعاملات سابقة</h2>
+        <p class="proofs-sub" id="proofsSub"
            data-ar="تجارب حقيقية، تقييمات موثقة، وإثباتات تعامل وضمان."
            data-en="Real experiences, verified reviews, and proof of dealing and escrow.">
           تجارب حقيقية، تقييمات موثقة، وإثباتات تعامل وضمان.
@@ -323,7 +324,7 @@
         <div class="proofs-cta">
           <a href="app.html#/proofs" class="btn btn-grad btn-lg">
             <svg class="ic"><use href="#i-shield"/></svg>
-            <span data-ar="شوف الإثباتات" data-en="See the proofs">شوف الإثباتات</span>
+            <span data-ar="شوف التعاملات السابقة" data-en="See past transactions">شوف التعاملات السابقة</span>
           </a>
           <a href="app.html#/new" class="btn btn-signature btn-lg">
             <svg class="ic"><use href="#i-send"/></svg>
@@ -338,8 +339,7 @@
       </div>
 
       <div class="proofs-shot">
-        <img src="assets/portraits/ahmed-green.jpg"
-             srcset="assets/portraits/ahmed-green-sm.jpg 560w, assets/portraits/ahmed-green.jpg 1200w"
+        <img src="assets/ahmed-portrait.svg"
              sizes="(max-width:900px) 90vw, 420px"
              alt="أحمد العوضي" width="1200" height="1600" loading="lazy">
       </div>
@@ -424,8 +424,9 @@
   <a class="fab fab-wa" id="fabWa" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="ic"><use href="#i-whatsapp"/></svg></a>
 </div>
 
-<script src="content.js?v=5"></script>
-<script src="links.js?v=5"></script>
-<script src="script.js?v=5"></script>
+<script src="firebase-config.js?v=8"></script>
+<script src="content.js?v=8"></script>
+<script src="links.js?v=8"></script>
+<script src="script.js?v=8"></script>
 </body>
 </html>

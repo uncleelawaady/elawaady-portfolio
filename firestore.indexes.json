@@ -1,0 +1,39 @@
+{
+  "$comment": [
+    "فهارس Firestore. الاستعلامات المركّبة (فلتر على حقل + ترتيب على حقل تاني)",
+    "محتاجة فهرس، غير كده Firestore بيرفض الاستعلام.",
+    "",
+    "1) حساب المستخدم — listMine(): where uid == me + orderBy createdAt desc",
+    "2) الصفحة العامة — listApproved(): where status == approved + orderBy createdAt desc",
+    "3) صور الإثبات — بتتجاب بالتقييم اللي هي تحته",
+    "",
+    "listAll() بتاعة اللوحة ترتيب على حقل واحد بس، فمش محتاجة فهرس مركّب."
+  ],
+  "indexes": [
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid",       "order": "ASCENDING"  },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status",    "order": "ASCENDING"  },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "review_media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "reviewId",  "order": "ASCENDING"  },
+        { "fieldPath": "createdAt", "order": "ASCENDING"  }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
