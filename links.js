@@ -124,9 +124,10 @@ window.SITE_LINK_GROUPS = [
       setText(firstCta,'تعاملات سابقة','Previous dealings');
     }
 
+    /* استخدم الصورة الواضحة الوحيدة المعتمدة بدل ملفات البورتريه القديمة/الضبابية. */
     document.querySelectorAll('img[src*="assets/portraits/"]').forEach(function(img){
       img.removeAttribute('srcset');
-      img.setAttribute('src','assets/ahmed-portrait.svg');
+      img.setAttribute('src','assets/ahmed-cutout.png');
     });
   }
 
