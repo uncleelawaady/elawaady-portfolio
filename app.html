@@ -1219,6 +1219,26 @@ async function makeFirebaseBackend(cfg, ownerUid){
   const col  = () => F.collection(db, 'reviews');
   const rows = (snap) => snap.docs.map(d => ({ id:d.id, ...d.data() }));
 
+  /* المثبّت فوق، وبعدين الأحدث. serverTimestamp بيرجع null للحظة قبل ما
+     السيرفر يكتبه، فالتقييم اللي لسه اتبعت بيتحسب أحدث حاجة. */
+  const sortForDisplay = (list) => list.sort((a, b) =>
+    (b.featured ? 1 : 0) - (a.featured ? 1 : 0) ||
+    (ms(b.createdAt) || Infinity) - (ms(a.createdAt) || Infinity));
+
+  /* بتجرّب الاستعلام المرتّب، وبترجع للاستعلام العادي لو الفهرس المركّب
+     لسه ما اتعملش. أي خطأ تاني بيتمرّر زي ما هو. */
+  async function tryOrdered(filters, max){
+    const parts = [...filters, F.orderBy('createdAt','desc')];
+    if (max) parts.push(F.limit(max));
+    try {
+      return rows(await F.getDocs(F.query(col(), ...parts)));
+    } catch (e){
+      if (e && e.code !== 'failed-precondition') throw e;
+      console.warn('فهرس مركّب ناقص في Firestore — الترتيب بيتعمل في المتصفح.', e.message);
+      return rows(await F.getDocs(F.query(col(), ...filters)));
+    }
+  }
+
   /* صورة واحدة بعد التمويه والضغط → Cloudinary. المصغّرة مش بتترفع:
      بتتولّد من نفس الرابط بتحويل، فالرفع نصّه والتخزين نصّه. */
   const uploadOne = (uid, reviewId, blob) =>
@@ -1283,14 +1303,21 @@ async function makeFirebaseBackend(cfg, ownerUid){
       return up.url;
     }),
 
+    /* استعلام «فلتر على حقل + ترتيب على حقل تاني» محتاج فهرس مركّب في
+       Firestore. الفهارس مكتوبة في firestore.indexes.json، بس لو واحد
+       منهم لسه ما اتعملش السيرفر بيرد FAILED_PRECONDITION والصفحة تطلع
+       فاضية. فبنجرّب المرتّب الأول، ولو الفهرس ناقص بنجيب من غير ترتيب
+       ونرتّب هنا — الصفحة تفضل شغالة، والترتيب هو هو.
+
+       الترتيب النهائي بيتعمل هنا في الحالتين عشان المثبّت يطلع فوق؛ ده
+       ترتيب عرض مش استعلام. */
     listApproved: (max = 60) => run(async () =>
-      rows(await F.getDocs(F.query(col(), F.where('status','==','approved'),
-        F.orderBy('createdAt','desc'), F.limit(max))))),
+      sortForDisplay(await tryOrdered(
+        [F.where('status','==','approved')], max))),
 
     listMine: () => run(async () => {
       if (!user) return [];
-      return rows(await F.getDocs(F.query(col(), F.where('uid','==',user.uid),
-        F.orderBy('createdAt','desc'))));
+      return sortForDisplay(await tryOrdered([F.where('uid','==',user.uid)]));
     }),
 
     listAll: () => run(async () =>
