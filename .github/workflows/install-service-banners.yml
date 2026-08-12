@@ -1,0 +1,51 @@
+name: Install service banners
+on:
+  push:
+    paths:
+      - '.github/workflows/install-service-banners.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download supplied service banners
+        run: |
+          mkdir -p assets/banners
+          curl -fL 'https://files.oaiusercontent.com/file_000000009a20820aaf1cea6ba4e52b9f' -o assets/banners/security.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_00000000537482469471af8f92e520b1' -o assets/banners/offers.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_00000000913881f4854637eb2803b7ed' -o assets/banners/payments.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_000000001660820a8100a82b40da41da' -o assets/banners/digital-services.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_00000000bcf881f4b9d3e00270967689' -o assets/banners/numbers.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_00000000f09c8246bb53faa61ec725cd' -o assets/banners/email.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_00000000271c8246bf4278beb60691bd' -o assets/banners/escrow.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_000000007f7482468df20df79d42f0c3' -o assets/banners/business.jpg
+          curl -fL 'https://files.oaiusercontent.com/file_00000000efb481f4882c83c4cbcf1451' -o assets/banners/software.jpg
+      - name: Put banners in their matching sections
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          # Remove the black-suit portrait from About; gray portrait remains elsewhere if present.
+          s=s.replace('''        <div class="portrait">\n          <img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="1024" height="1365">\n        </div>\n''','')
+          # Banner strip under Expertise: each supplied category visual links to its relevant area.
+          marker='''    <div class="filter-row" id="filterRow"></div>\n'''
+          banners='''    <div class="service-banners" aria-label="الخدمات الرقمية">\n      <img src="assets/banners/digital-services.jpg" alt="الخدمات الرقمية" loading="lazy">\n      <img src="assets/banners/software.jpg" alt="البرامج والتراخيص" loading="lazy">\n      <img src="assets/banners/payments.jpg" alt="وسائل الدفع" loading="lazy">\n      <img src="assets/banners/numbers.jpg" alt="الأرقام والاتصالات" loading="lazy">\n      <img src="assets/banners/email.jpg" alt="البريد الإلكتروني" loading="lazy">\n      <img src="assets/banners/escrow.jpg" alt="الوساطة والبيع والشراء" loading="lazy">\n      <img src="assets/banners/business.jpg" alt="الأعمال والتسويق" loading="lazy">\n      <img src="assets/banners/offers.jpg" alt="العروض والخصومات" loading="lazy">\n      <img src="assets/banners/security.jpg" alt="الحماية والأمان" loading="lazy">\n    </div>\n'''
+          if 'class="service-banners"' not in s:
+              s=s.replace(marker, marker+banners)
+          p.write_text(s)
+          css=Path('style.css')
+          c=css.read_text()
+          if '.service-banners{' not in c:
+              c += '''\n/* Service category banners */\n.service-banners{display:grid;grid-template-columns:1fr;gap:18px;margin:24px 0 34px}.service-banners img{display:block;width:100%;height:auto;border-radius:24px;border:1px solid rgba(42,211,224,.28);box-shadow:0 14px 40px rgba(0,0,0,.18)}@media(min-width:900px){.service-banners{grid-template-columns:repeat(2,minmax(0,1fr))}}\n'''
+          css.write_text(c)
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html style.css assets/banners
+          git commit -m 'Remove black suit portrait and add service banners' || exit 0
+          git push
