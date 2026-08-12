@@ -1,0 +1,63 @@
+name: Keep gray portrait only
+
+on:
+  push:
+    paths:
+      - '.github/workflows/keep-gray-portrait-only.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Remove extra portraits from homepage
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Keep only the gray-suit portrait in the About section.
+          s = re.sub(
+              r'<img src="assets/portraits/ahmed-gray\.jpg"\s+srcset="assets/portraits/ahmed-gray-sm\.jpg 560w, assets/portraits/ahmed-gray\.jpg 1024w"\s+sizes="\(max-width:900px\) 90vw, 380px"\s+alt="Ahmed Elawaady" width="1024" height="1280">',
+              '<img src="assets/ahmed-portrait.svg" alt="Ahmed Elawaady" width="1024" height="1365">',
+              s,
+              count=1,
+              flags=re.S,
+          )
+
+          # Remove the three-photo strip under Vision.
+          s = re.sub(
+              r'\n\s*<div class="shots-strip reveal" aria-label="صور">.*?</div>',
+              '',
+              s,
+              count=1,
+              flags=re.S,
+          )
+
+          # Remove the extra portrait from the proofs card.
+          s = re.sub(
+              r'\n\s*<div class="proofs-shot">.*?</div>',
+              '',
+              s,
+              count=1,
+              flags=re.S,
+          )
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit homepage cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Keep only gray suit portrait on homepage"
+          git push origin HEAD:main
