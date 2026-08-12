@@ -1,0 +1,157 @@
+name: Finalize portfolio layout
+
+on:
+  push:
+    branches: [portfolio-finalize]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: portfolio-finalize
+
+      - name: Apply requested portfolio changes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          index = Path('index.html')
+          html = index.read_text(encoding='utf-8')
+
+          # 1) Remove “أضف تقييمك” from the main/mobile navigation.
+          html = re.sub(
+              r'\s*<li class="nav-review">\s*<a class="nav-review-link"[^>]*>.*?</a>\s*</li>',
+              '', html, count=1, flags=re.S
+          )
+
+          # 2) Put “أضف تقييمك” beside the primary hero CTA.
+          hero_anchor = '''<a href="#expertise" class="btn btn-grad btn-lg"><svg class="ic"><use href="#i-layers"/></svg> <span id="heroCta1"></span></a>'''
+          review_anchor = '''<a href="app.html?v=7#/new" class="btn btn-review btn-lg hero-review-cta"><svg class="ic"><use href="#i-send"/></svg> <span data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</span></a>'''
+          if review_anchor not in html and hero_anchor in html:
+              html = html.replace(hero_anchor, hero_anchor + '\n      ' + review_anchor, 1)
+
+          # 3) Use the new portraits in About.
+          html = re.sub(
+              r'<div class="portrait">\s*<img[^>]+>\s*</div>',
+              '''<div class="portrait portfolio-about-photo">\n          <img src="assets/portfolio-04.webp" alt="Ahmed Elawaady" width="400" height="500" loading="lazy">\n        </div>''',
+              html, count=1, flags=re.S
+          )
+
+          # 4) Remove the old repeated side-by-side portrait strip and replace it with the four supplied portraits.
+          html = re.sub(
+              r'<div class="shots-strip reveal" aria-label="صور">.*?</div>',
+              '''<div class="shots-strip portfolio-gallery reveal" aria-label="صور أحمد العوضي">\n      <figure><img src="assets/portfolio-01.jpg" alt="Ahmed Elawaady portrait 1" width="500" height="625" loading="lazy"></figure>\n      <figure><img src="assets/portfolio-02.webp" alt="Ahmed Elawaady portrait 2" width="400" height="500" loading="lazy"></figure>\n      <figure><img src="assets/portfolio-03.webp" alt="Ahmed Elawaady portrait 3" width="400" height="500" loading="lazy"></figure>\n      <figure><img src="assets/portfolio-04.webp" alt="Ahmed Elawaady portrait 4" width="400" height="500" loading="lazy"></figure>\n    </div>''',
+              html, count=1, flags=re.S
+          )
+
+          # 5) Use a supplied portrait in the transactions/proofs section too.
+          html = re.sub(
+              r'<div class="proofs-shot">\s*<img[^>]+>\s*</div>',
+              '''<div class="proofs-shot portfolio-proof-photo">\n        <img src="assets/portfolio-02.webp" alt="أحمد العوضي" width="400" height="500" loading="lazy">\n      </div>''',
+              html, count=1, flags=re.S
+          )
+
+          # Cache-bust CSS so the live site does not keep the old mobile layout.
+          html = re.sub(r'href="style\.css\?v=\d+"', 'href="style.css?v=8"', html, count=1)
+          index.write_text(html, encoding='utf-8')
+
+          css = Path('style.css')
+          style = css.read_text(encoding='utf-8')
+          marker = '/* === FINAL PORTFOLIO PORTRAITS + REVIEW CTA === */'
+          if marker not in style:
+              style += r'''
+
+/* === FINAL PORTFOLIO PORTRAITS + REVIEW CTA === */
+.hero-cta .hero-review-cta{
+  border:1px solid rgba(42,220,231,.58);
+  background:rgba(7,31,41,.72);
+  color:#49DDEA;
+  box-shadow:0 12px 34px rgba(0,196,210,.12);
+}
+.hero-cta .hero-review-cta:hover{
+  transform:translateY(-2px);
+  border-color:#49DDEA;
+  background:rgba(18,73,84,.92);
+}
+.portfolio-about-photo,
+.portfolio-proof-photo{
+  overflow:hidden;
+}
+.portfolio-about-photo img,
+.portfolio-proof-photo img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center top;
+}
+.portfolio-gallery{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:18px !important;
+  align-items:stretch;
+  margin-top:34px;
+}
+.portfolio-gallery figure{
+  margin:0;
+  min-width:0;
+  aspect-ratio:4 / 5;
+  overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(44,215,226,.28);
+  background:rgba(5,26,34,.62);
+  box-shadow:0 18px 55px rgba(0,0,0,.20);
+}
+.portfolio-gallery img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center top;
+}
+@media (max-width:900px){
+  .portfolio-gallery{
+    grid-template-columns:1fr !important;
+    gap:18px !important;
+  }
+  .portfolio-gallery figure{
+    width:min(100%,520px);
+    margin-inline:auto;
+    border-radius:24px;
+  }
+  .hero-cta{
+    flex-wrap:wrap;
+  }
+  .hero-cta .hero-review-cta{
+    min-width:210px;
+  }
+}
+@media (max-width:560px){
+  .hero-cta > .btn{
+    width:100%;
+    justify-content:center;
+  }
+  .portfolio-gallery figure{
+    border-radius:22px;
+  }
+}
+'''
+              css.write_text(style, encoding='utf-8')
+          PY
+
+      - name: Commit final layout
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html style.css
+          git diff --cached --quiet && exit 0
+          git commit -m "Finalize portrait gallery and move review CTA"
+          git push origin HEAD:portfolio-finalize
