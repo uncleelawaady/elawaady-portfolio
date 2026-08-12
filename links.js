@@ -1,21 +1,6 @@
 /* ===========================================================================
-   سجل روابط التواصل والمجتمعات — Seed / Fallback
-   ===========================================================================
-   مين الـSource of Truth؟
-
-     • قبل تشغيل Firebase  →  الملف ده. الصفحة بتقرا منه على طول.
-     • بعد تشغيل Firebase  →  **Firestore** (مجموعة `links`) هو المرجع.
-       الملف ده بيبقى حاجتين بس: النسخة اللي بتتزرع أول مرة، ونسخة
-       الطوارئ لو المجموعة طلعت فاضية.
-
-   يعني بعد التشغيل، تعديل الرابط بيتم من الداشبورد (app.html#/links) —
-   مش من الملف ده. لو عدّلت هنا بعد الزرع مش هيبان أي حاجة، غير لما تفتح
-   الداشبورد وتضغط «رجّع القائمة الأصلية»، وده بيمسح تعديلاتك من الداشبورد
-   ويرجّع نسخة الملف مكانها.
-
-   أي رابط قديم في أي ملف تاني اتشال، والروابط دي بس هي اللي بتتعرض.
-=========================================================================== */
-
+   روابط التواصل والمجتمعات — Seed / Fallback
+   =========================================================================== */
 window.SITE_LINKS = [
   { id:'off-store', type:'official', order:1, visible:true, platform:'store', title:'المتجر الرسمي | Elawaady XDigital', url:'https://elawaady.com' },
   { id:'off-wa-main', type:'official', order:2, visible:true, platform:'whatsapp', title:'واتساب | الرسمي', url:'https://wa.me/201055578777' },
@@ -74,63 +59,118 @@ window.SITE_LINK_GROUPS = [
   { type:'whatsapp_channel', ar:'قناة واتساب', en:'WhatsApp Channel' }
 ];
 
-/* دمج حساب المستخدم والتقييمات داخل القائمة الرئيسية بدون تغيير هوية الموقع. */
-(function(){
-  function setText(el, ar, en){
-    if(!el) return;
-    el.textContent=ar;
-    el.setAttribute('data-ar',ar);
-    if(en) el.setAttribute('data-en',en);
+/* ===========================================================================
+   التعديلات النهائية المطلوبة للبورتفوليو
+   - أضف تقييمك خارج القائمة الجانبية وداخل الهيرو
+   - استبدال الصور المكررة بالصور الأربع الجديدة
+   - موبايل: صورة واحدة في الصف، لا صورتان جنب بعض
+=========================================================================== */
+(function () {
+  function text(el, ar, en) {
+    if (!el) return;
+    el.textContent = ar;
+    el.setAttribute('data-ar', ar);
+    if (en) el.setAttribute('data-en', en);
   }
 
-  function patchPortfolio(){
-    if(!document.body || !document.querySelector('.hero')) return;
+  function installStyle() {
+    if (document.getElementById('portfolio-final-style')) return;
+    var s = document.createElement('style');
+    s.id = 'portfolio-final-style';
+    s.textContent = `
+      .nav-review{display:none!important}
+      .hero-review-cta{border:1px solid rgba(73,221,234,.58)!important;background:rgba(7,31,41,.74)!important;color:#49DDEA!important;box-shadow:0 12px 34px rgba(0,196,210,.12)!important}
+      .hero-review-cta:hover{transform:translateY(-2px);border-color:#49DDEA!important;background:rgba(18,73,84,.94)!important}
+      .portfolio-about-photo,.portfolio-proof-photo{overflow:hidden!important}
+      .portfolio-about-photo img,.portfolio-proof-photo img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center top!important}
+      .portfolio-gallery{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important;margin-top:34px!important}
+      .portfolio-gallery figure{margin:0!important;min-width:0!important;aspect-ratio:4/5!important;overflow:hidden!important;border-radius:28px!important;border:1px solid rgba(44,215,226,.28)!important;background:rgba(5,26,34,.62)!important;box-shadow:0 18px 55px rgba(0,0,0,.20)!important}
+      .portfolio-gallery img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center top!important}
+      @media(max-width:900px){.portfolio-gallery{grid-template-columns:1fr!important;gap:18px!important}.portfolio-gallery figure{width:min(100%,520px)!important;margin-inline:auto!important;border-radius:24px!important}.hero .hero-cta{flex-wrap:wrap!important}.hero-review-cta{min-width:210px!important}}
+      @media(max-width:560px){.hero .hero-cta>.btn{width:100%!important;justify-content:center!important}.portfolio-gallery figure{border-radius:22px!important}}
+    `;
+    document.head.appendChild(s);
+  }
 
-    /* رجوع صريح للهوية الفيروزية الأصلية. */
-    var theme=document.querySelector('meta[name="theme-color"]');
-    if(theme) theme.setAttribute('content','#071F29');
+  function patch() {
+    if (!document.body) return;
+    installStyle();
 
-    /* لو النسخة القديمة من الثيم المحقون موجودة في الكاش، شيلها. */
-    document.querySelectorAll('link[href*="saas.css"]').forEach(function(el){ el.remove(); });
-
-    var nav=document.querySelector('.nav-links');
-    if(nav){
-      var proofLink=nav.querySelector('a[href="#proofs"]');
-      setText(proofLink,'تعاملات سابقة','Previous dealings');
-
-      /* «أضف تقييمك» بقى في الـmarkup نفسه، مكانه الثابت جنب «خبراتي».
-         مش بنحقنه من هنا عشان ما يتحطش في آخر الشريط. */
-      var oldAuth=nav.querySelector('.nav-auth');
-      if(oldAuth) oldAuth.remove();
-
-      var loginLi=document.createElement('li');
-      loginLi.className='nav-auth';
-      loginLi.innerHTML='<a class="nav-auth-link" href="app.html?v=7#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a>';
+    /* القائمة: احذف أضف تقييمك منها، وخلي الدخول/التسجيل فقط. */
+    document.querySelectorAll('.nav-review').forEach(function (el) { el.remove(); });
+    var nav = document.querySelector('.nav-links');
+    if (nav && !nav.querySelector('.nav-auth')) {
+      var loginLi = document.createElement('li');
+      loginLi.className = 'nav-auth';
+      loginLi.innerHTML = '<a class="nav-auth-link" href="app.html?v=7#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a>';
       nav.appendChild(loginLi);
     }
 
-    var title=document.querySelector('.proofs-title');
-    setText(title,'تعاملات سابقة','Previous dealings');
-
-    var proofSec=document.querySelector('#proofs');
-    if(proofSec){
-      var badge=proofSec.querySelector('.eyebrow span:last-child');
-      setText(badge,'تجارب العملاء','Client experiences');
-      var sub=proofSec.querySelector('.proofs-sub');
-      setText(sub,'تقييمات موثقة وتجارب تعامل حقيقية تمت مراجعتها قبل النشر.','Verified reviews and real client experiences, reviewed before publishing.');
-      var note=proofSec.querySelector('.proofs-note');
-      setText(note,'استعرض التعاملات السابقة، أو سجّل دخولك واكتب تقييمك وارفع إثباتك من حسابك.','Browse previous dealings, or sign in to post your review and proof from your account.');
-      var firstCta=proofSec.querySelector('.proofs-cta a[href*="#/proofs"] span');
-      setText(firstCta,'تعاملات سابقة','Previous dealings');
+    /* الهيرو: الزر الأساسي يبقى استكشف مشاريعي، وأضف تقييمك جنبه. */
+    var hero = document.querySelector('.hero');
+    var heroCta = hero && hero.querySelector('.hero-cta');
+    if (heroCta) {
+      var first = heroCta.querySelector('a');
+      if (first) {
+        first.setAttribute('href', '#projects');
+        var firstSpan = first.querySelector('span');
+        text(firstSpan, 'استكشف مشاريعي', 'Explore my projects');
+      }
+      if (!heroCta.querySelector('.hero-review-cta')) {
+        var review = document.createElement('a');
+        review.href = 'app.html?v=7#/new';
+        review.className = 'btn btn-lg hero-review-cta';
+        review.innerHTML = '<svg class="ic"><use href="#i-send"/></svg><span data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</span>';
+        if (first && first.nextSibling) heroCta.insertBefore(review, first.nextSibling);
+        else heroCta.appendChild(review);
+      }
     }
 
-    /* استخدم الصورة الواضحة الوحيدة المعتمدة بدل ملفات البورتريه القديمة/الضبابية. */
-    document.querySelectorAll('img[src*="assets/portraits/"]').forEach(function(img){
-      img.removeAttribute('srcset');
-      img.setAttribute('src','assets/ahmed-cutout.png');
-    });
+    /* من أنا: صورة جديدة واضحة. */
+    var aboutImg = document.querySelector('#about .portrait img');
+    if (aboutImg) {
+      aboutImg.removeAttribute('srcset');
+      aboutImg.removeAttribute('sizes');
+      aboutImg.src = 'assets/portfolio-04.webp';
+      aboutImg.width = 400;
+      aboutImg.height = 500;
+      aboutImg.closest('.portrait') && aboutImg.closest('.portrait').classList.add('portfolio-about-photo');
+    }
+
+    /* احذف الشريط القديم الذي كان يعرض نفس الصورة جنب بعض، واعرض الأربع صور المرفقة. */
+    var strip = document.querySelector('.shots-strip');
+    if (strip) {
+      strip.classList.add('portfolio-gallery');
+      strip.setAttribute('aria-label', 'صور أحمد العوضي');
+      strip.innerHTML = [
+        ['assets/portfolio-01.jpg', 'Ahmed Elawaady portrait 1', 500, 625],
+        ['assets/portfolio-02.webp', 'Ahmed Elawaady portrait 2', 400, 500],
+        ['assets/portfolio-03.webp', 'Ahmed Elawaady portrait 3', 400, 500],
+        ['assets/portfolio-04.webp', 'Ahmed Elawaady portrait 4', 400, 500]
+      ].map(function (p) {
+        return '<figure><img src="' + p[0] + '" alt="' + p[1] + '" width="' + p[2] + '" height="' + p[3] + '" loading="lazy"></figure>';
+      }).join('');
+    }
+
+    /* قسم التعاملات السابقة: استخدم صورة جديدة بدل النسخ القديمة. */
+    var proofImg = document.querySelector('.proofs-shot img');
+    if (proofImg) {
+      proofImg.removeAttribute('srcset');
+      proofImg.removeAttribute('sizes');
+      proofImg.src = 'assets/portfolio-02.webp';
+      proofImg.width = 400;
+      proofImg.height = 500;
+      proofImg.closest('.proofs-shot') && proofImg.closest('.proofs-shot').classList.add('portfolio-proof-photo');
+    }
+
+    var proofLink = document.querySelector('.nav-links a[href="#proofs"]');
+    text(proofLink, 'تعاملات سابقة', 'Previous dealings');
+    text(document.querySelector('.proofs-title'), 'تعاملات سابقة', 'Previous dealings');
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',patchPortfolio,{once:true});
-  else patchPortfolio();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', patch, { once:true });
+  } else {
+    patch();
+  }
 })();
