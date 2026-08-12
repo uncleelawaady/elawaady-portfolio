@@ -1,20 +1,6 @@
 /* ===========================================================================
    سجل روابط التواصل والمجتمعات — Seed / Fallback
-   ===========================================================================
-   مين الـSource of Truth؟
-
-     • قبل تشغيل Firebase  →  الملف ده. الصفحة بتقرا منه على طول.
-     • بعد تشغيل Firebase  →  **Firestore** (مجموعة `links`) هو المرجع.
-       الملف ده بيبقى حاجتين بس: النسخة اللي بتتزرع أول مرة، ونسخة
-       الطوارئ لو المجموعة طلعت فاضية.
-
-   يعني بعد التشغيل، تعديل الرابط بيتم من الداشبورد (app.html#/links) —
-   مش من الملف ده. لو عدّلت هنا بعد الزرع مش هيبان أي حاجة، غير لما تفتح
-   الداشبورد وتضغط «رجّع القائمة الأصلية»، وده بيمسح تعديلاتك من الداشبورد
-   ويرجّع نسخة الملف مكانها.
-
-   أي رابط قديم في أي ملف تاني اتشال، والروابط دي بس هي اللي بتتعرض.
-=========================================================================== */
+   =========================================================================== */
 
 window.SITE_LINKS = [
   { id:'off-store', type:'official', order:1, visible:true, platform:'store', title:'المتجر الرسمي | Elawaady XDigital', url:'https://elawaady.com' },
@@ -74,7 +60,7 @@ window.SITE_LINK_GROUPS = [
   { type:'whatsapp_channel', ar:'قناة واتساب', en:'WhatsApp Channel' }
 ];
 
-/* دمج حساب المستخدم والتقييمات داخل القائمة الرئيسية بدون تغيير هوية الموقع. */
+/* تعديلات واجهة البورتفوليو: CTA التقييم + صور البورتفوليو الجديدة. */
 (function(){
   function setText(el, ar, en){
     if(!el) return;
@@ -86,11 +72,8 @@ window.SITE_LINK_GROUPS = [
   function patchPortfolio(){
     if(!document.body || !document.querySelector('.hero')) return;
 
-    /* رجوع صريح للهوية الفيروزية الأصلية. */
     var theme=document.querySelector('meta[name="theme-color"]');
     if(theme) theme.setAttribute('content','#071F29');
-
-    /* لو النسخة القديمة من الثيم المحقون موجودة في الكاش، شيلها. */
     document.querySelectorAll('link[href*="saas.css"]').forEach(function(el){ el.remove(); });
 
     var nav=document.querySelector('.nav-links');
@@ -98,20 +81,30 @@ window.SITE_LINK_GROUPS = [
       var proofLink=nav.querySelector('a[href="#proofs"]');
       setText(proofLink,'تعاملات سابقة','Previous dealings');
 
-      /* «أضف تقييمك» بقى في الـmarkup نفسه، مكانه الثابت جنب «خبراتي».
-         مش بنحقنه من هنا عشان ما يتحطش في آخر الشريط. */
+      /* التقييم خرج من القائمة الجانبية نهائيًا. */
+      var reviewNav=nav.querySelector('.nav-review');
+      if(reviewNav) reviewNav.remove();
+
       var oldAuth=nav.querySelector('.nav-auth');
       if(oldAuth) oldAuth.remove();
-
       var loginLi=document.createElement('li');
       loginLi.className='nav-auth';
       loginLi.innerHTML='<a class="nav-auth-link" href="app.html?v=7#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a>';
       nav.appendChild(loginLi);
     }
 
+    /* زر أضف تقييمك بجوار استكشف خبراتي في الواجهة الرئيسية. */
+    var heroCta=document.querySelector('.hero .hero-cta');
+    if(heroCta && !heroCta.querySelector('.hero-review-link')){
+      var review=document.createElement('a');
+      review.className='btn btn-ghost btn-lg hero-review-link';
+      review.href='app.html?v=7#/new';
+      review.innerHTML='<svg class="ic"><use href="#i-check-circle"/></svg><span data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</span>';
+      heroCta.insertBefore(review, heroCta.children[1] || null);
+    }
+
     var title=document.querySelector('.proofs-title');
     setText(title,'تعاملات سابقة','Previous dealings');
-
     var proofSec=document.querySelector('#proofs');
     if(proofSec){
       var badge=proofSec.querySelector('.eyebrow span:last-child');
@@ -124,11 +117,43 @@ window.SITE_LINK_GROUPS = [
       setText(firstCta,'تعاملات سابقة','Previous dealings');
     }
 
-    /* استخدم الصورة الواضحة الوحيدة المعتمدة بدل ملفات البورتريه القديمة/الضبابية. */
-    document.querySelectorAll('img[src*="assets/portraits/"]').forEach(function(img){
-      img.removeAttribute('srcset');
-      img.setAttribute('src','assets/ahmed-cutout.png');
-    });
+    /* الصور القديمة/المكررة تتبدل بالصور الجديدة المرفوعة. */
+    var aboutPortrait=document.querySelector('#about .portrait img');
+    if(aboutPortrait){
+      aboutPortrait.removeAttribute('srcset');
+      aboutPortrait.src='assets/portraits/portfolio-04.jpg';
+    }
+    var proofPortrait=document.querySelector('#proofs .proofs-shot img');
+    if(proofPortrait){
+      proofPortrait.removeAttribute('srcset');
+      proofPortrait.src='assets/portraits/portfolio-01.jpg';
+    }
+
+    var strip=document.querySelector('.shots-strip');
+    if(strip){
+      strip.classList.add('portfolio-photo-grid');
+      var photos=[
+        'assets/portraits/portfolio-01.jpg',
+        'assets/portraits/portfolio-02.jpg',
+        'assets/portraits/portfolio-03.jpg',
+        'assets/portraits/portfolio-04.jpg'
+      ];
+      strip.innerHTML=photos.map(function(src){
+        return '<figure><img src="'+src+'" alt="Ahmed Elawaady" loading="lazy"></figure>';
+      }).join('');
+    }
+
+    if(!document.getElementById('portfolio-photo-fix')){
+      var st=document.createElement('style');
+      st.id='portfolio-photo-fix';
+      st.textContent=''
+        +'.portfolio-photo-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:32px}'
+        +'.portfolio-photo-grid figure{margin:0!important;border:1px solid rgba(42,217,225,.25);border-radius:26px;overflow:hidden;background:#082b35;aspect-ratio:4/5}'
+        +'.portfolio-photo-grid img{display:block;width:100%;height:100%;object-fit:cover}'
+        +'.hero-review-link{border-color:rgba(42,217,225,.55)!important}'
+        +'@media(max-width:720px){.portfolio-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.portfolio-photo-grid figure{border-radius:20px}.hero .hero-cta{flex-wrap:wrap}.hero-review-link{order:2}}';
+      document.head.appendChild(st);
+    }
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',patchPortfolio,{once:true});
