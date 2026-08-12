@@ -1,7 +1,6 @@
 /* ===========================================================================
-   سجل روابط التواصل والمجتمعات — Seed / Fallback
+   روابط التواصل والمجتمعات — Seed / Fallback
    =========================================================================== */
-
 window.SITE_LINKS = [
   { id:'off-store', type:'official', order:1, visible:true, platform:'store', title:'المتجر الرسمي | Elawaady XDigital', url:'https://elawaady.com' },
   { id:'off-wa-main', type:'official', order:2, visible:true, platform:'whatsapp', title:'واتساب | الرسمي', url:'https://wa.me/201055578777' },
@@ -60,102 +59,104 @@ window.SITE_LINK_GROUPS = [
   { type:'whatsapp_channel', ar:'قناة واتساب', en:'WhatsApp Channel' }
 ];
 
-/* تعديلات واجهة البورتفوليو: CTA التقييم + صور البورتفوليو الجديدة. */
-(function(){
-  function setText(el, ar, en){
-    if(!el) return;
-    el.textContent=ar;
-    el.setAttribute('data-ar',ar);
-    if(en) el.setAttribute('data-en',en);
+(function () {
+  function setText(el, ar, en) {
+    if (!el) return;
+    el.textContent = ar;
+    el.setAttribute('data-ar', ar);
+    if (en) el.setAttribute('data-en', en);
   }
 
-  function patchPortfolio(){
-    if(!document.body || !document.querySelector('.hero')) return;
+  function installStyle() {
+    if (document.getElementById('portfolio-final-style')) return;
+    var s = document.createElement('style');
+    s.id = 'portfolio-final-style';
+    s.textContent = `
+      .nav-review{display:none!important}
+      .hero-review-cta{border:1px solid rgba(73,221,234,.58)!important;background:rgba(7,31,41,.74)!important;color:#49DDEA!important;box-shadow:0 12px 34px rgba(0,196,210,.12)!important}
+      .hero-review-cta:hover{transform:translateY(-2px);border-color:#49DDEA!important;background:rgba(18,73,84,.94)!important}
+      .portfolio-about-photo,.portfolio-proof-photo{overflow:hidden!important}
+      .portfolio-about-photo img,.portfolio-proof-photo img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center top!important}
+      .portfolio-gallery{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important;margin-top:34px!important}
+      .portfolio-gallery figure{margin:0!important;min-width:0!important;aspect-ratio:4/5!important;overflow:hidden!important;border-radius:28px!important;border:1px solid rgba(44,215,226,.28)!important;background:rgba(5,26,34,.62)!important;box-shadow:0 18px 55px rgba(0,0,0,.20)!important}
+      .portfolio-gallery img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center top!important}
+      @media(max-width:900px){.portfolio-gallery{grid-template-columns:1fr!important;gap:18px!important}.portfolio-gallery figure{width:min(100%,520px)!important;margin-inline:auto!important;border-radius:24px!important}.hero .hero-cta{flex-wrap:wrap!important}.hero-review-cta{min-width:210px!important}}
+      @media(max-width:560px){.hero .hero-cta>.btn{width:100%!important;justify-content:center!important}.portfolio-gallery figure{border-radius:22px!important}}
+    `;
+    document.head.appendChild(s);
+  }
 
-    var theme=document.querySelector('meta[name="theme-color"]');
-    if(theme) theme.setAttribute('content','#071F29');
-    document.querySelectorAll('link[href*="saas.css"]').forEach(function(el){ el.remove(); });
+  function patch() {
+    if (!document.body) return;
+    installStyle();
 
-    var nav=document.querySelector('.nav-links');
-    if(nav){
-      var proofLink=nav.querySelector('a[href="#proofs"]');
-      setText(proofLink,'تعاملات سابقة','Previous dealings');
-
-      /* التقييم خرج من القائمة الجانبية نهائيًا. */
-      var reviewNav=nav.querySelector('.nav-review');
-      if(reviewNav) reviewNav.remove();
-
-      var oldAuth=nav.querySelector('.nav-auth');
-      if(oldAuth) oldAuth.remove();
-      var loginLi=document.createElement('li');
-      loginLi.className='nav-auth';
-      loginLi.innerHTML='<a class="nav-auth-link" href="app.html?v=7#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a>';
+    document.querySelectorAll('.nav-review').forEach(function (el) { el.remove(); });
+    var nav = document.querySelector('.nav-links');
+    if (nav) {
+      var oldAuth = nav.querySelector('.nav-auth');
+      if (oldAuth) oldAuth.remove();
+      var loginLi = document.createElement('li');
+      loginLi.className = 'nav-auth';
+      loginLi.innerHTML = '<a class="nav-auth-link" href="app.html?v=7#/login" data-ar="دخول / تسجيل" data-en="Login / Register">دخول / تسجيل</a>';
       nav.appendChild(loginLi);
     }
 
-    /* زر أضف تقييمك بجوار استكشف خبراتي في الواجهة الرئيسية. */
-    var heroCta=document.querySelector('.hero .hero-cta');
-    if(heroCta && !heroCta.querySelector('.hero-review-link')){
-      var review=document.createElement('a');
-      review.className='btn btn-ghost btn-lg hero-review-link';
-      review.href='app.html?v=7#/new';
-      review.innerHTML='<svg class="ic"><use href="#i-check-circle"/></svg><span data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</span>';
-      heroCta.insertBefore(review, heroCta.children[1] || null);
+    var hero = document.querySelector('.hero');
+    var heroCta = hero && hero.querySelector('.hero-cta');
+    if (heroCta) {
+      var first = heroCta.querySelector('a');
+      if (first) {
+        first.setAttribute('href', '#projects');
+        setText(first.querySelector('span'), 'استكشف مشاريعي', 'Explore my projects');
+      }
+      if (!heroCta.querySelector('.hero-review-cta')) {
+        var review = document.createElement('a');
+        review.href = 'app.html?v=7#/new';
+        review.className = 'btn btn-lg hero-review-cta';
+        review.innerHTML = '<svg class="ic"><use href="#i-send"/></svg><span data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</span>';
+        if (first && first.nextSibling) heroCta.insertBefore(review, first.nextSibling);
+        else heroCta.appendChild(review);
+      }
     }
 
-    var title=document.querySelector('.proofs-title');
-    setText(title,'تعاملات سابقة','Previous dealings');
-    var proofSec=document.querySelector('#proofs');
-    if(proofSec){
-      var badge=proofSec.querySelector('.eyebrow span:last-child');
-      setText(badge,'تجارب العملاء','Client experiences');
-      var sub=proofSec.querySelector('.proofs-sub');
-      setText(sub,'تقييمات موثقة وتجارب تعامل حقيقية تمت مراجعتها قبل النشر.','Verified reviews and real client experiences, reviewed before publishing.');
-      var note=proofSec.querySelector('.proofs-note');
-      setText(note,'استعرض التعاملات السابقة، أو سجّل دخولك واكتب تقييمك وارفع إثباتك من حسابك.','Browse previous dealings, or sign in to post your review and proof from your account.');
-      var firstCta=proofSec.querySelector('.proofs-cta a[href*="#/proofs"] span');
-      setText(firstCta,'تعاملات سابقة','Previous dealings');
+    var aboutImg = document.querySelector('#about .portrait img');
+    if (aboutImg) {
+      aboutImg.removeAttribute('srcset');
+      aboutImg.removeAttribute('sizes');
+      aboutImg.src = 'assets/portfolio-04.webp';
+      aboutImg.width = 400;
+      aboutImg.height = 500;
+      if (aboutImg.closest('.portrait')) aboutImg.closest('.portrait').classList.add('portfolio-about-photo');
     }
 
-    /* الصور القديمة/المكررة تتبدل بالصور الجديدة المرفوعة. */
-    var aboutPortrait=document.querySelector('#about .portrait img');
-    if(aboutPortrait){
-      aboutPortrait.removeAttribute('srcset');
-      aboutPortrait.src='assets/portraits/portfolio-04.jpg';
-    }
-    var proofPortrait=document.querySelector('#proofs .proofs-shot img');
-    if(proofPortrait){
-      proofPortrait.removeAttribute('srcset');
-      proofPortrait.src='assets/portraits/portfolio-01.jpg';
-    }
-
-    var strip=document.querySelector('.shots-strip');
-    if(strip){
-      strip.classList.add('portfolio-photo-grid');
-      var photos=[
-        'assets/portraits/portfolio-01.jpg',
-        'assets/portraits/portfolio-02.jpg',
-        'assets/portraits/portfolio-03.jpg',
-        'assets/portraits/portfolio-04.jpg'
-      ];
-      strip.innerHTML=photos.map(function(src){
-        return '<figure><img src="'+src+'" alt="Ahmed Elawaady" loading="lazy"></figure>';
+    var strip = document.querySelector('.shots-strip');
+    if (strip) {
+      strip.classList.add('portfolio-gallery');
+      strip.setAttribute('aria-label', 'صور أحمد العوضي');
+      strip.innerHTML = [
+        ['assets/portfolio-01.jpg', 'Ahmed Elawaady portrait 1', 500, 625],
+        ['assets/portfolio-02.webp', 'Ahmed Elawaady portrait 2', 400, 500],
+        ['assets/portfolio-03.webp', 'Ahmed Elawaady portrait 3', 400, 500],
+        ['assets/portfolio-04.webp', 'Ahmed Elawaady portrait 4', 400, 500]
+      ].map(function (p) {
+        return '<figure><img src="' + p[0] + '" alt="' + p[1] + '" width="' + p[2] + '" height="' + p[3] + '" loading="lazy"></figure>';
       }).join('');
     }
 
-    if(!document.getElementById('portfolio-photo-fix')){
-      var st=document.createElement('style');
-      st.id='portfolio-photo-fix';
-      st.textContent=''
-        +'.portfolio-photo-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:32px}'
-        +'.portfolio-photo-grid figure{margin:0!important;border:1px solid rgba(42,217,225,.25);border-radius:26px;overflow:hidden;background:#082b35;aspect-ratio:4/5}'
-        +'.portfolio-photo-grid img{display:block;width:100%;height:100%;object-fit:cover}'
-        +'.hero-review-link{border-color:rgba(42,217,225,.55)!important}'
-        +'@media(max-width:720px){.portfolio-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.portfolio-photo-grid figure{border-radius:20px}.hero .hero-cta{flex-wrap:wrap}.hero-review-link{order:2}}';
-      document.head.appendChild(st);
+    var proofImg = document.querySelector('.proofs-shot img');
+    if (proofImg) {
+      proofImg.removeAttribute('srcset');
+      proofImg.removeAttribute('sizes');
+      proofImg.src = 'assets/portfolio-02.webp';
+      proofImg.width = 400;
+      proofImg.height = 500;
+      if (proofImg.closest('.proofs-shot')) proofImg.closest('.proofs-shot').classList.add('portfolio-proof-photo');
     }
+
+    setText(document.querySelector('.nav-links a[href="#proofs"]'), 'تعاملات سابقة', 'Previous dealings');
+    setText(document.querySelector('.proofs-title'), 'تعاملات سابقة', 'Previous dealings');
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',patchPortfolio,{once:true});
-  else patchPortfolio();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patch, { once:true });
+  else patch();
 })();
