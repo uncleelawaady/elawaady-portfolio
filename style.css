@@ -680,3 +680,65 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
   html{scroll-behavior:auto}
   .reveal{opacity:1;transform:none}
 }
+
+/* =====================================================================
+   شريط التقييمات المعتمدة — عرض أفقي قابل للسحب على الصفحة الرئيسية
+   يُملأ ديناميكياً من reviews-strip.js
+   ===================================================================== */
+.reviews-strip-wrap{margin-block-start:28px;position:relative}
+.reviews-strip{
+  display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding-block:4px 14px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--turquoise) transparent;
+}
+.reviews-strip::-webkit-scrollbar{height:8px}
+.reviews-strip::-webkit-scrollbar-track{background:transparent}
+.reviews-strip::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px}
+.reviews-strip::-webkit-scrollbar-thumb:hover{background:var(--turquoise)}
+
+.review-chip{
+  flex:0 0 auto;width:min(320px,78vw);scroll-snap-align:start;
+  border-radius:var(--radius);border:1px solid var(--line);
+  background:var(--glass);padding:20px;display:flex;flex-direction:column;gap:10px;
+  transition:border-color .25s,box-shadow .25s,transform .25s;
+}
+.review-chip:hover{transform:translateY(-3px);border-color:rgba(16,181,191,.4);box-shadow:var(--glow)}
+.review-chip.is-featured{border-color:rgba(255,138,28,.45);box-shadow:0 0 0 1px rgba(255,138,28,.14)}
+
+.review-chip-head{display:flex;align-items:flex-start;gap:12px}
+.review-avatar{
+  width:42px;height:42px;border-radius:50%;flex:0 0 auto;object-fit:cover;
+  border:1px solid var(--line);background:var(--surface-2);
+}
+.review-avatar-fallback{
+  display:flex;align-items:center;justify-content:center;font-weight:900;
+  font-size:1.05rem;color:#fff;background:var(--grad);
+}
+.review-chip-who{display:flex;flex-direction:column;gap:5px;min-width:0}
+.review-chip-who strong{font-size:.95rem;color:var(--text)}
+
+.review-stars{display:inline-flex;gap:2px}
+.review-star{width:.85em;height:.85em;color:var(--line);stroke-width:1.4}
+.review-star.on{color:var(--orange);fill:var(--orange)}
+
+.review-chip-title{font-size:.98rem;font-weight:800;color:var(--text);line-height:1.5}
+.review-chip-body{
+  font-size:.9rem;color:var(--muted);line-height:1.75;flex:1;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;
+}
+.review-chip-foot{display:flex;flex-wrap:wrap;gap:8px;margin-block-start:4px}
+.review-chip-tag{
+  font-size:.74rem;font-weight:700;color:var(--accent-ink);
+  background:var(--chip-bg);border:1px solid var(--line);border-radius:999px;
+  padding:4px 11px;
+}
+
+.review-chip-loading,.review-chip-empty,.review-chip-more{
+  align-items:center;justify-content:center;text-align:center;gap:14px;
+}
+.review-chip-loading span,.review-chip-empty p{color:var(--muted);font-size:.9rem}
+.review-chip-more{width:min(220px,60vw)}
+
+@media (max-width:560px){
+  .review-chip{width:82vw}
+}

@@ -1141,6 +1141,16 @@ async function makeFirebaseBackend(cfg, ownerUid){
   const col  = () => F.collection(db, 'reviews');
   const rows = (snap) => snap.docs.map(d => ({ id:d.id, ...d.data() }));
 
+  /* ترتيب محلي بعد الجلب — بديل orderBy داخل الاستعلام.
+     دمج where + orderBy على حقلين مختلفين في Firestore يتطلب فهرساً مركّباً
+     (Composite Index) لم يُنشأ لهذا المشروع؛ عند غيابه يفشل الاستعلام ويُعرض
+     خطأ تقني للزائر بدل التقييمات — وهو ما كان يحدث فعلياً في صفحة
+     الإثباتات وصفحة "حسابي". الحل: نجلب بـ where فقط (لا يحتاج فهرساً
+     مركّباً) ثم نرتّب النتائج بالجافاسكريبت. */
+  const createdMs = (v) => (v && typeof v.toMillis === 'function') ? v.toMillis()
+    : (v ? (Date.parse(v) || 0) : 0);
+  const byNewest = (a, b) => createdMs(b.createdAt) - createdMs(a.createdAt);
+
   /* صورة واحدة بعد التمويه والضغط → Cloudinary. المصغّرة مش بتترفع:
      بتتولّد من نفس الرابط بتحويل، فالرفع نصّه والتخزين نصّه. */
   const uploadOne = (uid, reviewId, blob) =>
@@ -1205,14 +1215,15 @@ async function makeFirebaseBackend(cfg, ownerUid){
       return up.url;
     }),
 
-    listApproved: (max = 60) => run(async () =>
-      rows(await F.getDocs(F.query(col(), F.where('status','==','approved'),
-        F.orderBy('createdAt','desc'), F.limit(max))))),
+    listApproved: (max = 60) => run(async () => {
+      const list = rows(await F.getDocs(F.query(col(), F.where('status','==','approved'))));
+      return list.sort(byNewest).slice(0, max);
+    }),
 
     listMine: () => run(async () => {
       if (!user) return [];
-      return rows(await F.getDocs(F.query(col(), F.where('uid','==',user.uid),
-        F.orderBy('createdAt','desc'))));
+      const list = rows(await F.getDocs(F.query(col(), F.where('uid','==',user.uid))));
+      return list.sort(byNewest);
     }),
 
     listAll: () => run(async () =>
