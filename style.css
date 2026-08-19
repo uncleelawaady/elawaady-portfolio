@@ -685,17 +685,24 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
    شريط التقييمات المعتمدة — عرض أفقي قابل للسحب على الصفحة الرئيسية
    يُملأ ديناميكياً من reviews-strip.js
    ===================================================================== */
+/* خلفية القسم = نسيج الجلد البرتقالي المرفق، مع طبقة تعتيم للحفاظ على
+   وضوح النص والكروت الزجاجية فوقها. الحدّ والتوهج التركوازي أُبقيا كلون
+   مميّز يبرز فوق البرتقالي بدل تحويل القسم بالكامل لدرجات برتقالية. */
 .reviews-strip-wrap{
   margin-block-start:34px;position:relative;width:100%;
-  border-radius:var(--radius-lg);border:1px solid rgba(16,181,191,.24);
+  border-radius:var(--radius-lg);border:1px solid rgba(32,214,227,.35);
   background:
-    radial-gradient(120% 160% at 0% 0%, rgba(16,181,191,.1), transparent 55%),
-    var(--surface);
+    linear-gradient(165deg, rgba(7,20,26,.62), rgba(7,20,26,.82)),
+    url('assets/bg-leather.jpg') center / cover no-repeat;
   padding:26px 24px 22px;
+  box-shadow:0 18px 50px rgba(4,20,27,.4);
 }
 .reviews-strip-head{display:flex;align-items:center;gap:10px;margin-block-end:18px}
-.reviews-strip-head .ic{width:1.3rem;height:1.3rem;color:var(--turquoise)}
-.reviews-strip-head h3{font-size:clamp(1.15rem,2.4vw,1.5rem);font-weight:900;color:var(--text)}
+.reviews-strip-head .ic{width:1.3rem;height:1.3rem;color:var(--aqua)}
+.reviews-strip-head h3{
+  font-size:clamp(1.15rem,2.4vw,1.5rem);font-weight:900;color:#fff;
+  text-shadow:0 1px 6px rgba(0,0,0,.4);
+}
 
 .reviews-strip{
   display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
