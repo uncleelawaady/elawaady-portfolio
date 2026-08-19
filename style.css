@@ -685,7 +685,18 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
    شريط التقييمات المعتمدة — عرض أفقي قابل للسحب على الصفحة الرئيسية
    يُملأ ديناميكياً من reviews-strip.js
    ===================================================================== */
-.reviews-strip-wrap{margin-block-start:28px;position:relative}
+.reviews-strip-wrap{
+  margin-block-start:34px;position:relative;width:100%;
+  border-radius:var(--radius-lg);border:1px solid rgba(16,181,191,.24);
+  background:
+    radial-gradient(120% 160% at 0% 0%, rgba(16,181,191,.1), transparent 55%),
+    var(--surface);
+  padding:26px 24px 22px;
+}
+.reviews-strip-head{display:flex;align-items:center;gap:10px;margin-block-end:18px}
+.reviews-strip-head .ic{width:1.3rem;height:1.3rem;color:var(--turquoise)}
+.reviews-strip-head h3{font-size:clamp(1.15rem,2.4vw,1.5rem);font-weight:900;color:var(--text)}
+
 .reviews-strip{
   display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
   padding-block:4px 14px;-webkit-overflow-scrolling:touch;
@@ -699,11 +710,22 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 .review-chip{
   flex:0 0 auto;width:min(320px,78vw);scroll-snap-align:start;
   border-radius:var(--radius);border:1px solid var(--line);
-  background:var(--glass);padding:20px;display:flex;flex-direction:column;gap:10px;
+  background:var(--glass);overflow:hidden;display:flex;flex-direction:column;
   transition:border-color .25s,box-shadow .25s,transform .25s;
 }
 .review-chip:hover{transform:translateY(-3px);border-color:rgba(16,181,191,.4);box-shadow:var(--glow)}
 .review-chip.is-featured{border-color:rgba(255,138,28,.45);box-shadow:0 0 0 1px rgba(255,138,28,.14)}
+
+/* صورة إثبات التعامل — أول ما تلفت النظر في الكارت، زي البوسترات المرجعية */
+.review-proofs{position:relative;aspect-ratio:16/10;background:var(--surface-2)}
+.review-proof-img{width:100%;height:100%;object-fit:cover;display:block}
+.review-proofs-count{
+  position:absolute;bottom:9px;inset-inline-end:9px;
+  background:rgba(7,31,41,.72);color:#fff;font-size:.72rem;font-weight:800;
+  padding:3px 9px;border-radius:999px;backdrop-filter:blur(4px);
+}
+
+.review-chip-body-wrap{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
 
 .review-chip-head{display:flex;align-items:flex-start;gap:12px}
 .review-avatar{
@@ -714,12 +736,22 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
   display:flex;align-items:center;justify-content:center;font-weight:900;
   font-size:1.05rem;color:#fff;background:var(--grad);
 }
-.review-chip-who{display:flex;flex-direction:column;gap:5px;min-width:0}
+.review-chip-who{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
 .review-chip-who strong{font-size:.95rem;color:var(--text)}
 
 .review-stars{display:inline-flex;gap:2px}
 .review-star{width:.85em;height:.85em;color:var(--line);stroke-width:1.4}
 .review-star.on{color:var(--orange);fill:var(--orange)}
+
+/* شارة "تقييم معتمد" — كل تقييم في هذا الشريط approved فعلياً من صاحب الموقع،
+   فالشارة توثّق حقيقة موجودة في البيانات، لا ادّعاءً غير قابل للتحقق. */
+.review-verified{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;
+  font-size:.7rem;font-weight:800;color:var(--turquoise);
+  background:rgba(16,181,191,.1);border:1px solid rgba(16,181,191,.3);
+  border-radius:999px;padding:4px 9px;white-space:nowrap;
+}
+.review-verified .ic{width:.85em;height:.85em}
 
 .review-chip-title{font-size:.98rem;font-weight:800;color:var(--text);line-height:1.5}
 .review-chip-body{
@@ -734,11 +766,12 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 }
 
 .review-chip-loading,.review-chip-empty,.review-chip-more{
-  align-items:center;justify-content:center;text-align:center;gap:14px;
+  align-items:center;justify-content:center;text-align:center;gap:14px;padding:20px;
 }
 .review-chip-loading span,.review-chip-empty p{color:var(--muted);font-size:.9rem}
 .review-chip-more{width:min(220px,60vw)}
 
 @media (max-width:560px){
   .review-chip{width:82vw}
+  .reviews-strip-wrap{padding:20px 16px 18px}
 }

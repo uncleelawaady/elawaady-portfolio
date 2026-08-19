@@ -139,9 +139,49 @@
     return wrap;
   }
 
+  function verifiedBadge() {
+    const L = lang();
+    const b = el('span', 'review-verified');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'ic');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-check-circle');
+    svg.appendChild(use);
+    b.appendChild(svg);
+    b.appendChild(document.createTextNode(L === 'ar' ? 'تقييم معتمد' : 'Verified review'));
+    return b;
+  }
+
+  /* صور إثبات التعامل — هي جوهر هذا الشريط: نفس الصور اللي المستخدم رفعها
+     مع تقييمه، وتُحفظ داخل مستند التقييم نفسه (review.images) بعد رفعها
+     على Cloudinary في submitReview بـ app.html. كل رابط https فقط. */
+  function proofShots(r) {
+    const L = lang();
+    const images = Array.isArray(r.images) ? r.images : [];
+    const urls = images.map((im) => safeHttpsUrl(im && im.url)).filter(Boolean);
+    if (!urls.length) return null;
+
+    const wrap = el('div', 'review-proofs');
+    const first = el('img', 'review-proof-img');
+    first.src = urls[0];
+    first.alt = L === 'ar' ? 'صورة إثبات التعامل' : 'Transaction proof screenshot';
+    first.loading = 'lazy';
+    first.referrerPolicy = 'no-referrer';
+    wrap.appendChild(first);
+    if (urls.length > 1) {
+      wrap.appendChild(el('span', 'review-proofs-count', '+' + (urls.length - 1)));
+    }
+    return wrap;
+  }
+
   function reviewCard(r) {
     const L = lang();
     const card = el('article', 'review-chip' + (r.featured ? ' is-featured' : ''));
+
+    const proofs = proofShots(r);
+    if (proofs) card.appendChild(proofs);
+
+    const body = el('div', 'review-chip-body-wrap');
 
     const head = el('div', 'review-chip-head');
     const photo = safeHttpsUrl(r.authorPhoto);
@@ -149,6 +189,7 @@
       const img = el('img', 'review-avatar');
       img.src = photo;
       img.alt = '';
+      img.loading = 'lazy';
       img.referrerPolicy = 'no-referrer';
       head.appendChild(img);
     } else {
@@ -159,16 +200,18 @@
     nameWrap.appendChild(el('strong', null, r.authorName || (L === 'ar' ? 'عميل' : 'Client')));
     nameWrap.appendChild(starRow(r.rating));
     head.appendChild(nameWrap);
-    card.appendChild(head);
+    head.appendChild(verifiedBadge());
+    body.appendChild(head);
 
-    if (r.title) card.appendChild(el('h4', 'review-chip-title', r.title));
-    card.appendChild(el('p', 'review-chip-body', r.body || ''));
+    if (r.title) body.appendChild(el('h4', 'review-chip-title', r.title));
+    body.appendChild(el('p', 'review-chip-body', r.body || ''));
 
     const foot = el('div', 'review-chip-foot');
     const dl = DEAL_LABELS[r.dealType];
     if (dl) foot.appendChild(el('span', 'review-chip-tag', dl[L] || dl.ar));
-    card.appendChild(foot);
+    body.appendChild(foot);
 
+    card.appendChild(body);
     return card;
   }
 

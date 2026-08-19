@@ -116,7 +116,7 @@
       <li><a href="#projects"  data-ar="مشاريعي"  data-en="Projects">مشاريعي</a></li>
       <li><a href="#journey"   data-ar="رحلتي"    data-en="Journey">رحلتي</a></li>
       <li><a href="#network"   data-ar="شبكتي"    data-en="Network">شبكتي</a></li>
-      <li><a href="#proofs" class="nav-proofs" data-ar="إثباتات التعاملات" data-en="Proofs">إثباتات التعاملات</a></li>
+      <li><a href="#guarantees" class="nav-proofs" data-ar="التقييمات والضمانات" data-en="Reviews &amp; Guarantees">التقييمات والضمانات</a></li>
       <li><a href="#channels"  data-ar="قنواتي"   data-en="Channels">قنواتي</a></li>
       <li><a href="#contact"   data-ar="تواصل"    data-en="Contact">تواصل</a></li>
     </ul>
@@ -330,8 +330,12 @@
       </div>
     </div>
 
-    <!-- تقييمات حقيقية معتمدة — شريط أفقي قابل للسحب، يُملأ من Firestore مباشرة -->
-    <div class="reviews-strip-wrap reveal">
+    <!-- تقييمات حقيقية معتمدة — شريط أفقي بعرض الموقع، يُملأ من Firestore مباشرة -->
+    <div class="reviews-strip-wrap reveal" id="guarantees">
+      <div class="reviews-strip-head">
+        <svg class="ic"><use href="#i-shield"/></svg>
+        <h3 data-ar="التقييمات والضمانات" data-en="Reviews &amp; Guarantees">التقييمات والضمانات</h3>
+      </div>
       <div class="reviews-strip" id="reviewsStrip" aria-live="polite">
         <div class="review-chip review-chip-loading">
           <span data-ar="بنجيب التقييمات المعتمدة…" data-en="Loading approved reviews…">بنجيب التقييمات المعتمدة…</span>
