@@ -21,7 +21,7 @@
 
 /* ===== نفس رموز الهوية اللي في style.css ===== */
 :root{
-  --turquoise:#8F0000; --cyan:#660000; --aqua:#FFD400; --orange:#FFC900;
+  --turquoise:#8F0000; --cyan:#660000; --aqua:#660000; --orange:#660000;
   --bg:#FFFFFF; --bg-2:#F8F8F5; --surface:#FFFFFF; --surface-2:#F8F8F5;
   --line:#EDE3E3; --line-soft:#F2EBEB;
   --text:#111111; --muted:#6B6B6B; --dim:#9A9A9A;
@@ -81,7 +81,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .btn-ghost:hover:not([disabled]){border-color:var(--turquoise);background:rgba(143,0,0,.12)}
 .btn-ok{background:rgba(46,212,122,.14);border-color:rgba(46,212,122,.45);color:var(--ok)}
 .btn-bad{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.42);color:var(--bad)}
-.btn-warn{background:rgba(255,201,0,.1);border-color:rgba(255,201,0,.45);color:var(--orange)}
+.btn-warn{background:rgba(255,49,49,.1);border-color:rgba(255,49,49,.45);color:var(--orange)}
 .btn-sm{padding:8px 15px;font-size:.84rem}
 .btn.block{width:100%}
 
@@ -117,7 +117,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .page{padding-block:36px 80px}
 .page-head{margin-block-end:26px}
 .eyebrow{display:inline-flex;align-items:center;gap:7px;padding:6px 15px;border-radius:999px;
-  background:rgba(143,0,0,.12);border:1px solid rgba(255,212,0,.32);
+  background:rgba(143,0,0,.12);border:1px solid rgba(255,49,49,.32);
   color:var(--accent-ink);font-weight:700;font-size:.78rem}
 h1.title{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;line-height:1.3;margin-block:12px 6px}
 .sub{color:var(--muted);font-size:.96rem;max-width:62ch}
@@ -159,7 +159,7 @@ textarea.input{resize:vertical;min-height:130px}
 .stars{display:inline-flex;flex-direction:row-reverse;gap:4px}
 .stars button{font-size:1.9rem;line-height:1;color:var(--line);transition:.15s;
   padding:8px;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
-.stars button.lit{color:var(--orange);text-shadow:0 0 16px rgba(255,201,0,.5)}
+.stars button.lit{color:var(--orange);text-shadow:0 0 16px rgba(255,49,49,.5)}
 .stars button:hover{transform:scale(1.14)}
 .stars-ro{color:var(--orange);letter-spacing:2px;font-size:1.05rem;direction:ltr;display:inline-block}
 .stars-ro .off{color:var(--line)}
@@ -171,12 +171,12 @@ textarea.input{resize:vertical;min-height:130px}
 .pill.approved{background:rgba(46,212,122,.12);border-color:rgba(46,212,122,.4);color:var(--ok)}
 .pill.rejected{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4);color:var(--bad)}
 .pill.hidden  {background:var(--chip-bg);border-color:var(--line);color:var(--dim)}
-.pill.featured{background:rgba(255,201,0,.12);border-color:rgba(255,201,0,.45);color:var(--orange)}
+.pill.featured{background:rgba(255,49,49,.12);border-color:rgba(255,49,49,.45);color:var(--orange)}
 
 /* ===== بطاقة تقييم ===== */
 .review{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);
   padding:20px;display:flex;flex-direction:column;gap:13px}
-.review.is-featured{border-color:rgba(255,201,0,.45)}
+.review.is-featured{border-color:rgba(255,49,49,.45)}
 .rv-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .avatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;object-fit:cover;
   background:var(--surface-2);border:1px solid var(--line)}

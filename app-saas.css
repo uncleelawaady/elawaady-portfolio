@@ -6,11 +6,11 @@
    system driven by --text/--muted/--dim at bare :root; scoping avoids
    clobbering that with app.html's always-ink values. */
 html.app-shell{
-  --turquoise:#8F0000!important;--cyan:#660000!important;--aqua:#FFD400!important;--orange:#FFC900!important;
+  --turquoise:#8F0000!important;--cyan:#660000!important;--aqua:#660000!important;--orange:#660000!important;
   --bg:#FFFFFF!important;--bg-2:#F8F8F5!important;--surface:#FFFFFF!important;--surface-2:#F8F8F5!important;
   --line:#EDE3E3!important;--line-soft:#F2EBEB!important;--text:#111111!important;--muted:#6B6B6B!important;--dim:#9A9A9A!important;
   --chip-bg:rgba(255,255,255,.5)!important;--glass:linear-gradient(160deg,#FFFFFF,#FBF6EF)!important;
-  --grad:linear-gradient(135deg,#660000,#8F0000 55%,#FFD400)!important;--accent-ink:#660000!important;
+  --grad:linear-gradient(135deg,#660000,#8F0000 55%,#FF3131)!important;--accent-ink:#660000!important;
   --glow:0 0 0 1px rgba(143,0,0,.22),0 18px 46px rgba(23,6,6,.3)!important;
 }
 html.app-shell[data-theme="light"]{--bg-2:#fff!important;--surface-2:#F7F2EC!important;--line:#E9E1D5!important}
@@ -19,7 +19,7 @@ html.app-shell,html.app-shell body{background:#FFFFFF!important;color:var(--text
 html.app-shell body{
   background:
     linear-gradient(rgba(23,6,6,.6), rgba(23,6,6,.72)),
-    url('assets/bg-abstract.svg') center / cover no-repeat !important;
+    url('assets/bg-red.webp') center / cover no-repeat !important;
   background-attachment:fixed!important;
 }
 html.app-shell ::selection{background:#8F0000;color:#fff}
@@ -42,7 +42,7 @@ html.app-shell .input:focus,html.app-shell input:focus,html.app-shell textarea:f
 html.app-shell .tabs{background:var(--chip-bg)!important;border-color:var(--line)!important;border-radius:999px!important}
 html.app-shell .tabs button{color:var(--muted)!important}
 html.app-shell .tabs button.on{background:var(--grad)!important;color:#fff!important}
-html.app-shell .stars button.lit,html.app-shell .stars-ro{color:#FFB400!important}
+html.app-shell .stars button.lit,html.app-shell .stars-ro{color:#FF3131!important}
 html.app-shell .google-btn,html.app-shell [data-provider="google"]{background:#fff!important;color:#111111!important;border-radius:18px!important;border:1px solid var(--line)!important}
 html.app-shell .rv-media img,html.app-shell .media-grid img,html.app-shell .shots img{border-radius:18px!important;border:1px solid var(--line)!important;background:#fff!important}
 html.app-shell .admin-nav,html.app-shell .side-nav,html.app-shell .admin-sidebar{background:rgba(255,255,255,.94)!important;border-color:var(--line)!important}

@@ -33,8 +33,8 @@
      يكفي لإعادة تلوين الموقع كله. */
   --turquoise:#8F0000;
   --cyan:#660000;
-  --aqua:#FFD400;
-  --orange:#FFC900;
+  --aqua:#FFFFFF;
+  --orange:#FFFFFF;
 
   /* أسطح بيضاء بدل الأزرق البترولي الغامق */
   --bg:#FFFFFF;
@@ -66,11 +66,11 @@
 
   /* accent-ink نفس فكرة --text: فاتح فوق الصورة، وغامق داخل الكروت
      البيضاء (يُعاد تعريفه هناك أيضاً). */
-  --accent-ink-onbg:#FFD400;
+  --accent-ink-onbg:#FF3131;
   --accent-ink-ink:#660000;
   --accent-ink:var(--accent-ink-onbg);
 
-  --grad:linear-gradient(135deg,#660000,#8F0000 55%,#FFD400);
+  --grad:linear-gradient(135deg,#660000,#8F0000 55%,#FF3131);
   --grad-metal:linear-gradient(150deg,#FFFFFF,#C7D2D8 40%,#91A6AE 70%,#EDF3F5);
   --glow:0 0 0 1px rgba(143,0,0,.22),0 18px 46px rgba(23,6,6,.35);
   --glow-strong:0 0 34px rgba(143,0,0,.3),0 22px 60px rgba(23,6,6,.45);
@@ -105,7 +105,7 @@ body{
      فبتتحسب نسبة لحجم الشاشة نفسها، فالتعتيم ثابت من أول قسم لآخره. */
   background:
     linear-gradient(rgba(23,6,6,.6), rgba(23,6,6,.72)),
-    url('assets/bg-abstract.svg') center / cover no-repeat;
+    url('assets/bg-red.webp') center / cover no-repeat;
   background-attachment:fixed;
   color:var(--text);line-height:1.9;
   overflow-x:hidden;-webkit-font-smoothing:antialiased;
@@ -141,7 +141,7 @@ button{font:inherit;color:inherit}
    الخلفية الحمراء بدل ما تدوب فيها. */
 .btn-grad{background:var(--grad);color:#fff;border:2px solid #fff;
   box-shadow:0 4px 0 0 rgba(23,6,6,.4),0 12px 30px rgba(143,0,0,.32)}
-.btn-grad:hover{transform:translateY(-3px);box-shadow:0 6px 0 0 rgba(23,6,6,.4),0 18px 44px rgba(255,212,0,.46)}
+.btn-grad:hover{transform:translateY(-3px);box-shadow:0 6px 0 0 rgba(23,6,6,.4),0 18px 44px rgba(255,49,49,.46)}
 .btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text)}
 .btn-ghost:hover{transform:translateY(-3px);border-color:var(--turquoise);background:rgba(143,0,0,.12)}
 .btn-signature{background:linear-gradient(135deg,#660000,#8F0000);border:2px solid #fff;color:#fff;
@@ -173,7 +173,7 @@ button{font:inherit;color:inherit}
 .nav-inner{display:flex;align-items:center;gap:18px}
 .brand{display:flex;align-items:center;gap:11px;font-weight:800}
 .brand-logo{width:40px;height:40px;object-fit:contain;border-radius:12px;
-  filter:drop-shadow(0 4px 14px rgba(255,212,0,.35))}
+  filter:drop-shadow(0 4px 14px rgba(255,49,49,.35))}
 .brand-name{font-size:1.04rem;letter-spacing:.3px;line-height:1.2}
 .brand-name em{display:block;font-style:normal;font-size:.6rem;font-weight:600;
   letter-spacing:1.4px;text-transform:uppercase;color:var(--dim)}
@@ -193,7 +193,7 @@ button{font:inherit;color:inherit}
 }
 .icon-btn:hover{color:var(--text);border-color:var(--turquoise);background:rgba(143,0,0,.14)}
 .icon-btn .ic{width:1.15rem;height:1.15rem}
-.icon-btn.on{color:var(--orange);border-color:rgba(255,201,0,.5);background:rgba(255,201,0,.12)}
+.icon-btn.on{color:var(--orange);border-color:rgba(255,49,49,.5);background:rgba(255,49,49,.12)}
 .lang-btn{width:auto;padding-inline:14px;border-radius:999px;font-weight:700;font-size:.8rem;letter-spacing:.5px}
 .nav-toggle{display:none}
 
@@ -224,7 +224,7 @@ button{font:inherit;color:inherit}
 .eyebrow{
   display:inline-flex;align-items:center;gap:8px;
   padding:8px 18px;border-radius:999px;
-  background:rgba(143,0,0,.12);border:1px solid rgba(255,212,0,.35);
+  background:rgba(143,0,0,.12);border:1px solid rgba(255,49,49,.35);
   color:var(--aqua);font-weight:700;font-size:.83rem;
 }
 .eyebrow .ic{color:var(--turquoise)}
@@ -234,7 +234,7 @@ button{font:inherit;color:inherit}
 .hero-mark{margin-block:26px 4px;position:relative;display:grid;place-items:center}
 .hero-mark img{
   width:min(100%,158px);position:relative;z-index:2;
-  filter:drop-shadow(0 24px 46px rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(255,212,0,.34));
+  filter:drop-shadow(0 24px 46px rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(255,49,49,.34));
   animation:bob 7s ease-in-out infinite;
 }
 @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(-1.2deg)}}
@@ -322,7 +322,7 @@ button{font:inherit;color:inherit}
   position:relative;padding:26px 24px;border-radius:var(--radius-lg);
   display:flex;flex-direction:column;gap:12px;transition:.3s;overflow:hidden;
 }
-.cat-card:hover{transform:translateY(-6px);border-color:rgba(255,212,0,.5);box-shadow:var(--glow-strong)}
+.cat-card:hover{transform:translateY(-6px);border-color:rgba(255,49,49,.5);box-shadow:var(--glow-strong)}
 .cat-card::before{
   content:"";position:absolute;inset-block-start:0;inset-inline:0;height:2px;
   background:var(--grad);transform:scaleX(0);transform-origin:inline-start;transition:transform .35s;
@@ -344,7 +344,7 @@ button{font:inherit;color:inherit}
   padding:6px 13px;border-radius:999px;font-size:.79rem;font-weight:700;
   background:var(--chip-bg);border:1px solid var(--line);color:var(--muted);
 }
-.cat-chips span.more{border-color:rgba(255,212,0,.4);color:var(--aqua)}
+.cat-chips span.more{border-color:rgba(255,49,49,.4);color:var(--aqua)}
 .cat-foot{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding-block-start:12px;border-block-start:1px solid var(--line-soft);
@@ -397,7 +397,7 @@ button{font:inherit;color:inherit}
   content:"";position:absolute;inset-block-start:0;inset-inline:0;height:2px;
   background:var(--grad);transform:scaleX(0);transform-origin:inline-start;transition:transform .35s;
 }
-.card:hover{transform:translateY(-7px);border-color:rgba(255,212,0,.5);box-shadow:var(--glow-strong)}
+.card:hover{transform:translateY(-7px);border-color:rgba(255,49,49,.5);box-shadow:var(--glow-strong)}
 .card:hover::before{transform:scaleX(1)}
 .card-icon{
   width:52px;height:52px;display:grid;place-items:center;border-radius:16px;margin-block-end:16px;
@@ -440,10 +440,10 @@ button{font:inherit;color:inherit}
 .flow{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-block-start:14px}
 .flow i{
   font-style:normal;padding:9px 15px;border-radius:12px;font-weight:700;font-size:.82rem;
-  background:rgba(143,0,0,.1);border:1px solid rgba(255,212,0,.3);color:var(--aqua);
+  background:rgba(143,0,0,.1);border:1px solid rgba(255,49,49,.3);color:var(--aqua);
 }
 .flow .arw{color:var(--dim);font-size:.9rem}
-.flow.dispute i{background:rgba(255,201,0,.09);border-color:rgba(255,201,0,.32);color:var(--orange)}
+.flow.dispute i{background:rgba(255,49,49,.09);border-color:rgba(255,49,49,.32);color:var(--orange)}
 .rules{display:grid;gap:9px;margin-block-start:16px}
 .rules li{display:flex;align-items:flex-start;gap:10px;color:var(--muted);font-size:.89rem}
 .rules .ic{color:var(--turquoise);margin-block-start:.35em}
@@ -453,13 +453,13 @@ button{font:inherit;color:inherit}
 .timeline::before{
   content:"";position:absolute;inset-block:6px 6px;inset-inline-start:9px;width:2px;
   background:linear-gradient(180deg,transparent,var(--turquoise) 12%,var(--cyan) 88%,transparent);
-  box-shadow:0 0 16px rgba(255,212,0,.45);
+  box-shadow:0 0 16px rgba(255,49,49,.45);
 }
 .tl-item{position:relative;padding-block-end:32px}
 .tl-item::before{
   content:"";position:absolute;inset-block-start:11px;inset-inline-start:-30px;
   width:12px;height:12px;border-radius:50%;
-  background:var(--bg);border:2px solid var(--turquoise);box-shadow:0 0 14px rgba(255,212,0,.6);
+  background:var(--bg);border:2px solid var(--turquoise);box-shadow:0 0 14px rgba(255,49,49,.6);
 }
 .tl-year{font-family:'Manrope',sans-serif;font-weight:800;font-size:.82rem;letter-spacing:1.4px;color:var(--orange)}
 .tl-item h3{font-size:1.08rem;font-weight:800;margin-block:3px 4px}
@@ -474,7 +474,7 @@ button{font:inherit;color:inherit}
 }
 .pill-grid span:hover{
   border-color:var(--turquoise);background:rgba(143,0,0,.14);
-  transform:translateY(-3px);box-shadow:0 0 20px rgba(255,212,0,.16);
+  transform:translateY(-3px);box-shadow:0 0 20px rgba(255,49,49,.16);
 }
 
 /* ===== Digital Products & Systems — SaaS mock cards =====
@@ -549,7 +549,7 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 .contact-card.tg .ic{background:#229ED9}
 .contact-card.ml .ic{background:linear-gradient(135deg,#EA4335,#FBBC05)}
 .contact-card.ln .ic{background:#0A66C2}
-.contact-card.st .ic{background:linear-gradient(135deg,var(--orange),#FFD400)}
+.contact-card.st .ic{background:linear-gradient(135deg,var(--orange),#FF3131)}
 .contact-card.pr .ic{background:linear-gradient(135deg,var(--turquoise),var(--cyan))}
 .contact-card strong{display:block;font-size:.96rem}
 .contact-card span{font-size:.83rem;color:var(--muted)}
@@ -648,13 +648,13 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 /* ===== Footer ===== */
 .footer{padding-block:48px 32px;border-block-start:1px solid var(--line-soft);background:var(--surface)}
 .footer-inner{display:grid;place-items:center;gap:11px;text-align:center}
-.footer-logo{width:62px;height:62px;object-fit:contain;filter:drop-shadow(0 6px 20px rgba(255,212,0,.3))}
+.footer-logo{width:62px;height:62px;object-fit:contain;filter:drop-shadow(0 6px 20px rgba(255,49,49,.3))}
 .footer-name{font-size:1.12rem;font-weight:900;letter-spacing:.4px}
 .footer-tag{color:var(--muted);font-size:.89rem}
 .footer-domain{font-family:'Manrope',sans-serif;font-weight:700;font-size:.89rem;letter-spacing:.6px;color:var(--aqua)}
 .footer-motto{
   font-family:'Manrope',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;
-  color:var(--dim);padding-block-start:12px;border-block-start:1px solid rgba(255,201,0,.35);
+  color:var(--dim);padding-block-start:12px;border-block-start:1px solid rgba(255,49,49,.35);
 }
 .footer-social{display:flex;gap:10px;margin-block-start:6px}
 .footer-social a{
@@ -725,10 +725,10 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
    أعمق قليلًا للحفاظ على وضوح النص والكروت الزجاجية فوقها. */
 .reviews-strip-wrap{
   margin-block-start:34px;position:relative;width:100%;
-  border-radius:var(--radius-lg);border:1px solid rgba(255,212,0,.35);
+  border-radius:var(--radius-lg);border:1px solid rgba(255,49,49,.35);
   background:
     linear-gradient(165deg, rgba(23,6,6,.62), rgba(23,6,6,.82)),
-    url('assets/bg-abstract.svg') center / cover no-repeat;
+    url('assets/bg-red.webp') center / cover no-repeat;
   padding:26px 24px 22px;
   box-shadow:0 18px 50px rgba(23,6,6,.4);
 }
@@ -757,7 +757,7 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
   transition:border-color .25s,box-shadow .25s,transform .25s;
 }
 .review-chip:hover{transform:translateY(-3px);border-color:rgba(143,0,0,.4);box-shadow:var(--glow)}
-.review-chip.is-featured{border-color:rgba(255,201,0,.45);box-shadow:0 0 0 1px rgba(255,201,0,.14)}
+.review-chip.is-featured{border-color:rgba(255,49,49,.45);box-shadow:0 0 0 1px rgba(255,49,49,.14)}
 
 /* صورة إثبات التعامل — أول ما تلفت النظر في الكارت، زي البوسترات المرجعية */
 .review-proofs{position:relative;aspect-ratio:16/10;background:var(--surface-2)}
@@ -832,6 +832,11 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
   --muted: var(--ink-muted);
   --dim: var(--ink-dim);
   --accent-ink: var(--accent-ink-ink);
+  /* --aqua/--orange دورهم لون تمييز (نص/أيقونة/نقطة) — أبيض ممتاز فوق
+     الأحمر الغامق مباشرة، لكن يختفي فوق كارت أبيض. هنا بس بيترجعوا لدرجة
+     حمراء غامقة تُقرأ بوضوح فوق الأسطح البيضاء. */
+  --aqua: var(--accent-ink-ink);
+  --orange: var(--accent-ink-ink);
   /* حاسم: color هي خاصية موروثة بقيمتها المحسوبة، مش بربط حي بالمتغيّر —
      فأي عنوان (h3/h4/strong...) جوه الكارت ده ومالوش color خاص بيه كان
      بيورّث اللون الأبيض المحسوب أصلًا على body (--text في bare :root)
