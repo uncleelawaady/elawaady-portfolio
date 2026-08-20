@@ -107,11 +107,6 @@ function renderHero() {
   txt('heroDesc',   t(C.hero.desc));
   txt('heroCta1',   t(C.hero.cta1));
   txt('heroCta2',   t(C.hero.cta2));
-  txt('searchGo',   L('بحث', 'Search'));
-  const input = document.getElementById('searchInput');
-  input.placeholder = t(C.hero.search);
-  input.value = query;
-
   set('heroFeatures', C.hero.features.map(f =>
     `<span><svg class="ic"><use href="#${esc(f.icon)}"/></svg>${esc(t(f))}</span>`).join(''));
 }
@@ -494,27 +489,10 @@ document.addEventListener('DOMContentLoaded', () => {
     navToggle.querySelector('use').setAttribute('href', '#i-menu');
   });
 
-  /* Search — live as you type, and the header icon jumps to the field */
-  const searchInput = document.getElementById('searchInput');
-  let searchTimer;
-  searchInput.addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    const v = e.target.value;
-    searchTimer = setTimeout(() => {
-      query = v;
-      openCategory = null;
-      renderExpertise();
-      if (KASHIDA && lang === 'ar') applyKashida(document.getElementById('expertise'));
-      observeReveals();
-    }, 200);
-  });
-  document.getElementById('heroSearch').addEventListener('submit', e => {
-    e.preventDefault();
-    document.getElementById('expertise').scrollIntoView({ behavior: 'smooth' });
-  });
+  /* شريط البحث اتشال من الـHero — أيقونة البحث في الهيدر بتاخدك لقسم
+     الخبرات مباشرة بدل ما تفتح حقل بحث. */
   document.getElementById('searchBtn').addEventListener('click', () => {
-    document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => searchInput.focus(), 500);
+    document.getElementById('expertise').scrollIntoView({ behavior: 'smooth' });
   });
 
   /* Category open / close / filter — delegated so re-renders keep working */

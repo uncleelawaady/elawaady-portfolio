@@ -29,7 +29,7 @@ html.app-shell .brand-name em{color:var(--muted)!important}
 html.app-shell .nav-links a:hover,html.app-shell .nav-links a.active{background:rgba(143,0,0,.1)!important;border-color:rgba(143,0,0,.25)!important;color:var(--text)!important}
 html.app-shell .icon-btn{background:var(--chip-bg)!important;border-color:var(--line)!important;color:var(--muted)!important}
 html.app-shell .page{background:transparent!important}
-html.app-shell .page-head,html.app-shell .card,html.app-shell .review,html.app-shell .modal-card,html.app-shell .drop,html.app-shell .media-card,html.app-shell .link-card,html.app-shell .user-card,html.app-shell .stat-card,html.app-shell .settings-card,html.app-shell .admin-card,html.app-shell .proof-card,html.app-shell .auth-wrap,html.app-shell .auth-card,html.app-shell .login-card{background:var(--glass)!important;border:1px solid var(--line)!important;border-radius:28px!important;box-shadow:var(--glow)!important;backdrop-filter:blur(22px)!important;overflow:hidden!important}
+html.app-shell .page-head,html.app-shell .card,html.app-shell .review,html.app-shell .modal-card,html.app-shell .drop,html.app-shell .media-card,html.app-shell .link-card,html.app-shell .user-card,html.app-shell .stat-card,html.app-shell .settings-card,html.app-shell .admin-card,html.app-shell .proof-card,html.app-shell .auth-wrap,html.app-shell .auth-card,html.app-shell .login-card{background:var(--glass)!important;border:2px solid rgba(143,0,0,.22)!important;border-radius:28px!important;box-shadow:0 5px 0 0 rgba(143,0,0,.9),0 14px 30px rgba(23,6,6,.3)!important;backdrop-filter:blur(22px)!important;overflow:hidden!important}
 html.app-shell .page-head{padding:28px!important}
 html.app-shell .auth-wrap,html.app-shell .auth-card,html.app-shell .login-card{border-radius:32px!important}
 html.app-shell .eyebrow{background:rgba(143,0,0,.08)!important;border-color:rgba(143,0,0,.28)!important;color:var(--accent-ink)!important}
@@ -47,7 +47,6 @@ html.app-shell .google-btn,html.app-shell [data-provider="google"]{background:#f
 html.app-shell .rv-media img,html.app-shell .media-grid img,html.app-shell .shots img{border-radius:18px!important;border:1px solid var(--line)!important;background:#fff!important}
 html.app-shell .admin-nav,html.app-shell .side-nav,html.app-shell .admin-sidebar{background:rgba(255,255,255,.94)!important;border-color:var(--line)!important}
 html.app-shell .admin-nav a.active,html.app-shell .side-nav a.active,html.app-shell .admin-sidebar a.active{background:rgba(143,0,0,.1)!important;color:var(--text)!important;border-color:rgba(143,0,0,.25)!important}
-html.app-shell img[src*="assets/portraits/"]{display:none!important}
 /* Safety net: legacy video controls must never appear in the current image-only review flow. */
 html.app-shell .field:has(input[type="file"][accept*="video"]),html.app-shell .card:has(input[type="file"][accept*="video"]),html.app-shell input[type="file"][accept*="video"],html.app-shell video,html.app-shell .warn-box:has(+ .ack){display:none!important}
 @media(max-width:860px){

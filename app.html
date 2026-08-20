@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#8F0000">
 <title>إثباتات تعاملات العوضي — Elawaady</title>
 <link rel="icon" href="assets/favicon.png" type="image/png">
 
@@ -20,45 +21,41 @@
 
 /* ===== نفس رموز الهوية اللي في style.css ===== */
 :root{
-  --turquoise:#10B5BF; --cyan:#20D6E3; --aqua:#5DE7F2; --orange:#FF8A1C;
-  --bg:#071F29; --bg-2:#0B2A34; --surface:#0C2C37; --surface-2:#103744;
-  --line:#174553; --line-soft:#123846;
-  --text:#EAF4F7; --muted:#9FBAC4; --dim:#6F909C;
-  --chip-bg:rgba(255,255,255,.04);
-  --glass:linear-gradient(160deg,rgba(58,9,9,.55),rgba(23,6,6,.75));
-  --grad:linear-gradient(135deg,var(--turquoise),var(--cyan) 60%,var(--aqua));
-  --glow:0 0 0 1px rgba(255,212,0,.18),0 18px 46px rgba(23,6,6,.6);
+  --turquoise:#8F0000; --cyan:#660000; --aqua:#FFD400; --orange:#FFC900;
+  --bg:#FFFFFF; --bg-2:#F8F8F5; --surface:#FFFFFF; --surface-2:#F8F8F5;
+  --line:#EDE3E3; --line-soft:#F2EBEB;
+  --text:#111111; --muted:#6B6B6B; --dim:#9A9A9A;
+  --chip-bg:rgba(255,255,255,.5);
+  --glass:linear-gradient(160deg,#FFFFFF,#FBF6EF);
+  --grad:linear-gradient(135deg,var(--cyan),var(--turquoise) 55%,var(--aqua));
+  --glow:0 0 0 1px rgba(143,0,0,.22),0 18px 46px rgba(23,6,6,.3);
   --ok:#2ED47A; --warn:#FFC53D; --bad:#FF6B6B;
-  /* لون الكلام اللي بلون الهوية. الـaqua نفسه بيضيع على الخلفية الفاتحة،
-     فبيتبدّل هناك بدرجة أغمق. */
-  --accent-ink:var(--aqua);
+  --accent-ink:var(--cyan);
   --radius:22px; --radius-sm:14px; --container:1080px; --nav-h:70px;
 }
-/* الموقع مصمَّم غامق، فالغامق فوق هو الحالة الأساسية. الفاتح بيتطبّق في
-   حالتين: لما نظام الزائر فاتح وهو ماختارش حاجة، أو لما يختار الفاتح
-   صراحةً. القيم متكررة لأن CSS مبيسمحش نشارك بلوك واحد بين
-   @media وselector عادي. */
+/* الصفحة دايمًا نفس الهوية الحمراء/البيضاء بغض النظر عن تفضيل الجهاز —
+   القيم مكرّرة هنا لأن CSS مبيسمحش نشارك بلوك واحد بين @media وselector. */
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
-  --bg:#F2F7F9; --bg-2:#FFFFFF; --surface:#FFFFFF; --surface-2:#EAF2F5;
-  --line:#CFE0E6; --line-soft:#DDE9ED;
-  --text:#082A35; --muted:#41707E; --dim:#6C949F;
-  --chip-bg:rgba(58,9,9,.04);
-  --glass:linear-gradient(160deg,#FFFFFF,#EEF6F8);
+  --bg:#FFFFFF; --bg-2:#F8F8F5; --surface:#FFFFFF; --surface-2:#F8F8F5;
+  --line:#EDE3E3; --line-soft:#F2EBEB;
+  --text:#111111; --muted:#6B6B6B; --dim:#9A9A9A;
+  --chip-bg:rgba(255,255,255,.5);
+  --glass:linear-gradient(160deg,#FFFFFF,#FBF6EF);
   --glow:0 0 0 1px rgba(143,0,0,.16),0 14px 34px rgba(58,9,9,.1);
   --ok:#15884E; --warn:#9A6B00; --bad:#C43B3B;
-  --accent-ink:#0B6F78;
+  --accent-ink:#660000;
   }
 }
 :root[data-theme="light"]{
-  --bg:#F2F7F9; --bg-2:#FFFFFF; --surface:#FFFFFF; --surface-2:#EAF2F5;
-  --line:#CFE0E6; --line-soft:#DDE9ED;
-  --text:#082A35; --muted:#41707E; --dim:#6C949F;
-  --chip-bg:rgba(58,9,9,.04);
-  --glass:linear-gradient(160deg,#FFFFFF,#EEF6F8);
+  --bg:#FFFFFF; --bg-2:#F8F8F5; --surface:#FFFFFF; --surface-2:#F8F8F5;
+  --line:#EDE3E3; --line-soft:#F2EBEB;
+  --text:#111111; --muted:#6B6B6B; --dim:#9A9A9A;
+  --chip-bg:rgba(255,255,255,.5);
+  --glass:linear-gradient(160deg,#FFFFFF,#FBF6EF);
   --glow:0 0 0 1px rgba(143,0,0,.16),0 14px 34px rgba(58,9,9,.1);
   --ok:#15884E; --warn:#9A6B00; --bad:#C43B3B;
-  --accent-ink:#0B6F78;
+  --accent-ink:#660000;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -78,7 +75,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   padding:12px 22px;border-radius:999px;border:1px solid transparent;
   font-weight:700;font-size:.93rem;cursor:pointer;transition:.24s;white-space:nowrap}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none!important}
-.btn-grad{background:var(--grad);color:#04222B;box-shadow:0 12px 30px rgba(143,0,0,.3)}
+.btn-grad{background:var(--grad);color:#fff;border:2px solid #fff;box-shadow:0 4px 0 0 rgba(23,6,6,.4),0 12px 30px rgba(143,0,0,.3)}
 .btn-grad:hover:not([disabled]){transform:translateY(-2px)}
 .btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text)}
 .btn-ghost:hover:not([disabled]){border-color:var(--turquoise);background:rgba(143,0,0,.12)}
@@ -156,7 +153,7 @@ textarea.input{resize:vertical;min-height:130px}
   border-radius:999px;padding:5px;margin-block-end:22px;overflow-x:auto}
 .tabs button{padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;
   color:var(--muted);white-space:nowrap;transition:.2s}
-.tabs button.on{background:var(--grad);color:#04222B}
+.tabs button.on{background:var(--grad);color:#fff}
 
 /* ===== النجوم ===== */
 .stars{display:inline-flex;flex-direction:row-reverse;gap:4px}
@@ -223,18 +220,6 @@ textarea.input{resize:vertical;min-height:130px}
 .grid.reviews-bento .review.is-featured .shots{max-width:none;
   grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 
-/* ===== ترويسة الصفحة العامة ===== */
-.hero-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;
-  margin-block-end:34px}
-.hero-shot{width:210px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);
-  flex:none}
-.hero-shot img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;
-  display:block}
-@media (max-width:760px){
-  .hero-row{grid-template-columns:1fr}
-  .hero-shot{display:none}
-}
-
 /* ===== الروابط ===== */
 .lnk-sec{margin-block-end:34px}
 .lnk-head{font-size:1.05rem;font-weight:800;color:var(--text);margin-block-end:14px;
@@ -294,7 +279,7 @@ textarea.input{resize:vertical;min-height:130px}
 .modal-head h3{font-size:1.1rem;font-weight:800}
 
 /* أداة التمويه */
-.redact-stage{background:#04141b;border:1px solid var(--line);border-radius:14px;
+.redact-stage{background:#170606;border:1px solid var(--line);border-radius:14px;
   padding:10px;display:grid;place-items:center;margin-block-end:12px}
 .redact-stage canvas{max-width:100%;max-height:56vh;border-radius:8px;cursor:crosshair;touch-action:none}
 .redact-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-block-end:12px}
@@ -310,7 +295,7 @@ textarea.input{resize:vertical;min-height:130px}
 .viewer .prev{inset-inline-start:14px}
 .viewer .next{inset-inline-end:14px}
 .viewer .count{position:absolute;inset-block-end:20px;inset-inline:0;text-align:center;
-  color:#9FBAC4;font-size:.85rem}
+  color:rgba(255,255,255,.7);font-size:.85rem}
 
 /* ===== متفرقات ===== */
 .empty{text-align:center;padding:56px 20px;color:var(--dim)}
@@ -2079,16 +2064,11 @@ async function viewReviews(){
 
   const v = render(`
   <div class="container page">
-    <div class="hero-row">
-      <div class="page-head" style="margin-block-end:0">
-        <span class="eyebrow">إثباتات التعامل</span>
-        <h1 class="title">إثباتات تعاملات العوضي</h1>
-        <p class="sub">تجارب حقيقية، تقييمات موثقة، وإثباتات تعامل وضمان.</p>
-        <p class="sub" style="font-size:.9rem">كل تقييم هنا اتراجع واتعتمد يدويًا قبل ما يتنشر، وصور الإثبات بتتموّه من صاحبها قبل الرفع.</p>
-      </div>
-      <div class="hero-shot">
-        <img src="assets/portraits/ahmed-orange-sm.jpg" alt="أحمد العوضي" width="560" height="739" loading="lazy">
-      </div>
+    <div class="page-head">
+      <span class="eyebrow">إثباتات التعامل</span>
+      <h1 class="title">إثباتات تعاملات العوضي</h1>
+      <p class="sub">تجارب حقيقية، تقييمات موثقة، وإثباتات تعامل وضمان.</p>
+      <p class="sub" style="font-size:.9rem">كل تقييم هنا اتراجع واتعتمد يدويًا قبل ما يتنشر، وصور الإثبات بتتموّه من صاحبها قبل الرفع.</p>
     </div>
 
     ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}

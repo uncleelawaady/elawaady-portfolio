@@ -62,10 +62,6 @@ window.OWNER_UID = 'jJPB9z2WISN7yhW1iq99H4ncfi72';
       replacements.forEach(function(pair){ ar=ar.split(pair[0]).join(pair[1]); });
       el.setAttribute('data-ar',ar);
     });
-    root.querySelectorAll && root.querySelectorAll('img[src*="assets/portraits/"]').forEach(function(img){
-      img.removeAttribute('srcset');
-      img.setAttribute('src','assets/ahmed-portrait.svg');
-    });
   }
 
   function run(){

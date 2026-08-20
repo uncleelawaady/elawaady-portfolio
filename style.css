@@ -137,12 +137,16 @@ button{font:inherit;color:inherit}
   transition:transform .25s,box-shadow .25s,background .25s,border-color .25s,color .25s;
   white-space:nowrap;
 }
-.btn-grad{background:var(--grad);color:#fff;box-shadow:0 12px 30px rgba(143,0,0,.32)}
-.btn-grad:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(255,212,0,.46)}
+/* حدود بيضاء صريحة على الأزرار الحمراء الأساسية عشان تبان بارزة/3D فوق
+   الخلفية الحمراء بدل ما تدوب فيها. */
+.btn-grad{background:var(--grad);color:#fff;border:2px solid #fff;
+  box-shadow:0 4px 0 0 rgba(23,6,6,.4),0 12px 30px rgba(143,0,0,.32)}
+.btn-grad:hover{transform:translateY(-3px);box-shadow:0 6px 0 0 rgba(23,6,6,.4),0 18px 44px rgba(255,212,0,.46)}
 .btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text)}
 .btn-ghost:hover{transform:translateY(-3px);border-color:var(--turquoise);background:rgba(143,0,0,.12)}
-.btn-signature{background:rgba(255,201,0,.1);border-color:rgba(255,201,0,.45);color:var(--orange)}
-.btn-signature:hover{transform:translateY(-3px);border-color:var(--orange);background:rgba(255,201,0,.2)}
+.btn-signature{background:linear-gradient(135deg,#660000,#8F0000);border:2px solid #fff;color:#fff;
+  box-shadow:0 4px 0 0 rgba(23,6,6,.4)}
+.btn-signature:hover{transform:translateY(-3px);box-shadow:0 6px 0 0 rgba(23,6,6,.4)}
 .btn-sm{padding:9px 17px;font-size:.86rem}
 .btn-lg{padding:16px 32px;font-size:1.02rem}
 .btn.block{width:100%}
@@ -252,21 +256,6 @@ button{font:inherit;color:inherit}
 
 .hero-desc{color:var(--muted);font-size:1.02rem;max-width:64ch;margin-block:18px 0}
 
-/* Search — the control that makes the page feel like a tool, not a page */
-.hero-search{
-  display:flex;align-items:center;gap:8px;width:min(100%,660px);margin-block-start:30px;
-  padding:7px 7px 7px 20px;border-radius:999px;
-  background:var(--glass);border:1px solid var(--line);box-shadow:var(--glow);
-}
-html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
-.hero-search .ic{color:var(--turquoise);width:1.2rem;height:1.2rem}
-.hero-search input{
-  flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);
-  font:inherit;font-size:.95rem;padding-block:10px;
-}
-.hero-search input::placeholder{color:var(--dim)}
-.hero-search .btn{padding:11px 24px}
-
 .hero-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-block-start:22px}
 
 .hero-features{
@@ -286,7 +275,10 @@ html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
 .reveal.in{opacity:1;transform:none}
 
-.glass{background:var(--glass);border:1px solid var(--line-soft);backdrop-filter:blur(10px)}
+/* حواف حمراء صلبة + ظل بلا تمويه (offset shadow) عشان الكارت الأبيض
+   يبان كإنه بارز/3D فوق الخلفية الحمراء، مش بس فلات. */
+.glass{background:var(--glass);border:2px solid rgba(143,0,0,.22);backdrop-filter:blur(10px);
+  box-shadow:0 5px 0 0 rgba(143,0,0,.9),0 14px 30px rgba(23,6,6,.35)}
 
 /* ===== Stats ===== */
 .stats-band{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:14px}
@@ -313,14 +305,6 @@ html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
 .mini-card .ic{width:1.5rem;height:1.5rem;color:var(--turquoise);margin:0 auto 10px;display:block}
 .mini-card h4{font-size:.79rem;color:var(--muted);font-weight:700;margin-block-end:4px}
 .mini-card p{font-size:.9rem;font-weight:700}
-
-.portrait{border-radius:var(--radius-lg);overflow:hidden;position:relative;border:1px solid var(--line);margin-block-end:14px}
-.portrait img{width:100%;aspect-ratio:1;object-fit:cover;object-position:top center}
-.portrait::after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(180deg,transparent 45%,color-mix(in srgb,var(--bg) 85%,transparent));
-  box-shadow:inset 0 0 60px rgba(255,212,0,.2);
-}
 
 /* ===========================================================================
    Expertise explorer — the card system the whole page is built around.
@@ -427,7 +411,8 @@ html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
 .case{
   border-radius:var(--radius-lg);padding:clamp(24px,4vw,44px);position:relative;overflow:hidden;
   background:radial-gradient(700px 340px at 88% 0%,rgba(143,0,0,.16),transparent 62%),var(--glass);
-  border:1px solid var(--line);
+  border:2px solid rgba(143,0,0,.22);
+  box-shadow:0 5px 0 0 rgba(143,0,0,.9),0 14px 30px rgba(23,6,6,.35);
 }
 .case::before{
   content:"";position:absolute;inset-block-start:0;inset-inline:0;height:2px;
@@ -497,10 +482,11 @@ html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
    العمل (لوحة تحكم، أتمتة، CRM) بهوية أحمر/أبيض/أصفر بدل الأزرق التقليدي. */
 .saas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
 .saas-card{
-  background:var(--glass);border:1px solid var(--line);border-radius:var(--radius-lg);
+  background:var(--glass);border:2px solid rgba(143,0,0,.22);border-radius:var(--radius-lg);
   padding:22px;transition:.3s;overflow:hidden;
+  box-shadow:0 5px 0 0 rgba(143,0,0,.9),0 14px 30px rgba(23,6,6,.35);
 }
-.saas-card:hover{transform:translateY(-6px);box-shadow:var(--glow-strong)}
+.saas-card:hover{transform:translateY(-6px);box-shadow:0 8px 0 0 rgba(143,0,0,.9),var(--glow-strong)}
 .saas-card h4{font-size:1.05rem;font-weight:800;margin-block-end:6px}
 .saas-card p{color:var(--muted);font-size:.86rem;margin-block-end:16px}
 
@@ -711,11 +697,6 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
   .nav-actions .btn-grad{display:none}
   .brand-name{display:none}
   .section{padding-block:62px}
-  .hero-search{padding:6px;flex-wrap:wrap}
-  html[dir="rtl"] .hero-search{padding:6px}
-  .hero-search input{padding-inline:12px;order:2;flex-basis:100%}
-  .hero-search .btn{order:3;flex:1}
-  .hero-search .ic{order:1;margin-inline-start:10px}
   .about-cards{grid-template-columns:1fr 1fr}
   .timeline{padding-inline-start:26px}
   .tl-item::before{inset-inline-start:-23px}
@@ -770,8 +751,9 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 
 .review-chip{
   flex:0 0 auto;width:min(320px,78vw);scroll-snap-align:start;
-  border-radius:var(--radius);border:1px solid var(--line);
+  border-radius:var(--radius);border:2px solid rgba(143,0,0,.22);
   background:var(--glass);overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 5px 0 0 rgba(143,0,0,.9),0 14px 30px rgba(23,6,6,.3);
   transition:border-color .25s,box-shadow .25s,transform .25s;
 }
 .review-chip:hover{transform:translateY(-3px);border-color:rgba(143,0,0,.4);box-shadow:var(--glow)}
