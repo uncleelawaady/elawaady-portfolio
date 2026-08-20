@@ -147,6 +147,11 @@ textarea.input{resize:vertical;min-height:130px}
 .msg.ok{background:rgba(46,212,122,.12);border:1px solid rgba(46,212,122,.4);color:var(--ok)}
 .msg.info{background:rgba(255,197,61,.1);border:1px solid rgba(255,197,61,.35);color:var(--warn)}
 
+.thanks-card{padding:44px 28px}
+.thanks-icon{width:64px;height:64px;margin:0 auto 18px;border-radius:50%;
+  background:var(--grad);color:#fff;display:grid;place-items:center;
+  font-size:1.6rem;font-weight:900}
+
 .tabs{display:flex;gap:6px;background:var(--chip-bg);border:1px solid var(--line);
   border-radius:999px;padding:5px;margin-block-end:22px;overflow-x:auto}
 .tabs button{padding:8px 16px;border-radius:999px;font-weight:700;font-size:.85rem;
@@ -191,9 +196,31 @@ textarea.input{resize:vertical;min-height:130px}
    البطاقة كله */
 .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px;
   max-width:460px}
-.shots img{aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:1px solid var(--line);
+.shot-frame{position:relative;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line);background:var(--surface-2)}
+.shot-frame::before{content:"";position:absolute;inset-inline-start:9px;top:9px;
+  width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.9);
+  box-shadow:11px 0 0 rgba(255,255,255,.9),22px 0 0 rgba(255,255,255,.9);z-index:1}
+.shots img{aspect-ratio:3/4;object-fit:cover;border-radius:0;border:0;display:block;width:100%;
   cursor:zoom-in;transition:.2s}
-.shots img:hover{transform:scale(1.03);border-color:var(--turquoise)}
+.shots img:hover{transform:scale(1.03)}
+
+/* ===== شبكة تقييمات Premium — الصفحة العامة ===== */
+.grid.reviews-bento{grid-template-columns:1fr}
+@media(min-width:720px){
+  .grid.reviews-bento{grid-template-columns:repeat(2,1fr);align-items:start}
+  .grid.reviews-bento .review.is-featured{grid-column:span 2}
+}
+@media(min-width:1140px){
+  .grid.reviews-bento{grid-template-columns:repeat(3,1fr)}
+  .grid.reviews-bento .review.is-featured{grid-column:span 2}
+}
+.grid.reviews-bento .review{padding:26px}
+.grid.reviews-bento .review.is-featured{padding:32px;background:var(--glass)}
+.grid.reviews-bento .review.is-featured .rv-title{font-size:1.24rem}
+.grid.reviews-bento .review.is-featured .rv-body{font-size:1.02rem}
+.grid.reviews-bento .review.is-featured .shots{max-width:none;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 
 /* ===== ترويسة الصفحة العامة ===== */
 .hero-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;
@@ -465,15 +492,20 @@ const starsRO = (n) => {
 /* أي id بيتضاف هنا لازم يتضاف كمان في قائمة dealType جوه firestore.rules،
    وإلا الـRule هترفض التقييم. الاتنين لازم يفضلوا متطابقين. */
 const DEAL_TYPES = [
-  { id:'escrow',     ar:'وساطة' },
-  { id:'guarantee',  ar:'ضمان' },
-  { id:'trade',      ar:'بيع وشراء' },
-  { id:'digital',    ar:'خدمات رقمية' },
-  { id:'transfer',   ar:'تحويلات أو معاملات رقمية' },
-  { id:'project',    ar:'تعاون' },
-  { id:'consulting', ar:'استشارة' },
-  { id:'other',      ar:'أخرى' }
+  { id:'digital',     ar:'خدمات رقمية' },
+  { id:'design',      ar:'تصميم' },
+  { id:'development', ar:'تطوير' },
+  { id:'marketing',   ar:'تسويق' },
+  { id:'consulting',  ar:'استشارة' },
+  { id:'mediation',   ar:'وساطة' },
+  { id:'project',     ar:'مشروع' },
+  { id:'trade',       ar:'بيع وشراء' },
+  { id:'other',       ar:'أخرى' }
 ];
+/* IDs قديمة كانت مستخدمة قبل إعادة التسمية — لسه موجودة في تقييمات
+   قديمة اتعملت واتعتمدت، فبنسيبها في القائمة البيضاء في firestore.rules
+   عشان الداتا القديمة تفضل قابلة للقراءة، بس مش معروضة هنا كخيار جديد:
+   escrow, guarantee, transfer */
 const OTHER_DEAL = DEAL_TYPES[DEAL_TYPES.length - 1];
 const dealLabel = (id) => (DEAL_TYPES.find(d => d.id === id) || OTHER_DEAL).ar;
 
@@ -1685,8 +1717,9 @@ function viewNew(){
   <div class="container page" style="max-width:720px">
     <div class="page-head">
       <span class="eyebrow">تقييم جديد</span>
-      <h1 class="title">اكتب تقييمك</h1>
-      <p class="sub">التقييم بيوصلني الأول وبيتراجع، وبعد الموافقة بيظهر في الصفحة العامة باسمك وصورتك.</p>
+      <h1 class="title">شاركني تجربتك</h1>
+      <p class="sub">إذا سبق وتعاملنا معًا، يسعدني أن تشارك تقييمك لتجربتك. رأيك
+        يساعدني على تطوير عملي ويعطي العملاء الجدد صورة حقيقية عن جودة التعامل.</p>
     </div>
 
     <div class="card">
@@ -1702,7 +1735,7 @@ function viewNew(){
 
       <div class="field">
         <label for="nTitle">عنوان مختصر</label>
-        <input class="input" id="nTitle" maxlength="90" placeholder="مثلًا: وساطة سريعة وآمنة">
+        <input class="input" id="nTitle" maxlength="90" placeholder="مثلًا: تجربة ممتازة وسريعة">
         <p class="counter"><span id="cTitle">0</span>/90</p>
       </div>
 
@@ -1714,8 +1747,9 @@ function viewNew(){
       </div>
 
       <div class="field">
-        <label for="nBody">تفاصيل التعامل</label>
-        <textarea class="input" id="nBody" maxlength="1500" placeholder="احكي اللي حصل بالتفصيل."></textarea>
+        <label for="nBody">اكتب رأيك <span class="hint">تعليق قصير يكفي، مش لازم مقال</span></label>
+        <textarea class="input" id="nBody" maxlength="1500"
+          placeholder="مثلًا: تعامل محترم وسريع جدًا وأنصح بالتعامل معه."></textarea>
         <p class="counter"><span id="cBody">0</span>/1500 — الحد الأدنى 10 حروف</p>
       </div>
 
@@ -1727,6 +1761,10 @@ function viewNew(){
         </div>
         <input type="file" id="files" accept="image/jpeg,image/png,image/webp" multiple hidden>
         <div class="picks" id="picks"></div>
+        <div class="msg info show" style="margin-block-start:10px">
+          يرجى إخفاء أي بيانات حساسة مثل الأرقام، كلمات المرور، البريد
+          الإلكتروني أو معلومات الدفع قبل رفع الصورة.
+        </div>
         <p class="counter" style="text-align:start">
           كل صورة بتتفتح في أداة التمويه قبل ما تتقبل — امسح الأرقام والأسماء
           والمبالغ. اللي بيترفع هو الصورة بعد المسح، والأصل مبيخرجش من جهازك.
@@ -1888,14 +1926,31 @@ function viewNew(){
     try {
       await api.submitReview({ rating, title, body, dealType, images: picks },
         (i, n) => setText(btn, `بيرفع الصورة ${i} من ${n}…`));
-      toast('وصلني تقييمك — هراجعه.', 'ok');
-      location.hash = '#/account';
+      location.hash = '#/thanks';
     } catch (e){
       show(e.message || 'حصل خطأ.');
       btn.disabled = false;
       setText(btn, 'ابعت التقييم للمراجعة');
     }
   };
+}
+
+/* =======================================================================
+   شكرًا — شاشة تأكيد بعد إرسال التقييم مباشرة
+======================================================================= */
+function viewThanks(){
+  render(`
+  <div class="container page" style="max-width:560px;text-align:center">
+    <div class="card thanks-card">
+      <div class="thanks-icon" aria-hidden="true">✓</div>
+      <h1 class="title">شكرًا لك ❤️</h1>
+      <p class="sub" style="margin-inline:auto">تم استلام تقييمك بنجاح وسيظهر بعد مراجعته.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-block-start:18px">
+        <a href="index.html" class="btn btn-grad btn-lg">العودة للموقع</a>
+        <a href="#/account" class="btn btn-ghost btn-lg">تقييماتي</a>
+      </div>
+    </div>
+  </div>`);
 }
 
 /* =======================================================================
@@ -1907,9 +1962,12 @@ function reviewCard(r, ctx){
   const thumbOf = (im) => im.thumbUrl || cldThumb(im.url);
   const shots = imgs.length ? `
     <div class="shots">
-      ${imgs.map((im, i) => `<img src="${esc(thumbOf(im))}"
-        data-full="${esc(im.url || im.thumbUrl)}" data-rid="${esc(r.id)}" data-i="${i}"
-        alt="صورة إثبات" loading="lazy">`).join('')}
+      ${imgs.map((im, i) => `
+        <div class="shot-frame">
+          <img src="${esc(thumbOf(im))}"
+            data-full="${esc(im.url || im.thumbUrl)}" data-rid="${esc(r.id)}" data-i="${i}"
+            alt="صورة إثبات" loading="lazy">
+        </div>`).join('')}
     </div>` : '';
 
   const statusPill = ctx === 'public' ? '' :
@@ -2051,7 +2109,7 @@ async function viewReviews(){
       </div>` : ''}
 
     ${n
-      ? `<div class="grid">${list.map(r => reviewCard(r, 'public')).join('')}</div>`
+      ? `<div class="grid reviews-bento">${list.map(r => reviewCard(r, 'public')).join('')}</div>`
       : (error ? '' : `<div class="card">${emptyState('⭐','لسه مفيش تقييمات منشورة. كن أول واحد.')}</div>`)}
 
     <div style="text-align:center;margin-block-start:26px">
@@ -2374,6 +2432,7 @@ const ROUTES = {
   '#/channels':     viewChannels,
   '#/links':        viewLinks,
   '#/new':          viewNew,
+  '#/thanks':       viewThanks,
   '#/login':        viewLogin,
   '#/account':      viewAccount,
   '#/admin':        viewAdmin

@@ -29,7 +29,7 @@ service cloud.firestore {
       function reviewFieldsOnly() { return request.resource.data.keys().hasOnly(['uid','authorName','authorPhoto','rating','title','body','dealType','status','featured','imageCount','images','createdAt','updatedAt']); }
       function validNewReview() {
         let d = request.resource.data;
-        return reviewFieldsOnly() && d.uid == request.auth.uid && d.status == 'pending' && d.featured == false && d.rating is int && d.rating >= 1 && d.rating <= 5 && d.title is string && d.title.size() <= 90 && d.body is string && d.body.size() >= 10 && d.body.size() <= 1500 && d.dealType in ['escrow','guarantee','trade','digital','transfer','project','consulting','other'] && !('moderatedBy' in d) && !('moderatedAt' in d);
+        return reviewFieldsOnly() && d.uid == request.auth.uid && d.status == 'pending' && d.featured == false && d.rating is int && d.rating >= 1 && d.rating <= 5 && d.title is string && d.title.size() <= 90 && d.body is string && d.body.size() >= 10 && d.body.size() <= 1500 && d.dealType in ['digital','design','development','marketing','consulting','mediation','project','trade','other','escrow','guarantee','transfer'] && !('moderatedBy' in d) && !('moderatedAt' in d);
       }
       function authorEditableOnly() { return onlyChanged(['title','body','rating','dealType','updatedAt']); }
       function mediaFieldsOnly() { return onlyChanged(['images','imageCount','updatedAt']); }
