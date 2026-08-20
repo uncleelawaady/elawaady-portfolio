@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="base" cx="32%" cy="18%" r="95%">
+      <stop offset="0%" stop-color="#B01414"/>
+      <stop offset="45%" stop-color="#8F0000"/>
+      <stop offset="80%" stop-color="#5C0202"/>
+      <stop offset="100%" stop-color="#170606"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="46"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="n"/>
+      <feColorMatrix in="n" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="1600" fill="url(#base)"/>
+
+  <g filter="url(#soft)" opacity="0.55">
+    <path d="M -120 260 C 60 60, 260 40, 340 220 C 420 400, 300 480, 420 620
+             C 540 760, 760 700, 820 900 C 880 1100, 700 1180, 760 1380
+             C 800 1520, 1000 1560, 1080 1600 L -120 1600 Z" fill="#3A0909"/>
+  </g>
+
+  <g filter="url(#soft)" opacity="0.5">
+    <path d="M 1080 -40 C 900 40, 860 220, 700 260 C 540 300, 520 160, 380 140
+             C 240 120, 160 220, 40 180 L 40 -40 Z" fill="#660000"/>
+  </g>
+
+  <g filter="url(#soft)" opacity="0.35">
+    <ellipse cx="150" cy="980" rx="360" ry="300" fill="#B01414"/>
+    <ellipse cx="820" cy="480" rx="300" ry="260" fill="#A50D0D"/>
+  </g>
+
+  <g filter="url(#soft)" opacity="0.16">
+    <ellipse cx="470" cy="1300" rx="520" ry="360" fill="#FFD400"/>
+  </g>
+
+  <rect width="960" height="1600" filter="url(#grain)"/>
+</svg>
