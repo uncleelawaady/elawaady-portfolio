@@ -1,6 +1,11 @@
 /* ===== Ahmed Elawaady — Personal Digital Portfolio (elawaady-db.com) =====
-   Identity: Deep Petrol × Turquoise × Cyan × Metallic Silver,
-   with Orange used only as a signature accent — never as a surface colour.
+   Identity (revised): warm orange leather texture as the page background
+   everywhere, white card surfaces, dark ink text on those cards, white
+   text directly on the photo. The turquoise/cyan/aqua identity has been
+   fully retired — every component below still reads from --turquoise/
+   --cyan/--aqua/--accent-ink, so redirecting those three tokens to orange
+   shades in :root is what reskins the whole site without touching each
+   component rule individually.
 */
 
 /* The Year of Handicrafts — the Arabic display face for the whole site.
@@ -23,35 +28,52 @@
    resolve as a complete set.
 =========================================================================== */
 :root{
-  --turquoise:#10B5BF;
-  --cyan:#20D6E3;
-  --aqua:#5DE7F2;
-  --orange:#FF8A1C;
+  /* الهوية القديمة (تركوازي/سماوي) مُعاد توجيهها بالكامل لدرجات برتقالية —
+     كل مكوّن في الملف بيقرأ من المتغيرات دي بدل لون خام، فتحويلها هنا
+     يكفي لإعادة تلوين الموقع كله. */
+  --turquoise:#D2691E;
+  --cyan:#B4530F;
+  --aqua:#FFB35C;
+  --orange:#D2691E;
 
-  --bg:#071F29;
-  --bg-2:#0B2A34;
-  --surface:#0C2C37;
-  --surface-2:#103744;
-  --line:#174553;
-  --line-soft:#123846;
+  /* أسطح بيضاء بدل الأزرق البترولي الغامق */
+  --bg:#FFFFFF;
+  --bg-2:#FBF7F3;
+  --surface:#FFFFFF;
+  --surface-2:#F5EFE8;
+  --line:#EBE2D7;
+  --line-soft:#F0E9E0;
 
-  --text:#EAF4F7;
-  --muted:#9FBAC4;
-  --dim:#6F909C;
+  /* نظام النصوص المزدوج: القيم الافتراضية هنا لنص يقع مباشرة فوق صورة
+     الخلفية (--onbg = أبيض)، وتُعاد تعريفها إلى ink الغامق داخل كل سطح
+     أبيض (.glass, .nav, .footer, ...) في القسم المخصص لهذا أسفل الملف. */
+  --ink:#221A12;
+  --ink-muted:#5B5044;
+  --ink-dim:#8A7F70;
 
-  --chip-bg:rgba(255,255,255,.04);
-  --glass:linear-gradient(160deg,rgba(23,69,83,.55),rgba(12,44,55,.75));
-  --hero-bg:linear-gradient(180deg,#0B2A34 0%,#071F29 70%);
-  --icon-well:#071A22;
+  --onbg:#FFFFFF;
+  --onbg-muted:rgba(255,255,255,.85);
+  --onbg-dim:rgba(255,255,255,.68);
 
-  /* لون النص التركوازي. --aqua نفسه بيغذّي التدرّج فمينفعش يتغيّر، والنص
-     المكتوب بيه بيبقى باهت على الخلفية الفاتحة — فده بديله للنصوص. */
-  --accent-ink:var(--aqua);
+  --text:var(--onbg);
+  --muted:var(--onbg-muted);
+  --dim:var(--onbg-dim);
 
-  --grad:linear-gradient(135deg,var(--turquoise),var(--cyan) 60%,var(--aqua));
+  --chip-bg:rgba(255,255,255,.1);
+  --glass:linear-gradient(160deg,#FFFFFF,#FBF6EF);
+  --hero-bg:transparent;
+  --icon-well:#241206;
+
+  /* accent-ink نفس فكرة --text: فاتح فوق الصورة، وغامق داخل الكروت
+     البيضاء (يُعاد تعريفه هناك أيضاً). */
+  --accent-ink-onbg:#FFCB8A;
+  --accent-ink-ink:#B4530F;
+  --accent-ink:var(--accent-ink-onbg);
+
+  --grad:linear-gradient(135deg,#B4530F,#D2691E 55%,#E8904F);
   --grad-metal:linear-gradient(150deg,#FFFFFF,#C7D2D8 40%,#91A6AE 70%,#EDF3F5);
-  --glow:0 0 0 1px rgba(32,214,227,.18),0 18px 46px rgba(4,20,27,.6);
-  --glow-strong:0 0 34px rgba(32,214,227,.28),0 22px 60px rgba(4,20,27,.7);
+  --glow:0 0 0 1px rgba(210,105,30,.22),0 18px 46px rgba(20,8,2,.35);
+  --glow-strong:0 0 34px rgba(210,105,30,.3),0 22px 60px rgba(20,8,2,.45);
 
   --radius:22px;
   --radius-lg:28px;
@@ -61,37 +83,26 @@
   --topbar-h:38px;
 }
 
+/* زر تبديل الثيم يبقى شغالاً بلا تناقض بصري — نفس الهوية البرتقالية في
+   الحالتين، فرق طفيف فقط في شدة الأسطح البيضاء. */
 :root[data-theme="light"]{
-  --bg:#F2F7F9;
   --bg-2:#FFFFFF;
-  --surface:#FFFFFF;
-  --surface-2:#EAF2F5;
-  --line:#CFE0E6;
-  --line-soft:#DDE9ED;
-
-  --text:#082A35;
-  --muted:#41707E;
-  --dim:#6C949F;
-
-  --accent-ink:#0B6F78;
-
-  --chip-bg:rgba(8,42,53,.04);
-  --glass:linear-gradient(160deg,#FFFFFF,#EEF6F8);
-  --hero-bg:linear-gradient(180deg,#E4F1F5 0%,#F2F7F9 70%);
-  --icon-well:#0B2A34;
-
-  --grad-metal:linear-gradient(150deg,#0E3A47,#10B5BF 55%,#0B2A34);
-  --glow:0 0 0 1px rgba(16,181,191,.16),0 14px 34px rgba(8,42,53,.1);
-  --glow-strong:0 0 26px rgba(16,181,191,.2),0 18px 44px rgba(8,42,53,.16);
+  --surface-2:#F7F2EC;
+  --line:#E9E1D5;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + var(--topbar-h) + 12px);background:var(--bg)}
+/* خلفية البورتفوليو بالكامل = نسيج الجلد البرتقالي، مع طبقة تعتيم موحّدة
+   تحت النص لضمان وضوح الأبيض والدرجات الفاتحة على كل أجزاء الصورة. */
 body{
   font-family:'Handicrafts','Tajawal','Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
-  background:var(--bg);color:var(--text);line-height:1.9;
+  background:
+    linear-gradient(180deg, rgba(10,4,1,.55), rgba(10,4,1,.72)),
+    url('assets/bg-leather.jpg') center / cover no-repeat fixed;
+  color:var(--text);line-height:1.9;
   overflow-x:hidden;-webkit-font-smoothing:antialiased;
-  transition:background .3s,color .3s;
+  transition:color .3s;
 }
 html[dir="ltr"] body{font-family:'Manrope','Handicrafts','Tajawal',system-ui,sans-serif}
 /* height:auto is load-bearing — the width/height attributes on the <img> tags
@@ -101,7 +112,7 @@ img{max-width:100%;height:auto;display:block}
 a{color:inherit;text-decoration:none}
 ul{list-style:none}
 button{font:inherit;color:inherit}
-::selection{background:var(--turquoise);color:#04141B}
+::selection{background:var(--turquoise);color:#fff}
 :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
 
 .container{width:min(100% - 32px,var(--container));margin-inline:auto}
@@ -119,7 +130,7 @@ button{font:inherit;color:inherit}
   transition:transform .25s,box-shadow .25s,background .25s,border-color .25s,color .25s;
   white-space:nowrap;
 }
-.btn-grad{background:var(--grad);color:#04222B;box-shadow:0 12px 30px rgba(16,181,191,.32)}
+.btn-grad{background:var(--grad);color:#fff;box-shadow:0 12px 30px rgba(16,181,191,.32)}
 .btn-grad:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(32,214,227,.46)}
 .btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text)}
 .btn-ghost:hover{transform:translateY(-3px);border-color:var(--turquoise);background:rgba(16,181,191,.12)}
@@ -134,7 +145,7 @@ button{font:inherit;color:inherit}
   position:fixed;inset-block-start:0;inset-inline:0;z-index:950;height:var(--topbar-h);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
   background:linear-gradient(90deg,var(--turquoise),var(--cyan),var(--aqua));
-  color:#04222B;font-weight:700;font-size:.84rem;
+  color:#fff;font-weight:700;font-size:.84rem;
 }
 .topbar span{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
   animation:tickerIn .5s ease}
@@ -176,29 +187,22 @@ button{font:inherit;color:inherit}
 .nav-toggle{display:none}
 
 /* ===== Hero ===== */
+/* لا خلفية خاصة بالهيرو — الصورة الثابتة على body تظهر من خلاله كما هي.
+   شبكة النقاط والأوربات المتوهجة كانت مصمَّمة لخلفية داكنة مسطحة، فأُخفيت
+   هنا بدل إعادة تلوينها؛ نسيج الصورة نفسه يوفر الغنى البصري. */
 .hero{
   position:relative;display:flex;align-items:center;
   padding-block:calc(var(--nav-h) + var(--topbar-h) + 54px) 66px;overflow:hidden;
-  background:
-    radial-gradient(880px 520px at 78% -8%,rgba(16,181,191,.24),transparent 62%),
-    radial-gradient(680px 460px at 4% 24%,rgba(32,214,227,.12),transparent 62%),
-    var(--hero-bg);
+  background:none;
 }
-.hero::after{
-  content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;
-  background-image:
-    linear-gradient(var(--turquoise) 1px,transparent 1px),
-    linear-gradient(90deg,var(--turquoise) 1px,transparent 1px);
-  background-size:58px 58px;
-  mask-image:radial-gradient(72% 62% at 50% 42%,#000,transparent);
-}
+.hero::after{content:none}
 /* Oversized wordmark behind the hero, cropped by the viewport */
 .watermark{
   position:absolute;inset-block-start:12%;inset-inline-start:-4%;z-index:0;pointer-events:none;
   font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(6rem,17vw,15rem);
   line-height:.9;letter-spacing:-.04em;color:var(--text);opacity:.035;white-space:nowrap;
 }
-.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.4;animation:float 17s ease-in-out infinite}
+.orb{display:none}
 .orb-1{width:440px;height:440px;background:var(--turquoise);inset-block-start:-100px;inset-inline-end:-80px}
 .orb-2{width:340px;height:340px;background:var(--cyan);inset-block-end:-90px;inset-inline-start:-60px;animation-delay:-6s}
 .orb-3{width:220px;height:220px;background:var(--orange);opacity:.1;inset-block-start:48%;inset-inline-start:44%;animation-delay:-10s}
@@ -320,7 +324,7 @@ html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
   background:var(--chip-bg);border:1px solid var(--line);color:var(--muted);transition:.22s;
 }
 .filter-row button:hover{color:var(--text);border-color:var(--turquoise)}
-.filter-row button.on{background:var(--grad);border-color:transparent;color:#04222B}
+.filter-row button.on{background:var(--grad);border-color:transparent;color:#fff}
 
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:18px}
 .cat-card{
@@ -406,7 +410,7 @@ html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
 .card:hover::before{transform:scaleX(1)}
 .card-icon{
   width:52px;height:52px;display:grid;place-items:center;border-radius:16px;margin-block-end:16px;
-  background:var(--grad);color:#04222B;box-shadow:0 8px 22px rgba(16,181,191,.28);
+  background:var(--grad);color:#fff;box-shadow:0 8px 22px rgba(16,181,191,.28);
 }
 .card-icon .ic{width:1.5rem;height:1.5rem;stroke-width:1.75}
 .card h3{font-size:1.08rem;margin-block-end:8px;font-weight:800}
@@ -425,7 +429,7 @@ html[dir="rtl"] .hero-search{padding:7px 20px 7px 7px}
 .case-head{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-block-end:8px}
 .case-badge{
   width:60px;height:60px;flex:0 0 60px;display:grid;place-items:center;border-radius:18px;
-  background:var(--grad);color:#04222B;box-shadow:0 10px 26px rgba(16,181,191,.3);
+  background:var(--grad);color:#fff;box-shadow:0 10px 26px rgba(16,181,191,.3);
 }
 .case-badge .ic{width:1.8rem;height:1.8rem}
 .case h3{font-size:clamp(1.35rem,3vw,1.95rem);font-weight:900;line-height:1.3}
@@ -620,7 +624,7 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
   width:42px;height:42px;display:grid;place-items:center;border-radius:12px;
   background:var(--chip-bg);border:1px solid var(--line);color:var(--muted);transition:.24s;
 }
-.footer-social a:hover{color:#04222B;background:var(--grad);transform:translateY(-4px);border-color:transparent}
+.footer-social a:hover{color:#fff;background:var(--grad);transform:translateY(-4px);border-color:transparent}
 .footer-social .ic{width:1.2rem;height:1.2rem}
 .copy{color:var(--dim);font-size:.79rem}
 
@@ -633,7 +637,7 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 .fab:hover{transform:scale(1.09)}
 .fab .ic{width:1.6rem;height:1.6rem;stroke-width:1.9}
 .fab-wa{background:#25D366;box-shadow:0 12px 30px rgba(37,211,102,.4)}
-.fab-top{background:var(--grad);color:#04222B;box-shadow:0 12px 30px rgba(16,181,191,.4);
+.fab-top{background:var(--grad);color:#fff;box-shadow:0 12px 30px rgba(16,181,191,.4);
   opacity:0;pointer-events:none;transition:opacity .3s,transform .25s}
 .fab-top.show{opacity:1;pointer-events:auto}
 
@@ -782,3 +786,32 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
   .review-chip{width:82vw}
   .reviews-strip-wrap{padding:20px 16px 18px}
 }
+
+/* =====================================================================
+   السياق الغامق: كل سطح أبيض/فاتح صلب يُعيد تعريف نظام النصوص إلى ink
+   بدل onbg. بما أن --text/--muted/--dim/--accent-ink متغيرات موروثة،
+   إعادة تعريفها هنا تكفي لتلوين كل نص داخل هذه الأسطح تلقائياً — تشمل
+   كل الكروت (عبر class="... glass")، الهيدر، الفوتر، القنوات، النماذج،
+   وكارت التقييم. بلا حاجة لتكرار قواعد لكل مكوّن على حدة.
+   ===================================================================== */
+.glass, .nav, .nav-links, .footer, .chan, .review-chip, .case, .statement,
+.proofs-band, .field, .contact-form, .proofs-list li {
+  --text: var(--ink);
+  --muted: var(--ink-muted);
+  --dim: var(--ink-dim);
+  --accent-ink: var(--accent-ink-ink);
+}
+
+/* الهيدر: شريط أبيض شفاف بدل الأزرق الداكن الشفاف */
+.nav{background:color-mix(in srgb, #fff 90%, transparent) !important}
+.nav.scrolled{background:color-mix(in srgb, #fff 97%, transparent) !important}
+.nav-links a:hover, .nav-links a.active{background:rgba(210,105,30,.12) !important}
+
+/* شارة السنة الفوقية: نص غامق على تدرّج برتقالي فاتح كفاية لقراءته */
+.topbar{color:#2b1608 !important}
+
+/* حقول النماذج: خلفية بيضاء صريحة بدل الاعتماد على --bg وحده */
+.field input, .field select, .field textarea{background:#fff !important}
+
+/* الفوتر */
+.footer{background:var(--surface) !important}

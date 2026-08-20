@@ -1,19 +1,56 @@
-/* Elawaady account/reviews app — same turquoise SaaS identity as portfolio */
-:root{
-  --turquoise:#10B5BF!important;--cyan:#20D6E3!important;--aqua:#5DE7F2!important;--orange:#FF8A1C!important;
-  --bg:#071F29!important;--bg-2:#0B2A34!important;--surface:#0C2C37!important;--surface-2:#103744!important;
-  --line:#174553!important;--line-soft:#123846!important;--text:#EAF4F7!important;--muted:#9FBAC4!important;--dim:#6F909C!important;
-  --chip-bg:rgba(255,255,255,.04)!important;--glass:linear-gradient(160deg,rgba(23,69,83,.55),rgba(12,44,55,.75))!important;
-  --grad:linear-gradient(135deg,#10B5BF,#20D6E3 60%,#5DE7F2)!important;--accent-ink:#5DE7F2!important;
-  --glow:0 0 0 1px rgba(32,214,227,.18),0 18px 46px rgba(4,20,27,.6)!important;
+/* Elawaady account/reviews app — retheme: orange leather background,
+   white glass cards, dark ink text (matches style.css's identity).
+   Scoped to html.app-shell (app.html only, see the class added on its
+   <html> tag) — this file is injected on index.html too (both pages load
+   firebase-config.js), and index.html has its own dual onbg/ink text
+   system driven by --text/--muted/--dim at bare :root; scoping avoids
+   clobbering that with app.html's always-ink values. */
+html.app-shell{
+  --turquoise:#D2691E!important;--cyan:#B4530F!important;--aqua:#FFB35C!important;--orange:#D2691E!important;
+  --bg:#FFFFFF!important;--bg-2:#FBF7F3!important;--surface:#FFFFFF!important;--surface-2:#F5EFE8!important;
+  --line:#EBE2D7!important;--line-soft:#F0E9E0!important;--text:#221A12!important;--muted:#5B5044!important;--dim:#8A7F70!important;
+  --chip-bg:rgba(255,255,255,.5)!important;--glass:linear-gradient(160deg,#FFFFFF,#FBF6EF)!important;
+  --grad:linear-gradient(135deg,#B4530F,#D2691E 55%,#E8904F)!important;--accent-ink:#B4530F!important;
+  --glow:0 0 0 1px rgba(210,105,30,.22),0 18px 46px rgba(20,8,2,.3)!important;
 }
-:root[data-theme="light"]{--bg:#F2F7F9!important;--bg-2:#fff!important;--surface:#fff!important;--surface-2:#EAF2F5!important;--line:#CFE0E6!important;--line-soft:#DDE9ED!important;--text:#082A35!important;--muted:#41707E!important;--dim:#6C949F!important;--accent-ink:#0B6F78!important;--chip-bg:rgba(8,42,53,.04)!important;--glass:linear-gradient(160deg,#fff,#EEF6F8)!important}
-html,body{background:var(--bg)!important;color:var(--text)!important}
-body{background:radial-gradient(800px 520px at 10% 4%,rgba(16,181,191,.14),transparent 65%),linear-gradient(180deg,var(--bg-2),var(--bg))!important}
-::selection{background:#20D6E3;color:#071F29}
-.nav{background:rgba(7,31,41,.92)!important;border-color:var(--line)!important}.brand-name,.nav-links a{color:var(--text)!important}.brand-name em{color:var(--muted)!important}.nav-links a:hover,.nav-links a.active{background:rgba(32,214,227,.1)!important;border-color:rgba(32,214,227,.25)!important;color:var(--text)!important}.icon-btn{background:var(--chip-bg)!important;border-color:var(--line)!important;color:var(--muted)!important}
-.page{background:transparent!important}.page-head,.card,.review,.modal-card,.drop,.media-card,.link-card,.user-card,.stat-card,.settings-card,.admin-card,.proof-card,.auth-wrap,.auth-card,.login-card{background:var(--glass)!important;border:1px solid var(--line)!important;border-radius:28px!important;box-shadow:var(--glow)!important;backdrop-filter:blur(22px)!important;overflow:hidden!important}.page-head{padding:28px!important}.auth-wrap,.auth-card,.login-card{border-radius:32px!important}.eyebrow{background:rgba(32,214,227,.08)!important;border-color:rgba(32,214,227,.28)!important;color:var(--accent-ink)!important}h1.title{color:var(--text)!important}.sub{color:var(--muted)!important}
-.btn-grad{background:var(--grad)!important;color:#071F29!important;box-shadow:0 14px 34px rgba(32,214,227,.18)!important}.btn-ghost{background:var(--chip-bg)!important;border-color:var(--line)!important;color:var(--text)!important}.input,textarea.input,select.input,input,textarea,select{background:rgba(7,31,41,.32)!important;border-color:var(--line)!important;color:var(--text)!important;border-radius:18px!important}.input:focus,input:focus,textarea:focus,select:focus{border-color:#20D6E3!important;box-shadow:0 0 0 3px rgba(32,214,227,.12)!important;outline:none!important}.tabs{background:var(--chip-bg)!important;border-color:var(--line)!important;border-radius:999px!important}.tabs button{color:var(--muted)!important}.tabs button.on{background:var(--grad)!important;color:#071F29!important}.stars button.lit,.stars-ro{color:#FFB400!important}.google-btn,[data-provider="google"]{background:#fff!important;color:#071F29!important;border-radius:18px!important}.rv-media img,.media-grid img,.shots img{border-radius:18px!important;border:1px solid var(--line)!important;background:var(--bg)!important}.admin-nav,.side-nav,.admin-sidebar{background:rgba(7,31,41,.92)!important;border-color:var(--line)!important}.admin-nav a.active,.side-nav a.active,.admin-sidebar a.active{background:rgba(32,214,227,.1)!important;color:var(--text)!important;border-color:rgba(32,214,227,.25)!important}img[src*="assets/portraits/"]{display:none!important}
+html.app-shell[data-theme="light"]{--bg-2:#fff!important;--surface-2:#F7F2EC!important;--line:#E9E1D5!important}
+html.app-shell,html.app-shell body{background:#FFFFFF!important;color:var(--text)!important}
+/* نفس نسيج الجلد البرتقالي المستخدم في الصفحة الرئيسية — هوية موحّدة عبر الموقع كله */
+html.app-shell body{
+  background:
+    linear-gradient(180deg, rgba(10,4,1,.55), rgba(10,4,1,.72)),
+    url('assets/bg-leather.jpg') center / cover no-repeat fixed !important;
+}
+html.app-shell ::selection{background:#D2691E;color:#fff}
+html.app-shell .nav{background:rgba(255,255,255,.9)!important;border-color:var(--line)!important}
+html.app-shell .brand-name,html.app-shell .nav-links a{color:var(--text)!important}
+html.app-shell .brand-name em{color:var(--muted)!important}
+html.app-shell .nav-links a:hover,html.app-shell .nav-links a.active{background:rgba(210,105,30,.1)!important;border-color:rgba(210,105,30,.25)!important;color:var(--text)!important}
+html.app-shell .icon-btn{background:var(--chip-bg)!important;border-color:var(--line)!important;color:var(--muted)!important}
+html.app-shell .page{background:transparent!important}
+html.app-shell .page-head,html.app-shell .card,html.app-shell .review,html.app-shell .modal-card,html.app-shell .drop,html.app-shell .media-card,html.app-shell .link-card,html.app-shell .user-card,html.app-shell .stat-card,html.app-shell .settings-card,html.app-shell .admin-card,html.app-shell .proof-card,html.app-shell .auth-wrap,html.app-shell .auth-card,html.app-shell .login-card{background:var(--glass)!important;border:1px solid var(--line)!important;border-radius:28px!important;box-shadow:var(--glow)!important;backdrop-filter:blur(22px)!important;overflow:hidden!important}
+html.app-shell .page-head{padding:28px!important}
+html.app-shell .auth-wrap,html.app-shell .auth-card,html.app-shell .login-card{border-radius:32px!important}
+html.app-shell .eyebrow{background:rgba(210,105,30,.08)!important;border-color:rgba(210,105,30,.28)!important;color:var(--accent-ink)!important}
+html.app-shell h1.title{color:var(--text)!important}
+html.app-shell .sub{color:var(--muted)!important}
+html.app-shell .btn-grad{background:var(--grad)!important;color:#fff!important;box-shadow:0 14px 34px rgba(210,105,30,.24)!important}
+html.app-shell .btn-ghost{background:var(--chip-bg)!important;border-color:var(--line)!important;color:var(--text)!important}
+html.app-shell .input,html.app-shell textarea.input,html.app-shell select.input,html.app-shell input,html.app-shell textarea,html.app-shell select{background:#fff!important;border-color:var(--line)!important;color:var(--text)!important;border-radius:18px!important}
+html.app-shell .input:focus,html.app-shell input:focus,html.app-shell textarea:focus,html.app-shell select:focus{border-color:#D2691E!important;box-shadow:0 0 0 3px rgba(210,105,30,.14)!important;outline:none!important}
+html.app-shell .tabs{background:var(--chip-bg)!important;border-color:var(--line)!important;border-radius:999px!important}
+html.app-shell .tabs button{color:var(--muted)!important}
+html.app-shell .tabs button.on{background:var(--grad)!important;color:#fff!important}
+html.app-shell .stars button.lit,html.app-shell .stars-ro{color:#FFB400!important}
+html.app-shell .google-btn,html.app-shell [data-provider="google"]{background:#fff!important;color:#221A12!important;border-radius:18px!important;border:1px solid var(--line)!important}
+html.app-shell .rv-media img,html.app-shell .media-grid img,html.app-shell .shots img{border-radius:18px!important;border:1px solid var(--line)!important;background:#fff!important}
+html.app-shell .admin-nav,html.app-shell .side-nav,html.app-shell .admin-sidebar{background:rgba(255,255,255,.94)!important;border-color:var(--line)!important}
+html.app-shell .admin-nav a.active,html.app-shell .side-nav a.active,html.app-shell .admin-sidebar a.active{background:rgba(210,105,30,.1)!important;color:var(--text)!important;border-color:rgba(210,105,30,.25)!important}
+html.app-shell img[src*="assets/portraits/"]{display:none!important}
 /* Safety net: legacy video controls must never appear in the current image-only review flow. */
-.field:has(input[type="file"][accept*="video"]),.card:has(input[type="file"][accept*="video"]),input[type="file"][accept*="video"],video,.warn-box:has(+ .ack){display:none!important}
-@media(max-width:860px){.nav-links{background:rgba(7,31,41,.98)!important;border-color:var(--line)!important;backdrop-filter:blur(24px)!important}.nav-links a{padding:13px 14px!important;border-radius:14px!important}.page-head,.card,.auth-wrap,.auth-card,.login-card{border-radius:24px!important}}
+html.app-shell .field:has(input[type="file"][accept*="video"]),html.app-shell .card:has(input[type="file"][accept*="video"]),html.app-shell input[type="file"][accept*="video"],html.app-shell video,html.app-shell .warn-box:has(+ .ack){display:none!important}
+@media(max-width:860px){
+  html.app-shell .nav-links{background:rgba(255,255,255,.98)!important;border-color:var(--line)!important;backdrop-filter:blur(24px)!important}
+  html.app-shell .nav-links a{padding:13px 14px!important;border-radius:14px!important}
+  html.app-shell .page-head,html.app-shell .card,html.app-shell .auth-wrap,html.app-shell .auth-card,html.app-shell .login-card{border-radius:24px!important}
+}
