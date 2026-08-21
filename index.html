@@ -144,7 +144,7 @@
 
     <h1 class="hero-title">
       <span class="metal-text" id="heroTitle"></span><br>
-      <span class="grad-text" id="heroTitle2"></span>
+      <span class="metal-text" id="heroTitle2"></span>
     </h1>
 
     <span class="hero-accent"><svg class="ic"><use href="#i-sparkles"/></svg><span class="typing" id="typed"></span></span>
@@ -210,14 +210,15 @@
 <section class="section alt" id="build">
   <div class="container">
     <div class="sec-head reveal">
-      <span class="eyebrow" data-ar="المنهج" data-en="Philosophy">المنهج</span>
-      <h2 data-ar="لا أبيع خدمات رقمية — أنا أبني أنظمة رقمية." data-en="I don't just sell digital services. I build digital systems.">لا أبيع خدمات رقمية — أنا أبني أنظمة رقمية.</h2>
-      <p data-ar="لا أتعامل مع المشروع كخدمة منفردة؛ أبني منظومة تربط التقنية والتجارة والتشغيل والعميل داخل تجربة واحدة."
-         data-en="I don't treat a project as a one-off service. I build a system that ties technology, commerce, operations and the customer into a single experience.">
-        لا أتعامل مع المشروع كخدمة منفردة؛ أبني منظومة تربط التقنية والتجارة والتشغيل والعميل داخل تجربة واحدة.
+      <span class="eyebrow" data-ar="الخدمات والمنظومات" data-en="Services &amp; systems">الخدمات والمنظومات</span>
+      <h2 data-ar="ماذا أبني" data-en="What I build">ماذا أبني</h2>
+      <p data-ar="من الأسواق الرقمية للوساطة والتجارة الإلكترونية — كل قسم داخل منظومة واحدة مترابطة."
+         data-en="From digital markets to mediation and e-commerce — every piece inside one connected ecosystem.">
+        من الأسواق الرقمية للوساطة والتجارة الإلكترونية — كل قسم داخل منظومة واحدة مترابطة.
       </p>
     </div>
     <div class="cards-grid" id="buildsGrid"></div>
+    <div id="buildsDetail"></div>
   </div>
 </section>
 
@@ -342,17 +343,7 @@
       <span class="eyebrow" data-ar="الأدوات" data-en="Tools">الأدوات</span>
       <h2 data-ar="الأدوات والتقنيات اللي بشتغل بيها" data-en="Tools &amp; technologies I work with">الأدوات والتقنيات اللي بشتغل بيها</h2>
     </div>
-    <div class="pill-grid reveal">
-      <span data-nokashida>Shopify</span><span data-nokashida>WooCommerce</span>
-      <span data-nokashida>Stripe</span><span data-nokashida>PayPal</span>
-      <span data-nokashida>Firebase</span><span data-nokashida>Cloudinary</span>
-      <span data-nokashida>Zapier</span><span data-nokashida>Make</span><span data-nokashida>n8n</span>
-      <span data-nokashida>Meta Ads</span><span data-nokashida>Google Ads</span><span data-nokashida>TikTok Ads</span>
-      <span data-nokashida>Figma</span><span data-nokashida>Notion</span>
-      <span data-nokashida>WhatsApp Business API</span>
-      <span data-nokashida>ChatGPT</span><span data-nokashida>Claude</span><span data-nokashida>Gemini</span>
-      <span data-nokashida>Google Analytics</span>
-    </div>
+    <div class="tool-grid reveal" id="toolsGrid"></div>
   </div>
 </section>
 
@@ -360,10 +351,11 @@
 <section class="section alt" id="approach">
   <div class="container">
     <div class="sec-head reveal">
-      <span class="eyebrow" data-ar="أسلوب العمل" data-en="Approach">أسلوب العمل</span>
-      <h2 data-ar="أبني أنظمة، مش حلول مؤقتة" data-en="I build systems, not temporary fixes">أبني أنظمة، مش حلول مؤقتة</h2>
+      <span class="eyebrow" data-ar="منهج العمل" data-en="Approach">منهج العمل</span>
+      <h2 data-ar="أنا مصدر خدمات رقمية وأقوم ببناء أنظمة رقمية" data-en="I'm a source of digital services, and I build digital systems">أنا مصدر خدمات رقمية وأقوم ببناء أنظمة رقمية</h2>
     </div>
     <div class="cards-grid" id="approachGrid"></div>
+    <div id="approachDetail"></div>
   </div>
 </section>
 
@@ -374,6 +366,8 @@
       <span class="eyebrow" data-ar="الرؤية" data-en="Vision">الرؤية</span>
       <h3 id="visionTitle"></h3>
       <p id="visionText"></p>
+      <p id="visionDetail" class="detail-text" hidden></p>
+      <button class="detail-toggle" type="button" id="visionMore" data-ar="اعرف أكثر" data-en="Learn more">اعرف أكثر</button>
       <span class="sig">Building Ideas Into Digital Reality</span>
     </div>
   </div>
@@ -504,6 +498,10 @@
 <div class="fabs">
   <button class="fab fab-top" id="toTop" aria-label="أعلى الصفحة"><svg class="ic"><use href="#i-arrow-up"/></svg></button>
   <a class="fab fab-wa" id="fabWa" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="ic"><use href="#i-whatsapp"/></svg></a>
+</div>
+
+<div class="site-modal" id="siteModal" role="dialog" aria-modal="true">
+  <div class="site-modal-box" id="siteModalBox"></div>
 </div>
 
 <script src="content.js?v=5"></script>

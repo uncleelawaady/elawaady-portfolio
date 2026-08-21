@@ -74,6 +74,8 @@ let lang  = 'ar';
 let theme = 'dark';
 let openCategory = null;
 let query = '';
+let openApproach = null;
+let openBuild = null;
 
 try {
   lang  = localStorage.getItem('elawaadyLang')  || 'ar';
@@ -203,13 +205,45 @@ function renderExpertise() {
 }
 
 function renderBuilds() {
-  set('buildsGrid', C.builds.map(b => {
+  set('buildsGrid', C.builds.map((b, i) => {
     const [title, desc] = t(b);
-    return `<article class="card glass reveal">
+    return `<article class="card glass reveal ${openBuild === i ? 'is-open' : ''}" data-open-build="${i}">
       <div class="card-icon"><svg class="ic"><use href="#${esc(b.icon)}"/></svg></div>
       <h3>${esc(title)}</h3><p>${esc(desc)}</p>
+      <span class="card-more">${esc(L('اعرف أكثر', 'Learn more'))} <svg class="ic"><use href="#i-arrow"/></svg></span>
     </article>`;
   }).join(''));
+
+  const open = openBuild != null ? C.builds[openBuild] : null;
+  if (!open) { set('buildsDetail', ''); return; }
+
+  const [title, , detail] = t(open);
+  const arw = lang === 'ar' ? '←' : '→';
+  const chain = (list) => list ? `<div class="flow">${list[lang].map((s, i) =>
+    `${i ? `<span class="arw">${arw}</span>` : ''}<i>${esc(s)}</i>`).join('')}</div>` : '';
+  const bullets = (list) => list ? `<ul class="rules">${list[lang].map(s =>
+    `<li><svg class="ic"><use href="#i-check-circle"/></svg><span>${esc(s)}</span></li>`).join('')}</ul>` : '';
+  const chipRow = (list) => list ? `<div class="chip-list">${chips(list)}</div>` : '';
+  const mediationLink = open.linkTo
+    ? `<a class="btn btn-grad" href="${esc(open.linkTo)}">${esc(L('صفحة الوساطة الكاملة', 'Full mediation page'))} <svg class="ic"><use href="#i-arrow"/></svg></a>`
+    : '';
+
+  set('buildsDetail', `
+    <div class="detail-band glass">
+      <div class="band-head">
+        <div class="cat-icon"><svg class="ic"><use href="#${esc(open.icon)}"/></svg></div>
+        <div><h3>${esc(title)}</h3></div>
+        <button class="band-close" type="button" data-close-build="1">
+          ${esc(L('إغلاق', 'Close'))} <svg class="ic"><use href="#i-close"/></svg>
+        </button>
+      </div>
+      <p class="detail-text" style="margin-block-start:4px">${esc(detail)}</p>
+      ${open.flow ? `<h4 class="detail-sub">${esc(L('مثال Flow', 'Example flow'))}</h4>${chain(open.flow)}` : ''}
+      ${open.uses ? `<h4 class="detail-sub">${esc(L('الاستخدامات', 'Uses'))}</h4>${bullets(open.uses)}` : ''}
+      ${open.steps ? `<h4 class="detail-sub">${esc(L('خطوات العملية', 'Process steps'))}</h4>${bullets(open.steps)}` : ''}
+      ${open.integrations ? `<h4 class="detail-sub">${esc(L('الشبكة المتكاملة', 'Integration network'))}</h4>${chipRow(open.integrations)}` : ''}
+      ${mediationLink}
+    </div>`);
 }
 
 function renderCase() {
@@ -253,13 +287,29 @@ function renderJourney() {
 }
 
 function renderApproach() {
-  set('approachGrid', C.approach.map(a => {
+  set('approachGrid', C.approach.map((a, i) => {
     const [title, desc] = t(a);
-    return `<article class="card glass reveal">
+    return `<article class="card glass reveal ${openApproach === i ? 'is-open' : ''}" data-open-approach="${i}">
       <div class="card-icon"><svg class="ic"><use href="#${esc(a.icon)}"/></svg></div>
       <h3>${esc(title)}</h3><p>${esc(desc)}</p>
+      <span class="card-more">${esc(L('اعرف أكثر', 'Learn more'))} <svg class="ic"><use href="#i-arrow"/></svg></span>
     </article>`;
   }).join(''));
+
+  const open = openApproach != null ? C.approach[openApproach] : null;
+  if (!open) { set('approachDetail', ''); return; }
+  const [title, , detail] = t(open);
+  set('approachDetail', `
+    <div class="detail-band glass">
+      <div class="band-head">
+        <div class="cat-icon"><svg class="ic"><use href="#${esc(open.icon)}"/></svg></div>
+        <div><h3>${esc(title)}</h3></div>
+        <button class="band-close" type="button" data-close-approach="1">
+          ${esc(L('إغلاق', 'Close'))} <svg class="ic"><use href="#i-close"/></svg>
+        </button>
+      </div>
+      <p class="detail-text" style="margin-block-start:4px">${esc(detail)}</p>
+    </div>`);
 }
 
 /* ---------------------------------------------------------------------------
@@ -362,6 +412,71 @@ function renderRest() {
   set('networkGrid', chips(C.network));
   txt('visionTitle', C.vision[lang][0]);
   txt('visionText',  C.vision[lang][1]);
+  txt('visionDetail', C.vision[lang][2]);
+  wireDetailToggle('visionMore', 'visionDetail');
+}
+
+/* ---------------------------------------------------------------------------
+   الأدوات والتقنيات
+--------------------------------------------------------------------------- */
+const TOOL_NAMES = {
+  shopify:'Shopify', woocommerce:'WooCommerce', stripe:'Stripe', paypal:'PayPal',
+  firebase:'Firebase', cloudinary:'Cloudinary', zapier:'Zapier', make:'Make', n8n:'n8n',
+  'meta-ads':'Meta Ads', 'google-ads':'Google Ads', 'tiktok-ads':'TikTok Ads',
+  figma:'Figma', notion:'Notion', chatgpt:'ChatGPT', claude:'Claude', gemini:'Gemini',
+  'whatsapp-business':'WhatsApp Business', 'google-analytics':'Google Analytics'
+};
+
+function initials(name){
+  return name.split(/[\s.]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+}
+
+function renderTools(){
+  set('toolsGrid', C.tools.map(tool => {
+    const name = TOOL_NAMES[tool.id] || tool.id;
+    return `<button type="button" class="tool-card glass" data-tool="${esc(tool.id)}">
+      <span class="tool-logo" style="background:${esc(tool.color)}">${esc(initials(name))}</span>
+      <span class="tool-name" dir="ltr" data-nokashida>${esc(name)}</span>
+    </button>`;
+  }).join(''));
+}
+
+function openSiteModal(html){
+  const box = document.getElementById('siteModalBox');
+  box.innerHTML = html;
+  document.getElementById('siteModal').classList.add('open');
+}
+function closeSiteModal(){
+  document.getElementById('siteModal').classList.remove('open');
+}
+
+function openToolModal(id){
+  const tool = C.tools.find(x => x.id === id);
+  if (!tool) return;
+  const name = TOOL_NAMES[id] || id;
+  openSiteModal(`
+    <div class="modal-head">
+      <h3 dir="ltr" data-nokashida>${esc(name)}</h3>
+      <button class="modal-close" type="button" data-modal-close="1">✕</button>
+    </div>
+    <dl>
+      <div><dt>${esc(L('النوع', 'Type'))}</dt><dd>${esc(t(tool.type))}</dd></div>
+      <div><dt>${esc(L('أين أستخدمها', 'Where I use it'))}</dt><dd>${esc(t(tool.use))}</dd></div>
+      <div><dt>${esc(L('مثال Workflow', 'Example workflow'))}</dt><dd>${esc(t(tool.flow))}</dd></div>
+    </dl>`);
+}
+
+/* زر «اعرف أكثر» / أي زر توسيع نص قصير — بيتحط مرة واحدة هنا، بيشتغل
+   على أي زوج id ثابت (نص + زرار) بدل ما نكرر نفس المنطق لكل قسم. */
+function wireDetailToggle(btnId, textId){
+  const btn = document.getElementById(btnId);
+  const box = document.getElementById(textId);
+  if (!btn || !box) return;
+  btn.onclick = () => {
+    const open = box.hasAttribute('hidden');
+    if (open) box.removeAttribute('hidden'); else box.setAttribute('hidden', '');
+    txt(btnId, L(open ? 'إخفاء' : 'اعرف أكثر', open ? 'Show less' : 'Learn more'));
+  };
 }
 
 /* ===================== Language & theme ===================== */
@@ -373,7 +488,7 @@ function render() {
 
   renderHero(); renderStats(); renderAbout(); renderExpertise();
   renderBuilds(); renderCase(); renderJourney(); renderApproach();
-  renderChannels(); renderContact(); renderRest();
+  renderChannels(); renderContact(); renderRest(); renderTools();
 
   observeReveals();
   runCounters();
@@ -514,6 +629,50 @@ document.addEventListener('DOMContentLoaded', () => {
       const band = document.querySelector('.detail-band');
       if (band) band.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+  });
+
+  /* كارت المنهج — نفس نمط الفتح/الإغلاق بتاع الخبرات */
+  document.getElementById('approach').addEventListener('click', e => {
+    const openCard = e.target.closest('[data-open-approach]');
+    const closeBtn  = e.target.closest('[data-close-approach]');
+    if (!openCard && !closeBtn) return;
+    const i = openCard ? +openCard.dataset.openApproach : null;
+    openApproach = closeBtn ? null : (openApproach === i ? null : i);
+    renderApproach();
+    if (KASHIDA && lang === 'ar') applyKashida(document.getElementById('approach'));
+    observeReveals();
+    if (openApproach != null) {
+      const band = document.querySelector('#approachDetail .detail-band');
+      if (band) band.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+
+  /* كارت «ماذا أبني» — نفس النمط */
+  document.getElementById('build').addEventListener('click', e => {
+    const openCard = e.target.closest('[data-open-build]');
+    const closeBtn  = e.target.closest('[data-close-build]');
+    if (!openCard && !closeBtn) return;
+    const i = openCard ? +openCard.dataset.openBuild : null;
+    openBuild = closeBtn ? null : (openBuild === i ? null : i);
+    renderBuilds();
+    if (KASHIDA && lang === 'ar') applyKashida(document.getElementById('build'));
+    observeReveals();
+    if (openBuild != null) {
+      const band = document.querySelector('#buildsDetail .detail-band');
+      if (band) band.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+
+  /* كروت الأدوات — نافذة معلومات صغيرة */
+  document.getElementById('tools').addEventListener('click', e => {
+    const card = e.target.closest('[data-tool]');
+    if (card) openToolModal(card.dataset.tool);
+  });
+  document.getElementById('siteModal').addEventListener('click', e => {
+    if (e.target.id === 'siteModal' || e.target.closest('[data-modal-close]')) closeSiteModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeSiteModal();
   });
 
   /* Scroll state */

@@ -177,14 +177,55 @@ window.SITE_CONTENT = {
 
   /* ---- ما أبنيه ---- */
   builds: [
-    { icon: 'i-chip',     ar: ['المنصات', 'منصات رقمية كاملة بحسابات ولوحات تحكم وعمليات تشغيل حقيقية.'],       en: ['Platforms', 'Complete digital platforms with accounts, dashboards and real operating flows.'] },
-    { icon: 'i-store',    ar: ['الأسواق الرقمية', 'ربط العميل والتاجر والمورد والخدمة داخل سوق واحد منظم.'],      en: ['Marketplaces', 'Connecting customer, merchant, supplier and service inside one organised market.'] },
-    { icon: 'i-users',    ar: ['المجتمعات', 'تحويل التجمعات العشوائية إلى مجتمعات منظمة لها قواعد وقيمة.'],       en: ['Communities', 'Turning scattered groups into organised communities with rules and value.'] },
-    { icon: 'i-bolt',     ar: ['الأتمتة', 'أنظمة تتولى العمل المتكرر بدل ما يتعمل يدوي كل مرة.'],                 en: ['Automation', 'Systems that take over repetitive work instead of doing it by hand every time.'] },
-    { icon: 'i-sparkles', ar: ['تدفقات الذكاء الاصطناعي', 'دمج أدوات الـ AI داخل سير العمل، مش استخدامها بشكل منفصل.'], en: ['AI workflows', 'Weaving AI tools into the workflow itself, not using them off to the side.'] },
-    { icon: 'i-swap',     ar: ['أنظمة الوساطة', 'تنظيم المعاملات الرقمية بحيث تكون حقوق كل طرف موثقة.'],          en: ['Escrow systems', 'Structuring digital transactions so every party’s rights are documented.'] },
-    { icon: 'i-cart',     ar: ['التجارة الإلكترونية', 'متاجر ومنتجات رقمية بعمليات طلب ودفع وتسليم مترابطة.'],    en: ['E-Commerce', 'Stores and digital products with order, payment and delivery wired together.'] },
-    { icon: 'i-globe',    ar: ['المنظومات المتكاملة', 'ربط التقنية والتجارة والتشغيل والعميل داخل تجربة واحدة.'], en: ['Business ecosystems', 'Technology, commerce, operations and customer inside a single experience.'] }
+    { icon: 'i-chip', ar: ['المنصات', 'منصات رقمية كاملة بحسابات ولوحات تحكم وعمليات تشغيل حقيقية.',
+        'منصات مبنية بحسابات مستخدمين حقيقية ولوحة تحكم للإدارة والمراجعة، مش صفحة عرض ثابتة — كل بيانات ودخول وحالة لها مكانها.'],
+      en: ['Platforms', 'Complete digital platforms with accounts, dashboards and real operating flows.',
+        'Platforms built with real user accounts and an admin dashboard for management and review — not a static landing page. Every piece of data, login and status has its place.'] },
+
+    { icon: 'i-store', ar: ['الأسواق الرقمية', 'ربط العميل ومقدم الخدمة أو صاحب العرض داخل سوق رقمي منظم.',
+        'السوق الرقمي يعرض الخدمات والمنتجات والأصول الرقمية المسموح بعرضها وفق القوانين وسياسات المنصة المعنية، مع البيانات الأساسية والسعر والصور والإثباتات وطريقة الطلب أو التواصل. الهدف هو أن يفهم المستخدم العرض قبل بدء التعامل، ثم يبدأ طلبًا رسميًا أو يتواصل لبدء إجراءات الوساطة عند الحاجة.'],
+      en: ['Digital markets', 'Connecting the customer with the service provider or offer owner inside an organised digital market.',
+        'The digital market displays services, products and digital assets allowed under the relevant laws and platform policies, along with the core details, price, photos, proof and how to order or get in touch. The goal is for the user to understand the offer before starting a deal, then place a formal order or reach out to start mediation when needed.'] },
+
+    { icon: 'i-users', ar: ['المجتمعات', 'تحويل التجمعات العشوائية إلى مجتمعات منظمة لها قواعد وقيمة.',
+        'بناء وإدارة مجتمعات متخصصة حول الخدمات الرقمية، التجارة، التسويق والمجالات المهنية المختلفة، مع قواعد واضحة وإدارة وتنظيم وتقييمات وتجارب موثقة.'],
+      en: ['Communities', 'Turning scattered groups into organised communities with rules and value.',
+        'Building and running specialised communities around digital services, trade, marketing and various professional fields, with clear rules, management, organisation, ratings and documented experiences.'] },
+
+    { icon: 'i-bolt', ar: ['الأتمتة', 'أنظمة تتولى العمل المتكرر بدل تنفيذه يدويًا كل مرة.',
+        'مثال حقيقي لمسار أتمتة متكرر في مشاريعي.'],
+      en: ['Automation', 'Systems that take over repetitive work instead of doing it by hand every time.',
+        'A real, recurring automation path from my projects.'],
+      flow: { ar: ['طلب جديد', 'إشعار', 'تحقق', 'تحديث الحالة', 'متابعة', 'إغلاق الطلب'],
+              en: ['New order', 'Notification', 'Verification', 'Status update', 'Follow-up', 'Close the order'] },
+      uses: { ar: ['تنظيم الطلبات', 'الإشعارات', 'تحديث حالة الأوردر', 'ربط المتجر بوسائل التواصل', 'ربط الطلبات بلوحة التحكم', 'تقليل الأخطاء اليدوية', 'توفير وقت الإدارة'],
+              en: ['Organising orders', 'Notifications', 'Updating order status', 'Linking the store to messaging channels', 'Linking orders to the dashboard', 'Cutting manual errors', 'Saving management time'] } },
+
+    { icon: 'i-sparkles', ar: ['تدفقات الذكاء الاصطناعي', 'دمج أدوات AI داخل سير العمل بدل استخدامها كأدوات منفصلة.',
+        'حيث يكون للذكاء الاصطناعي قيمة فعلية داخل سير العمل — لا يتخذ قرارات مالية أو قانونية بشكل مستقل.'],
+      en: ['AI workflows', 'Weaving AI tools into the workflow itself, not using them off to the side.',
+        'Wherever AI adds real value inside the workflow — it never makes financial or legal decisions on its own.'],
+      uses: { ar: ['ترتيب البيانات', 'كتابة وصف الخدمات', 'تحليل الطلبات', 'تجهيز رسائل مساعدة', 'مساعدة المستخدم داخل الموقع', 'تنظيم العمليات', 'تجهيز تنبيهات للإدارة', 'دعم خدمة العملاء'],
+              en: ['Organising data', 'Writing service descriptions', 'Analysing requests', 'Preparing help messages', 'Assisting the user on the site', 'Organising operations', 'Preparing alerts for management', 'Supporting customer service'] } },
+
+    { icon: 'i-swap', ar: ['أنظمة الوساطة', 'تنظيم المعاملات الرقمية بحيث تكون خطوات الاتفاق والتسليم موثقة وواضحة.',
+        'أي عملية تخضع لقوانين الدولة وسياسات المنصة أو الخدمة المستخدمة، ولا يتم دعم نقل أو بيع أي أصل أو حساب إذا كان ذلك مخالفًا لشروط المنصة أو القانون.'],
+      en: ['Mediation systems', 'Structuring digital transactions so the agreement and delivery steps are documented and clear.',
+        'Every deal is subject to the laws of the state and the policies of the platform or service used; transferring or selling any asset or account is never supported if it violates that platform’s terms or the law.'],
+      steps: { ar: ['طلب الوساطة.', 'مراجعة بيانات الأطراف والعرض.', 'تحديد السعر والشروط.', 'مراجعة الإثباتات.', 'تحديد آلية التنفيذ أو التسليم.', 'متابعة التنفيذ.', 'تأكيد الاستلام.', 'إغلاق العملية وتسجيل التقييم.'],
+               en: ['Request mediation.', 'Review the parties’ and offer’s details.', 'Set the price and terms.', 'Review the proof.', 'Set the execution or delivery method.', 'Follow up on execution.', 'Confirm receipt.', 'Close the deal and record the review.'] },
+      linkTo: '/mediation.html' },
+
+    { icon: 'i-cart', ar: ['التجارة الإلكترونية', 'متاجر ومنتجات رقمية بعمليات طلب ودفع وتسليم مترابطة.',
+        'أقسام رئيسية وفرعية، صفحات خدمات، صور وإثباتات، سلة طلبات، شراء أو طلب خدمة، ملخص أوردر، تواصل رسمي، تقييمات، وإدارة من لوحة التحكم.'],
+      en: ['E-commerce', 'Stores and digital products with order, payment and delivery wired together.',
+        'Main and sub sections, service pages, photos and proof, an order cart, buying or requesting a service, an order summary, official contact, reviews, and management from the dashboard.'] },
+
+    { icon: 'i-globe', ar: ['المنظومات المتكاملة', 'ربط التقنية والتجارة والتشغيل داخل تجربة واحدة.',
+        'كل جزء من النظام متصل بالباقي، مش بيشتغل لوحده.'],
+      en: ['Integrated systems', 'Tying technology, commerce and operations into a single experience.',
+        'Every part of the system is connected to the rest — nothing runs on its own.'],
+      integrations: ['Store', 'Orders', 'Dashboard', 'Reviews', 'Customers', 'Notifications', 'Automation', 'AI', 'Communication'] }
   ],
 
   /* ---- دراسة الحالة الرئيسية ---- */
@@ -261,16 +302,85 @@ window.SITE_CONTENT = {
   network: ['Media Buyers', 'Digital Marketers', 'Social Media Managers', 'Content Creators', 'Graphic Designers', 'Video Editors', 'Motion Designers', 'Web Developers', 'Bot Developers', 'UI/UX Designers', 'SEO Specialists', 'Affiliate Marketers', 'Sales', 'Customer Support', 'Moderators', 'Account Managers'],
 
   approach: [
-    { icon: 'i-check-circle', ar: ['وضوح', 'كل اتفاق مكتوب ومفهوم من الطرفين قبل ما الشغل يبدأ.'],        en: ['Clarity', 'Every agreement written down and understood by both sides before work starts.'] },
-    { icon: 'i-layers',       ar: ['تنظيم', 'بناء هيكل للعملية بدل التعامل مع كل حالة من الصفر.'],        en: ['Structure', 'Building a process instead of handling every case from scratch.'] },
-    { icon: 'i-bolt',         ar: ['أتمتة', 'كل خطوة متكررة تتحول لنظام يشتغل لوحده.'],                   en: ['Automation', 'Every repeated step becomes a system that runs itself.'] },
-    { icon: 'i-chart',        ar: ['قابلية للتوسع', 'الحل يتبني بحيث يستحمل نمو الحجم من غير ما ينهار.'], en: ['Scalability', 'Built so growth in volume does not break it.'] },
-    { icon: 'i-palette',      ar: ['تجربة مستخدم', 'الواجهة تخدم المستخدم مش تعقّد عليه.'],               en: ['User experience', 'The interface serves the user rather than complicating things.'] },
-    { icon: 'i-shield',       ar: ['حماية التعاملات', 'توثيق كل مرحلة بحيث حقوق الأطراف محفوظة.'],        en: ['Protected transactions', 'Documenting every stage so both parties’ rights hold up.'] }
+    { icon: 'i-check-circle', ar: ['وضوح', 'كل اتفاق مكتوب ومفهوم من الطرفين قبل ما الشغل يبدأ.', 'تحديد الخدمة والسعر وطريقة التنفيذ والتسليم قبل البداية.'],
+      en: ['Clarity', 'Every agreement written down and understood by both sides before work starts.', 'Defining the service, price, execution method and delivery before anything begins.'] },
+    { icon: 'i-layers',       ar: ['تنظيم', 'بناء هيكل للعملية بدل التعامل مع كل حالة من الصفر.', 'كل عملية لها خطوات وحالة وبيانات واضحة بدل إدارة الحالات بشكل عشوائي.'],
+      en: ['Structure', 'Building a process instead of handling every case from scratch.', 'Every process has clear steps, status and data instead of managing cases at random.'] },
+    { icon: 'i-bolt',         ar: ['أتمتة', 'كل خطوة متكررة تتحول لنظام يشتغل لوحده.', 'تحويل الخطوات المتكررة إلى Workflows تقلل العمل اليدوي والأخطاء.'],
+      en: ['Automation', 'Every repeated step becomes a system that runs itself.', 'Turning repeated steps into workflows that cut down manual work and errors.'] },
+    { icon: 'i-chart',        ar: ['قابلية للتوسع', 'الحل يتبني بحيث يستحمل نمو الحجم من غير ما ينهار.', 'بناء النظام بحيث يمكن إضافة خدمات ومستخدمين وأقسام وطلبات بدون إعادة بنائه من البداية.'],
+      en: ['Scalability', 'Built so growth in volume does not break it.', 'Built so services, users, sections and requests can be added without rebuilding it from scratch.'] },
+    { icon: 'i-palette',      ar: ['تجربة المستخدم', 'الواجهة تخدم المستخدم مش تعقّد عليه.', 'جعل المستخدم يفهم الخدمة ويطلبها ويتابع العملية بسهولة.'],
+      en: ['User experience', 'The interface serves the user rather than complicating things.', 'Making it easy for the user to understand the service, request it, and track the process.'] },
+    { icon: 'i-shield',       ar: ['حماية التعاملات', 'توثيق كل مرحلة بحيث حقوق الأطراف محفوظة.', 'استخدام التوثيق والمراجعة والإثباتات والوساطة عند الحاجة.'],
+      en: ['Protected transactions', 'Documenting every stage so both parties’ rights hold up.', 'Using documentation, review, proof and mediation whenever they are needed.'] }
   ],
 
   vision: {
-    ar: ['من الفكرة إلى منظومة رقمية حقيقية.', 'بناء مشروعات ومنظومات رقمية أكثر تنظيمًا وقابلية للتوسع، والاستفادة من التقنية والذكاء الاصطناعي والأتمتة لتحويل الأفكار إلى منتجات وأنظمة حقيقية تخدم المستخدم والسوق.'],
-    en: ['From ideas to digital ecosystems.', 'Building digital projects and ecosystems that are more organised and more scalable — using technology, AI and automation to turn ideas into real products and systems that serve both the user and the market.']
-  }
+    ar: ['من الفكرة إلى منظومة رقمية حقيقية', 'Elawaady XDigital تعمل على بناء منظومات رقمية مترابطة تساعد على تنظيم الخدمات والأسواق والتعاملات وتحويل الأفكار إلى منتجات وأنظمة قابلة للتوسع.',
+      'نحن لا نتعامل مع المشروع كخدمة منفردة، بل نبني منظومة تربط التقنية والتشغيل والتجارة وتجربة المستخدم داخل مسار واحد واضح، مع الاستفادة من الأتمتة والذكاء الاصطناعي حيث يكون لهما قيمة فعلية.'],
+    en: ['From an idea to a real digital ecosystem', 'Elawaady XDigital builds connected digital ecosystems that organise services, markets and transactions, turning ideas into scalable products and systems.',
+      'We don’t treat a project as a one-off service. We build an ecosystem that ties technology, operations, commerce and user experience into a single clear path — using automation and AI wherever they add real value.']
+  },
+
+  /* ---- الأدوات والتقنيات ---- */
+  tools: [
+    { id:'shopify', color:'#95BF47', type:{ar:'منصة متاجر',en:'Store platform'},
+      use:{ar:'إطلاق وإدارة متاجر إلكترونية جاهزة للدفع والشحن.',en:'Launching and running online stores ready for payment and shipping.'},
+      flow:{ar:'عميل يفتح المتجر → يضيف للسلة → يدفع → يتحدث الأوردر في لوحة التحكم.',en:'Customer opens the store → adds to cart → pays → the order updates in the dashboard.'} },
+    { id:'woocommerce', color:'#96588A', type:{ar:'منصة متاجر (WordPress)',en:'Store platform (WordPress)'},
+      use:{ar:'متاجر مبنية على ووردبريس لمشاريع تحتاج مرونة أكبر في التصميم.',en:'WordPress-based stores for projects that need more design flexibility.'},
+      flow:{ar:'إعداد المنتجات → ربط بوابة دفع → استقبال الطلبات وتتبعها.',en:'Set up products → connect a payment gateway → receive and track orders.'} },
+    { id:'stripe', color:'#635BFF', type:{ar:'بوابة دفع',en:'Payment gateway'},
+      use:{ar:'تحصيل المدفوعات أونلاين بأمان لمشاريع التجارة الإلكترونية.',en:'Collecting online payments securely for e-commerce projects.'},
+      flow:{ar:'طلب جديد → إنشاء فاتورة Stripe → تأكيد الدفع → تحديث حالة الأوردر تلقائيًا.',en:'New order → create a Stripe invoice → confirm payment → the order status updates automatically.'} },
+    { id:'paypal', color:'#003087', type:{ar:'بوابة دفع',en:'Payment gateway'},
+      use:{ar:'استقبال مدفوعات دولية بديلة عن التحويل البنكي المباشر.',en:'Receiving international payments as an alternative to direct bank transfer.'},
+      flow:{ar:'إرسال رابط دفع PayPal → استلام تأكيد الدفع → متابعة التنفيذ.',en:'Send a PayPal payment link → receive payment confirmation → proceed with execution.'} },
+    { id:'firebase', color:'#FFA000', type:{ar:'خلفية تطبيقات (Backend)',en:'App backend'},
+      use:{ar:'تسجيل الدخول وقاعدة البيانات وقواعد الصلاحيات لكل حسابات ولوحات التحكم في مشاريعي.',en:'Authentication, database and permission rules behind every account system and dashboard I build.'},
+      flow:{ar:'تسجيل مستخدم → Firestore يخزن البيانات → Security Rules تمنع أي وصول غير مصرح.',en:'A user registers → Firestore stores the data → Security Rules block any unauthorised access.'} },
+    { id:'cloudinary', color:'#3448C5', type:{ar:'استضافة وصور',en:'Media hosting'},
+      use:{ar:'رفع وتحسين صور الإثبات والمنتجات بدون تحميل السيرفر.',en:'Uploading and optimising proof and product images without loading the server.'},
+      flow:{ar:'رفع صورة من المتصفح → تعمل ضغط وتصغير تلقائي → تتخزن ويرجع رابط جاهز للعرض.',en:'Upload an image from the browser → it’s compressed and resized automatically → a ready-to-display link comes back.'} },
+    { id:'zapier', color:'#FF4A00', type:{ar:'أتمتة',en:'Automation'},
+      use:{ar:'ربط أدوات مختلفة مع بعض بدون كتابة كود لكل عملية بسيطة.',en:'Connecting different tools together without writing code for every simple task.'},
+      flow:{ar:'طلب جديد في المتجر → Zapier يبعت إشعار واتساب وإيميل تلقائي.',en:'New order in the store → Zapier sends an automatic WhatsApp notification and email.'} },
+    { id:'make', color:'#6D00CC', type:{ar:'أتمتة بصرية',en:'Visual automation'},
+      use:{ar:'بناء Workflows أكثر تعقيدًا بشكل بصري بدون كود.',en:'Building more complex workflows visually, without code.'},
+      flow:{ar:'حدث في نظام → فرع شرطي (لو/غير كده) → أكتر من إجراء يتنفذ بالتوازي.',en:'An event in one system → a conditional branch (if/else) → several actions run in parallel.'} },
+    { id:'n8n', color:'#EA4B71', type:{ar:'أتمتة (Self-hosted)',en:'Automation (self-hosted)'},
+      use:{ar:'أتمتة داخلية للمشاريع اللي محتاجة تحكم كامل في البيانات.',en:'Internal automation for projects that need full control over their data.'},
+      flow:{ar:'Webhook يستقبل بيانات → معالجة داخل n8n → تحديث Firestore أو إرسال إشعار.',en:'A webhook receives data → it’s processed inside n8n → Firestore is updated or a notification is sent.'} },
+    { id:'meta-ads', color:'#0866FF', type:{ar:'إعلانات ممولة',en:'Paid ads'},
+      use:{ar:'حملات إعلانية على فيسبوك وإنستجرام لتوليد طلبات وعملاء.',en:'Ad campaigns on Facebook and Instagram to generate orders and customers.'},
+      flow:{ar:'استهداف جمهور → إعلان يوصل لصفحة الخدمة → طلب أو تواصل مباشر.',en:'Target an audience → the ad leads to a service page → a direct order or contact.'} },
+    { id:'google-ads', color:'#4285F4', type:{ar:'إعلانات ممولة',en:'Paid ads'},
+      use:{ar:'الظهور في نتائج البحث للي بيدوّر على خدمة بعينها.',en:'Appearing in search results for people looking for a specific service.'},
+      flow:{ar:'بحث المستخدم عن كلمة مفتاحية → إعلان يظهر → زيارة صفحة الخدمة.',en:'A user searches a keyword → the ad appears → they visit the service page.'} },
+    { id:'tiktok-ads', color:'#000000', type:{ar:'إعلانات ممولة',en:'Paid ads'},
+      use:{ar:'الوصول لجمهور أصغر سنًا عبر محتوى فيديو قصير.',en:'Reaching a younger audience through short video content.'},
+      flow:{ar:'فيديو إعلاني قصير → مشاهدة → زيارة الرابط في البايو أو الإعلان.',en:'A short ad video → a view → a visit through the bio or ad link.'} },
+    { id:'figma', color:'#F24E1E', type:{ar:'تصميم واجهات',en:'UI design'},
+      use:{ar:'تصميم واجهات المواقع والتطبيقات قبل التنفيذ.',en:'Designing site and app interfaces before development.'},
+      flow:{ar:'Wireframe → تصميم كامل → مشاركة الرابط للمراجعة → تسليم للتطوير.',en:'Wireframe → full design → share the link for review → hand off to development.'} },
+    { id:'notion', color:'#000000', type:{ar:'إدارة مهام ومحتوى',en:'Task & content management'},
+      use:{ar:'تنظيم خطط المشاريع والمحتوى وقوائم المهام.',en:'Organising project plans, content and task lists.'},
+      flow:{ar:'إضافة مهمة → تحديد حالتها → متابعة التقدم في لوحة واحدة.',en:'Add a task → set its status → track progress on one board.'} },
+    { id:'chatgpt', color:'#10A37F', type:{ar:'ذكاء اصطناعي',en:'AI'},
+      use:{ar:'صياغة أوصاف الخدمات والردود ومساعدة العملاء.',en:'Drafting service descriptions, replies, and customer help.'},
+      flow:{ar:'سؤال أو طلب صياغة → رد مسودة → مراجعة وتعديل قبل الاستخدام.',en:'A question or drafting request → a draft reply → review and edit before use.'} },
+    { id:'claude', color:'#D97757', type:{ar:'ذكاء اصطناعي',en:'AI'},
+      use:{ar:'تحليل بيانات وتنظيم محتوى طويل ومهام تقنية.',en:'Analysing data, organising long content, and technical tasks.'},
+      flow:{ar:'بيانات خام → تلخيص أو تنظيم → مخرجات جاهزة للاستخدام.',en:'Raw data → summarised or organised → output ready to use.'} },
+    { id:'gemini', color:'#8E75B2', type:{ar:'ذكاء اصطناعي',en:'AI'},
+      use:{ar:'مساعدة إضافية في البحث وصياغة المحتوى.',en:'Extra help with research and content drafting.'},
+      flow:{ar:'سؤال بحثي → إجابة مع مصادر → استخدامها كنقطة بداية.',en:'A research question → an answer with sources → used as a starting point.'} },
+    { id:'whatsapp-business', color:'#25D366', type:{ar:'تواصل رسمي',en:'Official contact'},
+      use:{ar:'استقبال الطلبات والتواصل الرسمي مع العملاء.',en:'Receiving orders and official contact with customers.'},
+      flow:{ar:'رسالة عميل → رد سريع → متابعة الطلب حتى يتم.',en:'A customer message → a fast reply → following the order through to completion.'} },
+    { id:'google-analytics', color:'#E37400', type:{ar:'تحليلات',en:'Analytics'},
+      use:{ar:'متابعة زوار الموقع ومصادر الزيارات ومعدلات التحويل.',en:'Tracking site visitors, traffic sources and conversion rates.'},
+      flow:{ar:'زائر يدخل الموقع → يتسجل المصدر والسلوك → تقرير أداء دوري.',en:'A visitor enters the site → the source and behaviour are logged → a periodic performance report.'} }
+  ]
 };
