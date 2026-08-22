@@ -70,7 +70,12 @@
   --accent-ink-ink:#660000;
   --accent-ink:var(--accent-ink-onbg);
 
-  --grad:linear-gradient(135deg,#660000,#8F0000 55%,#FF3131);
+  --grad:linear-gradient(145deg,#8F0000,#C60000 55%,#FF1E1E);
+  /* ظل 3D متعدد الطبقات موحّد لكل الأزرار/الرقائق الحمراء الفاخرة —
+     طبقة صلبة سفلية (الارتفاع) + طبقة ضبابية (العمق) + Highlight داخلي علوي. */
+  --btn-3d-shadow:0 8px 0 0 #520000,0 16px 32px rgba(100,0,0,.38),inset 0 1px 0 rgba(255,255,255,.35);
+  --btn-3d-shadow-hover:0 11px 0 0 #520000,0 20px 42px rgba(100,0,0,.46),inset 0 1px 0 rgba(255,255,255,.42);
+  --btn-3d-shadow-active:0 2px 0 0 #520000,0 6px 14px rgba(100,0,0,.32),inset 0 1px 0 rgba(255,255,255,.22);
   --grad-metal:linear-gradient(150deg,#FFFFFF,#C7D2D8 40%,#91A6AE 70%,#EDF3F5);
   --glow:0 0 0 1px rgba(143,0,0,.22),0 18px 46px rgba(23,6,6,.35);
   --glow-strong:0 0 34px rgba(143,0,0,.3),0 22px 60px rgba(23,6,6,.45);
@@ -134,19 +139,27 @@ button{font:inherit;color:inherit}
   display:inline-flex;align-items:center;justify-content:center;gap:9px;
   padding:13px 24px;border-radius:999px;border:1px solid transparent;
   font-weight:700;font-size:.95rem;cursor:pointer;
-  transition:transform .25s,box-shadow .25s,background .25s,border-color .25s,color .25s;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease;
   white-space:nowrap;
 }
-/* حدود بيضاء صريحة على الأزرار الحمراء الأساسية عشان تبان بارزة/3D فوق
-   الخلفية الحمراء بدل ما تدوب فيها. */
-.btn-grad{background:var(--grad);color:#fff;border:2px solid #fff;
-  box-shadow:0 4px 0 0 rgba(23,6,6,.4),0 12px 30px rgba(143,0,0,.32)}
-.btn-grad:hover{transform:translateY(-3px);box-shadow:0 6px 0 0 rgba(23,6,6,.4),0 18px 44px rgba(255,49,49,.46)}
+/* المعالجة الحمراء الفاخرة 3D الموحّدة — تُطبَّق على كل أزرار الخدمات
+   والأقسام (CTA الرئيسية، فلاتر التصنيفات، رقائق المجتمعات/التخصصات)
+   عشان تبان زرار حقيقي بارز فوق الخلفية بدل رقعة لون فلات. */
+.btn-grad, .btn-signature, .filter-row button, .pill-grid span{
+  background:var(--grad);color:#fff;border:2px solid #fff;font-weight:800;
+  border-radius:999px;box-shadow:var(--btn-3d-shadow);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.filter-row button{cursor:pointer}
+.btn-grad:hover, .btn-signature:hover, .filter-row button:hover, .pill-grid span:hover{
+  transform:translateY(-3px);box-shadow:var(--btn-3d-shadow-hover);
+}
+.btn-grad:active, .btn-signature:active, .filter-row button:active, .pill-grid span:active{
+  transform:translateY(3px);box-shadow:var(--btn-3d-shadow-active);
+}
 .btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text)}
 .btn-ghost:hover{transform:translateY(-3px);border-color:var(--turquoise);background:rgba(143,0,0,.12)}
-.btn-signature{background:linear-gradient(135deg,#660000,#8F0000);border:2px solid #fff;color:#fff;
-  box-shadow:0 4px 0 0 rgba(23,6,6,.4)}
-.btn-signature:hover{transform:translateY(-3px);box-shadow:0 6px 0 0 rgba(23,6,6,.4)}
+.btn-ghost:active{transform:translateY(1px)}
 .btn-sm{padding:9px 17px;font-size:.86rem}
 .btn-lg{padding:16px 32px;font-size:1.02rem}
 .btn.block{width:100%}
@@ -310,12 +323,10 @@ button{font:inherit;color:inherit}
    Expertise explorer — the card system the whole page is built around.
 =========================================================================== */
 .filter-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-block-end:26px}
-.filter-row button{
-  padding:9px 18px;border-radius:999px;cursor:pointer;font-weight:700;font-size:.86rem;
-  background:var(--chip-bg);border:1px solid var(--line);color:var(--muted);transition:.22s;
-}
-.filter-row button:hover{color:var(--text);border-color:var(--turquoise)}
-.filter-row button.on{background:var(--grad);border-color:transparent;color:#fff}
+.filter-row button{padding:9px 18px;font-size:.86rem}
+/* التصنيف المفعّل يتميّز بحلقة بيضاء إضافية فوق نفس المعالجة ثلاثية
+   الأبعاد — مش بلون مختلف، عشان كل الأزرار تفضل بنفس الهوية الفاخرة. */
+.filter-row button.on{box-shadow:var(--btn-3d-shadow-hover),0 0 0 3px rgba(255,255,255,.55)}
 
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:18px}
 .cat-card{
@@ -431,17 +442,20 @@ button{font:inherit;color:inherit}
 .site-modal-box dt{font-weight:800;color:var(--ink);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px}
 .site-modal-box dd{color:var(--ink-muted);margin-inline-start:0}
 
-/* ===== كروت الأدوات ===== */
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+/* ===== كروت الأدوات — الشعار الحقيقي هو العنصر البصري الأساسي، بطاقة
+   أبيض-مائل-للكريمي فاخرة (تستعير 3D الأحمر نفسه من .glass) ===== */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
 .tool-card{
-  display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 12px;
-  border-radius:var(--radius);cursor:pointer;text-align:center;transition:.24s;
+  display:flex;flex-direction:column;align-items:center;gap:12px;padding:22px 14px;
+  border-radius:var(--radius-lg);cursor:pointer;text-align:center;transition:.24s;
 }
-.tool-card:hover{transform:translateY(-4px)}
+.tool-card:hover{transform:translateY(-6px)}
+.tool-card:active{transform:translateY(-1px)}
 .tool-logo{
-  width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
-  font-weight:900;font-size:1.15rem;color:#fff;flex:0 0 auto;
+  width:100%;height:64px;display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;overflow:hidden;
 }
+.tool-logo img{display:block;width:100%;height:100%;object-fit:contain}
 .tool-name{font-weight:700;font-size:.86rem}
 
 /* ===== Case study ===== */
@@ -505,14 +519,7 @@ button{font:inherit;color:inherit}
 
 /* ===== Pills ===== */
 .pill-grid{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
-.pill-grid span{
-  padding:10px 19px;border-radius:999px;font-weight:700;font-size:.88rem;
-  background:var(--chip-bg);border:1px solid var(--line);color:var(--text);transition:.24s;
-}
-.pill-grid span:hover{
-  border-color:var(--turquoise);background:rgba(143,0,0,.14);
-  transform:translateY(-3px);box-shadow:0 0 20px rgba(255,49,49,.16);
-}
+.pill-grid span{padding:10px 19px;font-size:.88rem}
 
 /* ===== Digital Products & Systems — SaaS mock cards =====
    لا صور فعلية لمنتجات — واجهات مموّهة (mock) مبنية بالـCSS تعبّر عن نوع

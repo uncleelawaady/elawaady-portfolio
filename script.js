@@ -427,15 +427,11 @@ const TOOL_NAMES = {
   'whatsapp-business':'WhatsApp Business', 'google-analytics':'Google Analytics'
 };
 
-function initials(name){
-  return name.split(/[\s.]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
-}
-
 function renderTools(){
   set('toolsGrid', C.tools.map(tool => {
     const name = TOOL_NAMES[tool.id] || tool.id;
     return `<button type="button" class="tool-card glass" data-tool="${esc(tool.id)}">
-      <span class="tool-logo" style="background:${esc(tool.color)}">${esc(initials(name))}</span>
+      <span class="tool-logo"><img src="assets/tools/${esc(tool.id)}.jpg" alt="${esc(name)}" loading="lazy" decoding="async"></span>
       <span class="tool-name" dir="ltr" data-nokashida>${esc(name)}</span>
     </button>`;
   }).join(''));
