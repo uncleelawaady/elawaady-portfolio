@@ -202,14 +202,19 @@ button{font:inherit;color:inherit}
 .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(143,0,0,.12)}
 
 .nav-actions{display:flex;align-items:center;gap:8px}
-/* Round icon controls, the row that gives the header its density */
+/* أزرار الهيدر المستديرة (القائمة/اللغة/الثيم/البحث) — نفس معالجة الأزرار
+   الحمراء 3D بتاعة «اكتب تقييمك» بدل الرقاقة الرمادية القديمة. */
 .icon-btn{
   width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:50%;cursor:pointer;
-  background:var(--chip-bg);border:1px solid var(--line);color:var(--muted);transition:.22s;
+  background:var(--grad);border:2px solid #fff;color:#fff;
+  box-shadow:0 4px 0 0 #520000,0 10px 20px rgba(100,0,0,.35),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .2s ease,box-shadow .2s ease;
 }
-.icon-btn:hover{color:var(--text);border-color:var(--turquoise);background:rgba(143,0,0,.14)}
+.icon-btn:hover{color:#fff;border-color:#fff;background:var(--grad);
+  transform:translateY(-3px);box-shadow:0 6px 0 0 #520000,0 14px 26px rgba(100,0,0,.42),inset 0 1px 0 rgba(255,255,255,.35)}
+.icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 0 #520000,0 4px 10px rgba(100,0,0,.3),inset 0 1px 0 rgba(255,255,255,.2)}
 .icon-btn .ic{width:1.15rem;height:1.15rem}
-.icon-btn.on{color:var(--orange);border-color:rgba(255,49,49,.5);background:rgba(255,49,49,.12)}
+.icon-btn.on{box-shadow:0 4px 0 0 #520000,0 10px 20px rgba(100,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.6)}
 .lang-btn{width:auto;padding-inline:14px;border-radius:999px;font-weight:700;font-size:.8rem;letter-spacing:.5px}
 .nav-toggle{display:none}
 
@@ -328,6 +333,14 @@ button{font:inherit;color:inherit}
   width:36px;height:36px;padding:8px;box-sizing:border-box;border-radius:11px;
   background:rgba(143,0,0,.14);color:var(--turquoise);
 }
+/* صورة شخصية مؤطرة فوق الكروت الجانبية — حواف حمراء 3D بنفس هوية الموقع */
+.about-photo{
+  border-radius:var(--radius-lg);overflow:hidden;margin-block-end:18px;
+  border:2px solid #fff;
+  box-shadow:0 8px 0 0 #520000,0 20px 40px rgba(60,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25);
+}
+.about-photo img{width:100%;height:auto;display:block}
+
 .about-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .mini-card{padding:20px 16px;border-radius:var(--radius);text-align:center;transition:.28s}
 .mini-card:hover{transform:translateY(-5px);border-color:var(--turquoise);box-shadow:var(--glow)}
@@ -769,21 +782,28 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 .chan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(266px,1fr));gap:10px}
 /* الأسماء بتلف على سطرين أحيانًا لأنها عربي وإنجليزي مع بعض، فالارتفاع
    الأدنى بيخلي كل البطاقات في الصف بنفس الطول من غير ما نقص أي اسم. */
+/* بطاقات القنوات/الجروبات — حمراء 3D بحواف بيضاء رفيعة بدل الكارت الأبيض،
+   نفس عائلة التصميم بتاعة قسم فريق العمل. */
 .chan{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);
-  border:1px solid var(--line);background:var(--surface);transition:.24s;min-width:0;
-  min-height:76px}
-.chan:hover{border-color:var(--turquoise);background:var(--bg-2);transform:translateY(-2px);
-  box-shadow:var(--glow)}
+  border:1.5px solid rgba(255,255,255,.85);
+  background:linear-gradient(160deg,#A80000,#8F0000 55%,#6b0000);
+  box-shadow:0 5px 0 0 #4a0000,0 12px 26px rgba(60,0,0,.4),inset 0 1px 0 rgba(255,255,255,.22);
+  transition:transform .22s ease,box-shadow .22s ease;min-width:0;
+  min-height:76px;color:#fff}
+.chan:hover{transform:translateY(-4px);
+  box-shadow:0 7px 0 0 #4a0000,0 16px 32px rgba(60,0,0,.48),inset 0 1px 0 rgba(255,255,255,.28)}
+.chan:active{transform:translateY(2px);
+  box-shadow:0 2px 0 0 #4a0000,0 6px 14px rgba(60,0,0,.32),inset 0 1px 0 rgba(255,255,255,.18)}
 .chan>.ic{width:34px;height:34px;padding:8px;box-sizing:border-box;border-radius:11px;
-  flex:none;background:var(--bg-2);color:var(--accent-ink);stroke-width:1.9}
+  flex:none;background:rgba(255,255,255,.16);color:#fff;stroke-width:1.9}
 .chan-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
-.chan-txt strong{font-size:.9rem;font-weight:700;line-height:1.4;
+.chan-txt strong{font-size:.9rem;font-weight:700;line-height:1.4;color:#fff;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.chan-txt span{font-size:.75rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;
+.chan-txt span{font-size:.75rem;color:rgba(255,255,255,.72);overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap}
-.chan-go{width:16px;height:16px;flex:none;margin-inline-start:auto;color:var(--dim);opacity:0;
+.chan-go{width:16px;height:16px;flex:none;margin-inline-start:auto;color:rgba(255,255,255,.65);opacity:0;
   transition:.24s}
-.chan:hover .chan-go{opacity:1;color:var(--accent-ink)}
+.chan:hover .chan-go{opacity:1;color:#fff}
 
 .contact-form{padding:26px;border-radius:var(--radius)}
 .field{margin-block-end:15px}
@@ -980,7 +1000,7 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
    كل الكروت (عبر class="... glass")، الهيدر، الفوتر، القنوات، النماذج،
    وكارت التقييم. بلا حاجة لتكرار قواعد لكل مكوّن على حدة.
    ===================================================================== */
-.glass, .nav, .nav-links, .footer, .chan, .review-chip, .case, .statement,
+.glass, .nav, .nav-links, .footer, .review-chip, .case, .statement,
 .proofs-band, .field, .contact-form, .proofs-list li, .saas-card {
   --text: var(--ink);
   --muted: var(--ink-muted);
