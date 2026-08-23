@@ -474,21 +474,21 @@ window.SITE_CONTENT = {
     },
 
     social: [
-      { id:'facebook',  name:'Facebook',  icon:'i-facebook' },
+      { id:'facebook',  name:'Facebook',  img:'facebook' },
       { id:'instagram', name:'Instagram', img:'instagram' },
       { id:'threads',   name:'Threads',   img:'threads' },
       { id:'whatsapp',  name:'WhatsApp',  img:'whatsapp' },
-      { id:'messenger', name:'Messenger', icon:'i-chat' },
+      { id:'messenger', name:'Messenger', img:'messenger' },
       { id:'tiktok',    name:'TikTok',    img:'tiktok' },
       { id:'youtube',   name:'YouTube',   img:'youtube' },
       { id:'x',         name:'X (Twitter)', img:'x' },
-      { id:'snapchat',  name:'Snapchat',  icon:'i-sparkles' },
+      { id:'snapchat',  name:'Snapchat',  img:'snapchat' },
       { id:'linkedin',  name:'LinkedIn',  img:'linkedin' },
       { id:'pinterest', name:'Pinterest', img:'pinterest' },
       { id:'telegram',  name:'Telegram',  img:'telegram' },
       { id:'discord',   name:'Discord',   img:'discord' },
-      { id:'reddit',    name:'Reddit',    icon:'i-globe' },
-      { id:'twitch',    name:'Twitch',    icon:'i-chip' },
+      { id:'reddit',    name:'Reddit',    img:'reddit' },
+      { id:'twitch',    name:'Twitch',    img:'twitch' },
       { id:'kwai',      name:'Kwai',      icon:'i-bolt' }
     ],
 
@@ -496,18 +496,18 @@ window.SITE_CONTENT = {
       { id:'meta-ads',     name:'Meta Ads',      img:'meta-ads' },
       { id:'google-ads',   name:'Google Ads',    img:'google-ads' },
       { id:'tiktok-ads',   name:'TikTok Ads',    img:'tiktok-ads' },
-      { id:'snapchat-ads', name:'Snapchat Ads',  icon:'i-sparkles' },
+      { id:'snapchat-ads', name:'Snapchat Ads',  img:'snapchat' },
       { id:'linkedin-ads', name:'LinkedIn Ads',  img:'linkedin' },
       { id:'pinterest-ads',name:'Pinterest Ads', img:'pinterest' },
       { id:'x-ads',        name:'X Ads',         img:'x' }
     ],
 
     payments: [
-      { id:'instapay',      name:'InstaPay',       icon:'i-card' },
-      { id:'vodafone-cash', name:'Vodafone Cash',  icon:'i-card' },
-      { id:'orange-cash',   name:'Orange Cash',    icon:'i-card' },
-      { id:'etisalat-cash', name:'Etisalat Cash',  icon:'i-card' },
-      { id:'we-pay',        name:'WE Pay',         icon:'i-card' },
+      { id:'instapay',      name:'InstaPay',       img:'instapay' },
+      { id:'vodafone-cash', name:'Vodafone Cash',  img:'vodafone-cash' },
+      { id:'orange-cash',   name:'Orange Cash',    img:'orange-cash' },
+      { id:'etisalat-cash', name:'Etisalat Cash',  img:'etisalat-cash' },
+      { id:'we-pay',        name:'WE Pay',         img:'we-pay' },
       { id:'paypal',        name:'PayPal',         img:'paypal' },
       { id:'stripe',        name:'Stripe',         img:'stripe' },
       { id:'paymob',        name:'Paymob',         icon:'i-card' }
