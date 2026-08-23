@@ -493,13 +493,24 @@ window.SITE_CONTENT = {
     ],
 
     ads: [
-      'Meta Ads', 'Google Ads', 'TikTok Ads', 'Snapchat Ads',
-      'LinkedIn Ads', 'Pinterest Ads', 'X Ads'
+      { id:'meta-ads',     name:'Meta Ads',      img:'meta-ads' },
+      { id:'google-ads',   name:'Google Ads',    img:'google-ads' },
+      { id:'tiktok-ads',   name:'TikTok Ads',    img:'tiktok-ads' },
+      { id:'snapchat-ads', name:'Snapchat Ads',  icon:'i-sparkles' },
+      { id:'linkedin-ads', name:'LinkedIn Ads',  img:'linkedin' },
+      { id:'pinterest-ads',name:'Pinterest Ads', img:'pinterest' },
+      { id:'x-ads',        name:'X Ads',         img:'x' }
     ],
 
     payments: [
-      'InstaPay', 'Vodafone Cash', 'Orange Cash', 'Etisalat Cash',
-      'WE Pay', 'PayPal', 'Stripe', 'Paymob'
+      { id:'instapay',      name:'InstaPay',       icon:'i-card' },
+      { id:'vodafone-cash', name:'Vodafone Cash',  icon:'i-card' },
+      { id:'orange-cash',   name:'Orange Cash',    icon:'i-card' },
+      { id:'etisalat-cash', name:'Etisalat Cash',  icon:'i-card' },
+      { id:'we-pay',        name:'WE Pay',         icon:'i-card' },
+      { id:'paypal',        name:'PayPal',         img:'paypal' },
+      { id:'stripe',        name:'Stripe',         img:'stripe' },
+      { id:'paymob',        name:'Paymob',         icon:'i-card' }
     ],
 
     services: [

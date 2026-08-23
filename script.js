@@ -499,20 +499,22 @@ function renderTools(){
 /* ---------------------------------------------------------------------------
    التقنيات والمنصات التي نعمل عليها
 --------------------------------------------------------------------------- */
+function platformCard(item){
+  return `<div class="tool-card glass">
+    <span class="tool-logo">${item.img
+      ? `<img src="assets/platforms/${esc(item.img)}.jpg" alt="${esc(item.name)}" loading="lazy" decoding="async">`
+      : `<svg class="ic platform-fallback-ic"><use href="#${esc(item.icon)}"/></svg>`}</span>
+    <span class="tool-name" dir="ltr" data-nokashida>${esc(item.name)}</span>
+  </div>`;
+}
+
 function renderPlatforms(){
   const P = C.platforms;
   txt('platformsIntro', t(P.intro));
 
-  set('socialGrid', P.social.map(s => `
-    <div class="tool-card glass">
-      <span class="tool-logo">${s.img
-        ? `<img src="assets/platforms/${esc(s.img)}.jpg" alt="${esc(s.name)}" loading="lazy" decoding="async">`
-        : `<svg class="ic platform-fallback-ic"><use href="#${esc(s.icon)}"/></svg>`}</span>
-      <span class="tool-name" dir="ltr" data-nokashida>${esc(s.name)}</span>
-    </div>`).join(''));
-
-  set('adsGrid', chips(P.ads));
-  set('paymentsGrid', chips(P.payments));
+  set('socialGrid', P.social.map(platformCard).join(''));
+  set('adsGrid', P.ads.map(platformCard).join(''));
+  set('paymentsGrid', P.payments.map(platformCard).join(''));
 
   set('servicesList', P.services.map(s =>
     `<li><svg class="ic"><use href="#i-check-circle"/></svg><span>${esc(t(s))}</span></li>`).join(''));
