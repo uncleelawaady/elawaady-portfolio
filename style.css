@@ -630,6 +630,26 @@ button{font:inherit;color:inherit}
 .pill-grid{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
 .pill-grid span{padding:10px 19px;font-size:.88rem}
 
+/* ===== Platforms & Technologies ===== */
+.platforms-sub{
+  font-size:clamp(1.05rem,2vw,1.35rem);font-weight:800;text-align:center;
+  margin-block:42px 18px;
+}
+.platforms-sub:first-of-type{margin-block-start:8px}
+.platform-fallback-ic{width:2rem;height:2rem;color:var(--turquoise)}
+.platforms-services{max-width:900px;margin-inline:auto}
+.platforms-closing{
+  margin-block-start:52px;text-align:center;padding-block:30px;
+  border-block-start:1px solid rgba(255,255,255,.14);
+}
+.platforms-closing strong{display:block;font-size:1.3rem;font-weight:900}
+.platforms-closing span{display:block;margin-block-start:8px;color:var(--muted);
+  font-weight:700;font-size:.92rem;letter-spacing:.2px}
+
+@media (min-width:640px){
+  .platforms-services{grid-template-columns:1fr 1fr;column-gap:28px}
+}
+
 /* ===== Digital Products & Systems — SaaS mock cards =====
    لا صور فعلية لمنتجات — واجهات مموّهة (mock) مبنية بالـCSS تعبّر عن نوع
    العمل (لوحة تحكم، أتمتة، CRM) بهوية أحمر/أبيض/أصفر بدل الأزرق التقليدي. */

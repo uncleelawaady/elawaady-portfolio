@@ -460,5 +460,68 @@ window.SITE_CONTENT = {
     { id:'google-analytics', color:'#E37400', type:{ar:'تحليلات',en:'Analytics'},
       use:{ar:'متابعة زوار الموقع ومصادر الزيارات ومعدلات التحويل.',en:'Tracking site visitors, traffic sources and conversion rates.'},
       flow:{ar:'زائر يدخل الموقع → يتسجل المصدر والسلوك → تقرير أداء دوري.',en:'A visitor enters the site → the source and behaviour are logged → a periodic performance report.'} }
-  ]
+  ],
+
+  /* ---- التقنيات والمنصات التي نعمل عليها ----
+     social[].img يشاور على assets/platforms/{img}.jpg لو موجودة صورة حقيقية،
+     وإلا social[].icon بيرجع لأيقونة عامة من الـsprite. */
+  platforms: {
+    eyebrow: { ar:'التقنيات والمنصات', en:'Platforms & technologies' },
+    title:   { ar:'التقنيات والمنصات التي نعمل عليها', en:'The platforms & technologies we work with' },
+    intro: {
+      ar: 'في Elawaady XDigital نقدم حلولًا وخدمات رقمية متكاملة تغطي أشهر المنصات العالمية، مع التركيز على إدارة الحسابات، النمو الرقمي، الإعلانات، الاشتراكات، وخدمات الذكاء الاصطناعي.',
+      en: 'At Elawaady XDigital we provide complete digital solutions and services covering the world’s most popular platforms — focused on account management, digital growth, advertising, subscriptions and AI services.'
+    },
+
+    social: [
+      { id:'facebook',  name:'Facebook',  icon:'i-facebook' },
+      { id:'instagram', name:'Instagram', img:'instagram' },
+      { id:'threads',   name:'Threads',   img:'threads' },
+      { id:'whatsapp',  name:'WhatsApp',  img:'whatsapp' },
+      { id:'messenger', name:'Messenger', icon:'i-chat' },
+      { id:'tiktok',    name:'TikTok',    img:'tiktok' },
+      { id:'youtube',   name:'YouTube',   img:'youtube' },
+      { id:'x',         name:'X (Twitter)', img:'x' },
+      { id:'snapchat',  name:'Snapchat',  icon:'i-sparkles' },
+      { id:'linkedin',  name:'LinkedIn',  img:'linkedin' },
+      { id:'pinterest', name:'Pinterest', img:'pinterest' },
+      { id:'telegram',  name:'Telegram',  img:'telegram' },
+      { id:'discord',   name:'Discord',   img:'discord' },
+      { id:'reddit',    name:'Reddit',    icon:'i-globe' },
+      { id:'twitch',    name:'Twitch',    icon:'i-chip' },
+      { id:'kwai',      name:'Kwai',      icon:'i-bolt' }
+    ],
+
+    ads: [
+      'Meta Ads', 'Google Ads', 'TikTok Ads', 'Snapchat Ads',
+      'LinkedIn Ads', 'Pinterest Ads', 'X Ads'
+    ],
+
+    payments: [
+      'InstaPay', 'Vodafone Cash', 'Orange Cash', 'Etisalat Cash',
+      'WE Pay', 'PayPal', 'Stripe', 'Paymob'
+    ],
+
+    services: [
+      { ar:'خدمات السوشيال ميديا', en:'Social media services' },
+      { ar:'إدارة الحملات الإعلانية', en:'Ad campaign management' },
+      { ar:'إدارة وإطلاق الحملات التسويقية', en:'Marketing campaign management & launch' },
+      { ar:'توثيق الحسابات', en:'Account verification' },
+      { ar:'بيع وشراء الحسابات', en:'Buying & selling accounts' },
+      { ar:'بيع وشراء الصفحات والجروبات والقنوات', en:'Buying & selling pages, groups and channels' },
+      { ar:'نقل ملكية الحسابات والأصول الرقمية', en:'Transferring ownership of accounts & digital assets' },
+      { ar:'خدمات الذكاء الاصطناعي', en:'AI services' },
+      { ar:'اشتراكات ومنصات AI', en:'AI subscriptions & platforms' },
+      { ar:'حلول API والتكامل البرمجي', en:'API solutions & integrations' },
+      { ar:'تطوير المتاجر والمنصات الرقمية', en:'Store & digital platform development' },
+      { ar:'تطوير بوتات Telegram وWhatsApp', en:'Telegram & WhatsApp bot development' },
+      { ar:'أنظمة الوساطة الرقمية وحفظ الحقوق', en:'Digital mediation & rights-protection systems' },
+      { ar:'إدارة الموردين والتجار والمسوقين', en:'Supplier, merchant & marketer management' },
+      { ar:'خدمات التسويق الرقمي', en:'Digital marketing services' },
+      { ar:'الاستشارات التقنية والتحول الرقمي', en:'Technical consulting & digital transformation' }
+    ],
+
+    closingName: 'Elawaady XDigital',
+    closingTagline: 'Digital Services • AI Solutions • Social Media • Digital Platforms'
+  }
 };

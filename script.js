@@ -496,6 +496,31 @@ function renderTools(){
   }).join(''));
 }
 
+/* ---------------------------------------------------------------------------
+   التقنيات والمنصات التي نعمل عليها
+--------------------------------------------------------------------------- */
+function renderPlatforms(){
+  const P = C.platforms;
+  txt('platformsIntro', t(P.intro));
+
+  set('socialGrid', P.social.map(s => `
+    <div class="tool-card glass">
+      <span class="tool-logo">${s.img
+        ? `<img src="assets/platforms/${esc(s.img)}.jpg" alt="${esc(s.name)}" loading="lazy" decoding="async">`
+        : `<svg class="ic platform-fallback-ic"><use href="#${esc(s.icon)}"/></svg>`}</span>
+      <span class="tool-name" dir="ltr" data-nokashida>${esc(s.name)}</span>
+    </div>`).join(''));
+
+  set('adsGrid', chips(P.ads));
+  set('paymentsGrid', chips(P.payments));
+
+  set('servicesList', P.services.map(s =>
+    `<li><svg class="ic"><use href="#i-check-circle"/></svg><span>${esc(t(s))}</span></li>`).join(''));
+
+  txt('platformsClosingName', P.closingName);
+  txt('platformsClosingTagline', P.closingTagline);
+}
+
 function openSiteModal(html){
   const box = document.getElementById('siteModalBox');
   box.innerHTML = html;
@@ -543,7 +568,7 @@ function render() {
 
   renderHero(); renderStats(); renderAbout(); renderExpertise();
   renderBuilds(); renderCase(); renderJourney(); renderApproach();
-  renderChannels(); renderContact(); renderRest(); renderTools(); renderTeam();
+  renderChannels(); renderContact(); renderRest(); renderTools(); renderTeam(); renderPlatforms();
 
   observeReveals();
   runCounters();
