@@ -2,17 +2,19 @@
    روابط التواصل والمجتمعات — Seed / Fallback
    =========================================================================== */
 window.SITE_LINKS = [
-  { id:'off-store', type:'official', order:1, visible:true, platform:'store', title:'المتجر الرسمي | Elawaady XDigital', url:'https://elawaady.com' },
-  { id:'off-wa-main', type:'official', order:2, visible:true, platform:'whatsapp', title:'واتساب | الرسمي', url:'https://wa.me/201055578777' },
-  { id:'off-wa-extra', type:'official', order:3, visible:true, platform:'whatsapp', title:'واتساب | إضافي', url:'https://wa.me/201008002333' },
-  { id:'off-messenger', type:'official', order:4, visible:true, platform:'messenger', title:'ماسنجر | الصفحة الرسمية', url:'https://m.me/eIawaady.official' },
-  { id:'off-instagram', type:'official', order:5, visible:true, platform:'instagram', title:'إنستجرام | Elawaady Official', url:'https://www.instagram.com/elawaady.official' },
-  { id:'off-fb-1', type:'official', order:6, visible:true, platform:'facebook', title:'فيسبوك | Elawaady Official', url:'https://www.facebook.com/eIawaady.official' },
-  { id:'off-fb-2', type:'official', order:7, visible:true, platform:'facebook', title:'فيسبوك | Official Elawaady', url:'https://www.facebook.com/official.elawaady' },
-  { id:'off-tg-1', type:'official', order:8, visible:true, platform:'telegram', title:'تليجرام | Elawaady Official', url:'https://t.me/elawaadyofficial' },
-  { id:'off-tg-2', type:'official', order:9, visible:true, platform:'telegram', title:'تليجرام | Elawaady XDigital', url:'https://t.me/Elawaady_XDigital' },
-  { id:'off-x', type:'official', order:10, visible:true, platform:'x', title:'X | Elawaady Official', url:'https://x.com/eIawaadyoffici' },
-  { id:'off-linkedin', type:'official', order:11, visible:true, platform:'linkedin', title:'لينكدإن | Ahmed Elawaady', url:'https://www.linkedin.com/in/elawaadyofficial' },
+  /* القائمة الرسمية المعتمدة النهائية لوسائل التواصل — استبدلت أي نسخة
+     سابقة (حسابات/صفحات غير معتمدة أُزيلت بالكامل). */
+  { id:'off-linkedin', type:'official', order:1, visible:true, platform:'linkedin', title:'LinkedIn | الحساب الرسمي', url:'https://www.linkedin.com/in/elawaadyofficial' },
+  { id:'off-x', type:'official', order:2, visible:true, platform:'x', title:'X (Twitter) | الحساب الرسمي', url:'https://x.com/eiawaadyoffici' },
+  { id:'off-tiktok', type:'official', order:3, visible:true, platform:'tiktok', title:'TikTok | الحساب الرسمي', url:'https://www.tiktok.com/@elawaady.official' },
+  { id:'off-store', type:'official', order:4, visible:true, platform:'store', title:'المتجر الرسمي | Elawaady XDigital', url:'https://elawaady.com' },
+  { id:'off-wa-main', type:'official', order:5, visible:true, platform:'whatsapp', title:'واتساب | الرسمي', url:'https://wa.me/201055578777' },
+  { id:'off-wa-extra', type:'official', order:6, visible:true, platform:'whatsapp', title:'واتساب | إضافي', url:'https://wa.me/201008002333' },
+  { id:'off-wa-support', type:'official', order:7, visible:true, platform:'whatsapp', title:'واتساب | دعم وطوارئ', url:'https://wa.me/201055656333' },
+  { id:'off-messenger', type:'official', order:8, visible:true, platform:'messenger', title:'ماسنجر | الصفحة الرسمية', url:'https://m.me/eIawaady.official' },
+  { id:'off-tg-1', type:'official', order:9, visible:true, platform:'telegram', title:'تليجرام | الرسمي', url:'https://t.me/ELawaadyBot' },
+  { id:'off-yallaa', type:'official', order:10, visible:true, platform:'telegram', title:'Yallaa Marketing', url:'https://t.me/YallaaMarketing' },
+  { id:'off-newlynow', type:'official', order:11, visible:true, platform:'web', title:'NewlyNow', url:'https://NewlyNow.com' },
 
   { id:'fbg-01', type:'facebook_group', order:1, visible:true, platform:'facebook', title:'جروب فيسبوك 1', url:'https://www.facebook.com/share/g/19AfKTyFiV/' },
   { id:'fbg-02', type:'facebook_group', order:2, visible:true, platform:'facebook', title:'جروب فيسبوك 2', url:'https://www.facebook.com/groups/556386908691748/' },

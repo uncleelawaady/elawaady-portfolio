@@ -49,9 +49,11 @@
   "email": "mailto:elawaady.official@gmail.com",
   "telephone": "+201055578777",
   "sameAs": [
-    "https://t.me/elawaadyofficial",
-    "https://wa.me/201055578777",
-    "https://linkedin.com/in/elawaadyofficial"
+    "https://www.linkedin.com/in/elawaadyofficial",
+    "https://x.com/eiawaadyoffici",
+    "https://www.tiktok.com/@elawaady.official",
+    "https://t.me/ELawaadyBot",
+    "https://wa.me/201055578777"
   ]
 }
 </script>
@@ -94,6 +96,7 @@
     <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M20.9 11.6a8.9 8.9 0 0 1-13.1 7.8L3.1 20.8l1.5-4.6A8.9 8.9 0 1 1 20.9 11.6Z"/><path d="M8.6 8.4c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .6.4l.8 1.9c.1.2 0 .4-.1.5l-.5.6c-.2.2-.3.4-.1.7.5.9 1.4 1.8 2.4 2.3.3.2.5.1.7-.1l.6-.6c.2-.2.3-.2.5-.1l1.8.9c.3.2.4.3.4.5v.5c0 .3-.1.5-.5.8-.4.3-1 .5-1.6.5-1.6 0-3.5-1.1-4.9-2.5s-2.4-3.2-2.4-4.7c0-.7.2-1.2.5-1.6Z"/></symbol>
     <symbol id="i-telegram" viewBox="0 0 24 24"><path d="M21.5 4.2 2.8 11.4c-.7.3-.7.9 0 1.1l4.7 1.5 1.8 5.5c.2.6.6.7 1 .3l2.6-2.4 4.6 3.4c.6.4 1 .2 1.2-.5l3-14c.2-.8-.3-1.2-1-.9Z"/><path d="m7.5 14 10.7-6.8-8.6 7.7"/></symbol>
     <symbol id="i-linkedin" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7.5 10.5V17"/><circle cx="7.5" cy="7.2" r="1.1"/><path d="M11.5 17v-6.5"/><path d="M11.5 13.2c0-1.5 1-2.7 2.6-2.7 1.5 0 2.4 1 2.4 2.7V17"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M13.5 3v11.2a3.4 3.4 0 1 1-2.5-3.3"/><path d="M13.5 3c.4 2.9 2.2 4.8 5 5.1"/></symbol>
   </defs>
 </svg>
 
@@ -109,7 +112,7 @@
     </a>
 
     <ul class="nav-links" id="navLinks">
-      <li><a href="#about"     data-ar="من أنا"   data-en="About">من أنا</a></li>
+      <li><a href="#about" class="nav-about" data-ar="من أنا"   data-en="About">من أنا</a></li>
       <li><a href="#expertise" data-ar="خبراتي"   data-en="Expertise">خبراتي</a></li>
       <li class="nav-review"><a class="nav-review-link" href="app.html?v=7#/new" data-ar="أضف تقييمك" data-en="Add your review">أضف تقييمك</a></li>
       <li><a href="#build"     data-ar="ما أبنيه" data-en="What I build">ما أبنيه</a></li>
@@ -151,9 +154,17 @@
 
     <p class="hero-desc" id="heroDesc"></p>
 
-    <div class="hero-cta">
+    <div class="hero-cta hero-cta-4">
+      <a href="app.html#/proofs" class="btn btn-grad btn-lg">
+        <svg class="ic"><use href="#i-shield"/></svg>
+        <span data-ar="شوف الإثباتات" data-en="See the proofs">شوف الإثباتات</span>
+      </a>
+      <a href="app.html?v=7#/new" class="btn btn-signature btn-lg">
+        <svg class="ic"><use href="#i-send"/></svg>
+        <span data-ar="اكتب تقييمك" data-en="Write your review">اكتب تقييمك</span>
+      </a>
       <a href="#expertise" class="btn btn-grad btn-lg"><svg class="ic"><use href="#i-layers"/></svg> <span id="heroCta1"></span></a>
-      <a href="#contact" class="btn btn-signature btn-lg"><svg class="ic"><use href="#i-send"/></svg> <span id="heroCta2"></span></a>
+      <a href="#contact" class="btn btn-signature btn-lg"><svg class="ic"><use href="#i-chat"/></svg> <span id="heroCta2"></span></a>
     </div>
 
     <div class="hero-features" id="heroFeatures"></div>
@@ -180,7 +191,7 @@
         <ul class="about-list" id="aboutPoints"></ul>
         <div class="hero-cta" style="justify-content:flex-start">
           <a href="#contact" class="btn btn-grad"><svg class="ic"><use href="#i-chat"/></svg> <span data-ar="تكلم معايا" data-en="Talk to me">تكلم معايا</span></a>
-          <a href="#projects" class="btn btn-ghost"><svg class="ic"><use href="#i-layers"/></svg> <span data-ar="شوف مشاريعي" data-en="See my projects">شوف مشاريعي</span></a>
+          <a href="#projects" class="btn btn-grad"><svg class="ic"><use href="#i-layers"/></svg> <span data-ar="شوف مشاريعي" data-en="See my projects">شوف مشاريعي</span></a>
         </div>
       </div>
 
@@ -359,6 +370,28 @@
   </div>
 </section>
 
+<!-- ===== Team & Operating System — فريق العمل والمنظومة التشغيلية ===== -->
+<section class="section team-os" id="team">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><span class="dot"></span><span data-ar="فريق العمل" data-en="Team &amp; operations">فريق العمل</span></span>
+      <h2 data-ar="منظومة تشغيل، وليست خدمة فردية" data-en="An operating system — not a one-person service">منظومة تشغيل، وليست خدمة فردية</h2>
+      <p id="teamBody"></p>
+      <p class="team-tagline" id="teamTagline" dir="ltr"></p>
+    </div>
+
+    <div class="org-map" id="orgMap"></div>
+
+    <div class="sec-head reveal" style="margin-block:56px 28px">
+      <span class="eyebrow" data-ar="سير العمل" data-en="Workflow">سير العمل</span>
+      <h3 data-ar="كيف تتحرك العملية داخل المنظومة؟" data-en="How does a request move through the system?">كيف تتحرك العملية داخل المنظومة؟</h3>
+    </div>
+    <div class="wf-line reveal" id="workflowFlow"></div>
+
+    <div class="team-vision-card reveal" id="teamVisionCard"></div>
+  </div>
+</section>
+
 <!-- ===== Vision ===== -->
 <section class="section" id="vision">
   <div class="container">
@@ -390,16 +423,6 @@
            data-en="Every review is reviewed and approved by hand before it appears, and proof images are redacted by their owner before upload. You can post stars, text and proof images.">
           كل تقييم بيتراجع ويتعتمد يدويًا قبل ما يظهر، وصور الإثبات بيموّهها صاحبها قبل الرفع. تقدر تكتب تقييمك بنجوم ونص وصور إثبات.
         </p>
-        <div class="proofs-cta">
-          <a href="app.html#/proofs" class="btn btn-grad btn-lg">
-            <svg class="ic"><use href="#i-shield"/></svg>
-            <span data-ar="شوف الإثباتات" data-en="See the proofs">شوف الإثباتات</span>
-          </a>
-          <a href="app.html#/new" class="btn btn-signature btn-lg">
-            <svg class="ic"><use href="#i-send"/></svg>
-            <span data-ar="اكتب تقييمك" data-en="Write your review">اكتب تقييمك</span>
-          </a>
-        </div>
         <ul class="proofs-list">
           <li data-ar="وساطة وضمان بين طرفين" data-en="Escrow and guarantee between two parties">وساطة وضمان بين طرفين</li>
           <li data-ar="بيع وشراء وخدمات رقمية" data-en="Buying, selling and digital services">بيع وشراء وخدمات رقمية</li>

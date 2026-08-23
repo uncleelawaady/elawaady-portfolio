@@ -323,6 +323,84 @@ window.SITE_CONTENT = {
       'We don’t treat a project as a one-off service. We build an ecosystem that ties technology, operations, commerce and user experience into a single clear path — using automation and AI wherever they add real value.']
   },
 
+  /* ---- فريق العمل والمنظومة التشغيلية ----
+     ملاحظة مهمة: القسم ده بيوصف هيكل تشغيل (Operational Structure/Areas of
+     Responsibility) مش صفحة "فريقنا" بصور موظفين وأعداد. من غير أرقام عن
+     عدد الموظفين ومن غير صور أشخاص وهميين — بالظبط زي ما اتفقنا. */
+  team: {
+    eyebrow: { ar: 'فريق العمل', en: 'Team & operations' },
+    title:   { ar: 'منظومة تشغيل، وليست خدمة فردية', en: 'An operating system — not a one-person service' },
+    body: {
+      ar: 'Elawaady XDigital تجمع بين الإدارة، التشغيل، الوساطة، التقنية، التسويق، الجودة والدعم داخل منظومة واحدة منظمة، بحيث ينتقل كل طلب إلى التخصص المناسب ويتم متابعته من البداية حتى التنفيذ والتسليم والتقييم.',
+      en: 'Elawaady XDigital brings management, operations, mediation, technology, marketing, quality and support together inside one organised system — every request moves to the right specialism and is tracked from the start through execution, delivery and review.'
+    },
+    tagline: 'Digital Platform • AI Solutions • Digital Services • Mediation',
+    mainCard: { ar: ['Elawaady XDigital', 'منظومة تشغيل رقمية'], en: ['Elawaady XDigital', 'Digital Operating System'] },
+
+    departments: [
+      { id:'exec', icon:'i-diamond',
+        ar:{ name:'الإدارة العليا', line:'الاستراتيجية • تطوير المنظومة • الشراكات • التوسع' },
+        en:{ name:'Executive Management', line:'Strategy • System development • Partnerships • Expansion' } },
+      { id:'cs', icon:'i-chat',
+        ar:{ name:'خدمة العملاء', line:'استقبال العملاء • الاستفسارات • متابعة الطلبات • توجيه الحالات' },
+        en:{ name:'Customer Service', line:'Client intake • Inquiries • Order follow-up • Case routing' } },
+      { id:'mediation', icon:'i-swap',
+        ar:{ name:'الوساطة والتوثيق', line:'تنظيم الصفقات • مراجعة الاتفاقات • متابعة التنفيذ • النزاعات • حفظ حقوق الأطراف' },
+        en:{ name:'Mediation & Documentation', line:'Deal structuring • Agreement review • Execution tracking • Disputes • Protecting both parties’ rights' } },
+      { id:'suppliers', icon:'i-store',
+        ar:{ name:'الموردون والشركاء', line:'اعتماد الموردين • جودة الخدمات • الأسعار • سرعة التنفيذ • تقييم الأداء' },
+        en:{ name:'Suppliers & Partners', line:'Supplier approval • Service quality • Pricing • Turnaround speed • Performance review' } },
+      { id:'merchants', icon:'i-cart',
+        ar:{ name:'التجار', line:'مراجعة الانضمام • اعتماد التجار • متابعة العروض • الجودة • المستحقات' },
+        en:{ name:'Merchants', line:'Onboarding review • Merchant approval • Offer tracking • Quality • Payouts' } },
+      { id:'marketing', icon:'i-megaphone',
+        ar:{ name:'التسويق', line:'Digital Marketing • Advertising • Social Media • Communities • Content' },
+        en:{ name:'Marketing', line:'Digital Marketing • Advertising • Social Media • Communities • Content' } },
+      { id:'design', icon:'i-palette',
+        ar:{ name:'التصميم والإبداع', line:'Branding • Social Media Design • Advertising • UI/UX • Visual Content' },
+        en:{ name:'Design & Creative', line:'Branding • Social Media Design • Advertising • UI/UX • Visual Content' } },
+      { id:'dev', icon:'i-code',
+        ar:{ name:'التطوير والبرمجة', line:'Website Development • Dashboards • APIs • Bots • Internal Systems • Maintenance' },
+        en:{ name:'Development & Engineering', line:'Website Development • Dashboards • APIs • Bots • Internal Systems • Maintenance' } },
+      { id:'ai', icon:'i-sparkles',
+        ar:{ name:'الذكاء الاصطناعي والأتمتة', line:'AI Solutions • Automation • AI Tools • Integrations • Workflow Development' },
+        en:{ name:'AI & Automation', line:'AI Solutions • Automation • AI Tools • Integrations • Workflow Development' } },
+      { id:'quality', icon:'i-shield',
+        ar:{ name:'الجودة', line:'مراجعة الطلبات • اختبار الخدمات • رضا العملاء • التقارير • تقييم الأداء' },
+        en:{ name:'Quality', line:'Order review • Service testing • Customer satisfaction • Reporting • Performance evaluation' } },
+      { id:'finance', icon:'i-chart',
+        ar:{ name:'الإدارة المالية', line:'المدفوعات • المستحقات • التحويلات • العمولات • التقارير المالية' },
+        en:{ name:'Finance', line:'Payments • Payouts • Transfers • Commissions • Financial reporting' } },
+      { id:'support', icon:'i-bolt',
+        ar:{ name:'الدعم الفني', line:'الأعطال • البلاغات • دعم المستخدمين • الأنظمة • تحسين الأداء' },
+        en:{ name:'Technical Support', line:'Issue resolution • Reports • User support • Systems • Performance tuning' } },
+      { id:'ops', icon:'i-layers',
+        ar:{ name:'فريق التشغيل', line:'متابعة الطلبات • تنسيق الإدارات • مراقبة التنفيذ • سير العمل • التقارير' },
+        en:{ name:'Operations Team', line:'Order tracking • Cross-department coordination • Execution monitoring • Workflow • Reporting' } }
+    ],
+
+    workflow: [
+      { icon:'i-users',   ar:'العميل',            en:'Client' },
+      { icon:'i-chat',    ar:'خدمة العملاء',      en:'Customer service' },
+      { icon:'i-chip',    ar:'التشغيل',           en:'Operations' },
+      { icon:'i-layers',  ar:'القسم المختص',      en:'Specialised department' },
+      { icon:'i-shield',  ar:'الجودة',            en:'Quality' },
+      { icon:'i-swap',    ar:'الوساطة / المالية', en:'Mediation / Finance' },
+      { icon:'i-send',    ar:'التسليم',           en:'Delivery' },
+      { icon:'i-star',    ar:'التقييم',           en:'Review' }
+    ],
+
+    vision: {
+      title: { ar:'رؤية الفريق', en:'Team vision' },
+      text: {
+        ar: 'نبني منظومة رقمية عربية متكاملة تجمع بين الخدمات الرقمية، والوساطة، والذكاء الاصطناعي، وإدارة العمليات، مع التركيز على الاحترافية والشفافية والتنظيم وتقديم تجربة موثوقة للعملاء والشركاء.',
+        en: 'We are building a complete Arabic digital ecosystem that brings together digital services, mediation, AI and operations management — with a focus on professionalism, transparency, structure and a trustworthy experience for clients and partners.'
+      },
+      cta1: { ar:'ابدأ مشروعك معنا', en:'Start your project with us' },
+      cta2: { ar:'تواصل مع Elawaady XDigital', en:'Contact Elawaady XDigital' }
+    }
+  },
+
   /* ---- الأدوات والتقنيات ---- */
   tools: [
     { id:'shopify', color:'#95BF47', type:{ar:'منصة متاجر',en:'Store platform'},

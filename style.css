@@ -151,6 +151,9 @@ button{font:inherit;color:inherit}
   transition:transform .2s ease,box-shadow .2s ease;
 }
 .filter-row button{cursor:pointer}
+/* رقائق المجتمعات/الجروبات بنفس الأحمر 3D لكن بحافة بيضاء أرفع من باقي
+   الأزرار — فرق دقيق يميّزها كرقائق مش أزرار CTA رئيسية. */
+.pill-grid span{border-width:1.5px}
 .btn-grad:hover, .btn-signature:hover, .filter-row button:hover, .pill-grid span:hover{
   transform:translateY(-3px);box-shadow:var(--btn-3d-shadow-hover);
 }
@@ -182,7 +185,7 @@ button{font:inherit;color:inherit}
   background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(18px);
   border-block-end:1px solid transparent;transition:.3s;
 }
-.nav.scrolled{background:color-mix(in srgb,var(--bg) 95%,transparent);border-block-end-color:var(--line-soft)}
+.nav.scrolled{background:color-mix(in srgb,var(--bg) 95%,transparent);box-shadow:0 1px 20px rgba(0,0,0,.14)}
 .nav-inner{display:flex;align-items:center;gap:18px}
 .brand{display:flex;align-items:center;gap:11px;font-weight:800}
 .brand-logo{width:40px;height:40px;object-fit:contain;border-radius:12px;
@@ -242,7 +245,8 @@ button{font:inherit;color:inherit}
 }
 .eyebrow .ic{color:var(--turquoise)}
 .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);flex:0 0 7px;
-  box-shadow:0 0 10px var(--orange)}
+  box-shadow:0 0 10px var(--orange);animation:dotPulse 2.2s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.3)}}
 
 .hero-mark{margin-block:26px 4px;position:relative;display:grid;place-items:center}
 .hero-mark img{
@@ -270,6 +274,18 @@ button{font:inherit;color:inherit}
 .hero-desc{color:var(--muted);font-size:1.02rem;max-width:64ch;margin-block:18px 0}
 
 .hero-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-block-start:22px}
+/* الأزرار الأربعة الرئيسية (الإثباتات/التقييم/الخبرات/التواصل) بنفس المقاس
+   تمامًا، صفين كل صف فيه زرارين بعرض الموقع بدل صف واحد مزدحم. */
+.hero-cta-4{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  width:100%;max-width:640px;margin-inline:auto;
+}
+.hero-cta-4 .btn{width:100%;animation:ctaPulse 3.6s ease-in-out infinite}
+.hero-cta-4 .btn:nth-child(2){animation-delay:.4s}
+.hero-cta-4 .btn:nth-child(3){animation-delay:.8s}
+.hero-cta-4 .btn:nth-child(4){animation-delay:1.2s}
+@keyframes ctaPulse{0%,100%{box-shadow:var(--btn-3d-shadow)}50%{box-shadow:var(--btn-3d-shadow-hover)}}
+@media (max-width:560px){.hero-cta-4{max-width:100%}.hero-cta-4 .btn{padding-inline:14px;font-size:.86rem}}
 
 .hero-features{
   display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-block-start:30px;
@@ -457,6 +473,86 @@ button{font:inherit;color:inherit}
 }
 .tool-logo img{display:block;width:100%;height:100%;object-fit:contain}
 .tool-name{font-weight:700;font-size:.86rem}
+
+/* =====================================================================
+   فريق العمل والمنظومة التشغيلية — Organization Map + Workflow + Vision
+
+   عائلة تصميم منفصلة عن بقية الموقع بقرار: بدل الكروت البيضاء (.glass)
+   المستخدمة في كل مكان تاني، كروت وأزرار القسم ده حمراء 3D فاتحة (أحمر
+   على أحمر) بحواف بيضاء رفيعة جدًا (1–1.5px) — طلب صريح من صاحب الموقع
+   عشان يبان القسم ده «منظومة» متماسكة بصريًا لوحدها.
+   ===================================================================== */
+.team-tagline{
+  margin-block-start:10px;font-weight:800;letter-spacing:.3px;font-size:.9rem;
+  color:var(--accent-ink);
+}
+
+.org-map{display:flex;flex-direction:column;align-items:center}
+.org-main{
+  display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
+  width:100%;max-width:320px;padding:30px 26px;border-radius:var(--radius-lg);
+  position:relative;z-index:2;transition:transform .25s ease,box-shadow .25s ease;
+}
+.org-main:hover{transform:translateY(-4px)}
+.org-main-logo{width:60px;height:60px;border-radius:16px;margin-block-end:6px;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.4))}
+.org-main strong{font-size:1.28rem;font-weight:900}
+.org-main span{color:rgba(255,255,255,.78);font-size:.85rem;font-weight:700}
+
+.org-rail{width:2px;height:32px;background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,.1));margin:0 auto}
+
+.org-depts{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));
+  gap:30px 16px;padding-block-start:8px;position:relative;
+}
+.dept-card{
+  position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;
+  width:100%;padding:24px 16px 20px;border-radius:var(--radius);cursor:pointer;font-family:inherit;
+  transition:transform .22s ease,box-shadow .22s ease;
+}
+.dept-card:hover{transform:translateY(-6px);box-shadow:0 9px 0 0 #4a0000,0 22px 44px rgba(60,0,0,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+.dept-card:active{transform:translateY(2px);box-shadow:0 3px 0 0 #4a0000,0 8px 18px rgba(60,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18)}
+.dept-stem{position:absolute;inset-block-start:-14px;inset-inline-start:50%;width:2px;height:14px;
+  background:rgba(255,255,255,.35);transform:translateX(-50%)}
+.dept-icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14)}
+.dept-icon .ic{width:1.3rem;height:1.3rem;color:#fff}
+.dept-card strong{font-size:.94rem;font-weight:800}
+.dept-card small{font-size:.75rem;color:rgba(255,255,255,.82);line-height:1.55}
+
+.wf-line{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:2px;margin-block-start:8px}
+.wf-step{display:flex;flex-direction:column;align-items:center;gap:9px;width:114px;text-align:center}
+.wf-ic{
+  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+  transition:transform .22s ease;
+}
+.wf-step:hover .wf-ic{transform:translateY(-4px) scale(1.06)}
+.wf-ic .ic{width:1.3rem;height:1.3rem;color:#fff}
+.wf-step > span{font-size:.82rem;font-weight:700;color:var(--muted)}
+.wf-arrow{display:flex;align-items:center;justify-content:center;width:1.6rem;height:52px;
+  color:var(--turquoise);flex:0 0 auto}
+.wf-arrow .ic{width:1.3rem;height:1.3rem}
+
+.team-vision-card{
+  margin-block-start:52px;padding:36px 30px;border-radius:var(--radius-lg);
+  text-align:center;max-width:760px;margin-inline:auto;
+}
+.team-vision-card h3{font-size:clamp(1.3rem,3vw,1.9rem);font-weight:900;margin-block-end:12px}
+.team-vision-card p{color:rgba(255,255,255,.85);font-size:1rem;line-height:1.85}
+
+/* اللمسة الحمراء 3D الموحّدة على كل عناصر القسم ده: الكارت الرئيسي،
+   كروت الإدارات، دوائر سير العمل، وكارت الرؤية الختامي. */
+.org-main, .dept-card, .wf-ic, .team-vision-card{
+  background:linear-gradient(160deg,#A80000,#8F0000 55%,#6b0000);
+  border:1.4px solid rgba(255,255,255,.85);
+  box-shadow:0 7px 0 0 #4a0000,0 16px 34px rgba(60,0,0,.42),inset 0 1px 0 rgba(255,255,255,.24);
+  color:#fff;
+}
+.team-vision-card .btn-grad, .team-vision-card .btn-signature{border-width:1.4px}
+
+@media (max-width:720px){
+  .wf-line{flex-direction:column;align-items:center;gap:14px}
+  .wf-arrow{width:52px;height:1.4rem;transform:rotate(-90deg)}
+}
 
 /* ===== Case study ===== */
 .case{
@@ -652,6 +748,12 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
 .proofs-shot img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;
   display:block}
 .nav-links a.nav-proofs{color:var(--accent-ink);font-weight:800}
+/* «من أنا» بارز كزرار مستقل: خلفية بيضاء، حافة حمراء، نص أسود — بدل رقعة
+   شفافة زي باقي روابط الهيدر. */
+.nav-links a.nav-about{
+  background:#fff;color:#111;border:1.5px solid var(--turquoise);font-weight:800;
+}
+.nav-links a.nav-about:hover{background:#fff;color:#111;box-shadow:0 4px 14px rgba(143,0,0,.25)}
 
 @media (max-width:900px){
   .proofs-band{grid-template-columns:1fr;padding:26px 22px;gap:26px}

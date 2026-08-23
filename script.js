@@ -321,7 +321,8 @@ function renderApproach() {
 --------------------------------------------------------------------------- */
 const PLATFORM_ICON = {
   store:'i-store', whatsapp:'i-whatsapp', messenger:'i-chat', instagram:'i-palette',
-  facebook:'i-users', telegram:'i-telegram', x:'i-sparkles', linkedin:'i-linkedin'
+  facebook:'i-users', telegram:'i-telegram', x:'i-sparkles', linkedin:'i-linkedin',
+  tiktok:'i-tiktok', web:'i-globe'
 };
 
 /* الاسم اللي بيظهر تحت العنوان — الدومين والمسار من غير https:// */
@@ -417,6 +418,64 @@ function renderRest() {
 }
 
 /* ---------------------------------------------------------------------------
+   فريق العمل والمنظومة التشغيلية — Organization Map + Workflow + Vision
+--------------------------------------------------------------------------- */
+function renderTeam(){
+  const T = C.team;
+  txt('teamBody', t(T.body));
+  txt('teamTagline', T.tagline);
+
+  set('orgMap', `
+    <div class="org-main">
+      <img src="assets/e-logo.png" alt="" class="org-main-logo" width="72" height="72">
+      <strong>${esc(t(T.mainCard)[0])}</strong>
+      <span dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${esc(t(T.mainCard)[1])}</span>
+    </div>
+    <div class="org-rail" aria-hidden="true"></div>
+    <div class="org-depts">
+      ${T.departments.map(d => `
+        <button type="button" class="dept-card" data-dept="${esc(d.id)}">
+          <span class="dept-stem" aria-hidden="true"></span>
+          <span class="dept-icon"><svg class="ic"><use href="#${esc(d.icon)}"/></svg></span>
+          <strong>${esc(t(d).name)}</strong>
+          <small>${esc(t(d).line)}</small>
+        </button>`).join('')}
+    </div>`);
+
+  set('workflowFlow', T.workflow.map((w, i) => `
+    ${i ? `<span class="wf-arrow" aria-hidden="true"><svg class="ic"><use href="#i-arrow"/></svg></span>` : ''}
+    <div class="wf-step">
+      <span class="wf-ic"><svg class="ic"><use href="#${esc(w.icon)}"/></svg></span>
+      <span>${esc(t(w))}</span>
+    </div>`).join(''));
+
+  const V = T.vision;
+  const waLink = firstLink('off-wa-main', `https://wa.me/${WHATSAPP}`);
+  set('teamVisionCard', `
+    <h3>${esc(t(V.title))}</h3>
+    <p>${esc(t(V.text))}</p>
+    <div class="hero-cta" style="justify-content:center">
+      <a href="#contact" class="btn btn-grad btn-lg">${esc(t(V.cta1))}</a>
+      <a href="${esc(waLink)}" target="_blank" rel="noopener noreferrer" class="btn btn-signature btn-lg">${esc(t(V.cta2))}</a>
+    </div>`);
+}
+
+function openDeptModal(id){
+  const d = C.team.departments.find(x => x.id === id);
+  if (!d) return;
+  const cur = t(d);
+  const points = cur.line.split('•').map(s => s.trim()).filter(Boolean);
+  openSiteModal(`
+    <div class="modal-head">
+      <h3>${esc(cur.name)}</h3>
+      <button class="modal-close" type="button" data-modal-close="1">✕</button>
+    </div>
+    <ul class="rules">
+      ${points.map(p => `<li><svg class="ic"><use href="#i-check-circle"/></svg><span>${esc(p)}</span></li>`).join('')}
+    </ul>`);
+}
+
+/* ---------------------------------------------------------------------------
    الأدوات والتقنيات
 --------------------------------------------------------------------------- */
 const TOOL_NAMES = {
@@ -484,7 +543,7 @@ function render() {
 
   renderHero(); renderStats(); renderAbout(); renderExpertise();
   renderBuilds(); renderCase(); renderJourney(); renderApproach();
-  renderChannels(); renderContact(); renderRest(); renderTools();
+  renderChannels(); renderContact(); renderRest(); renderTools(); renderTeam();
 
   observeReveals();
   runCounters();
@@ -663,6 +722,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('tools').addEventListener('click', e => {
     const card = e.target.closest('[data-tool]');
     if (card) openToolModal(card.dataset.tool);
+  });
+
+  /* كروت الإدارات في منظومة التشغيل — نافذة تفاصيل صغيرة */
+  document.getElementById('team').addEventListener('click', e => {
+    const card = e.target.closest('[data-dept]');
+    if (card) openDeptModal(card.dataset.dept);
   });
   document.getElementById('siteModal').addEventListener('click', e => {
     if (e.target.id === 'siteModal' || e.target.closest('[data-modal-close]')) closeSiteModal();
