@@ -1021,7 +1021,7 @@ html[dir="ltr"] .contact-card:hover{transform:translateX(6px)}
    وكارت التقييم. بلا حاجة لتكرار قواعد لكل مكوّن على حدة.
    ===================================================================== */
 .glass, .nav, .nav-links, .footer, .review-chip, .case, .statement,
-.proofs-band, .field, .contact-form, .proofs-list li, .saas-card {
+.proofs-band, .field, .contact-form, .proofs-list li, .saas-card, .site-modal-box {
   --text: var(--ink);
   --muted: var(--ink-muted);
   --dim: var(--ink-dim);

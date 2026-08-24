@@ -509,8 +509,7 @@ window.SITE_CONTENT = {
       { id:'etisalat-cash', name:'Etisalat Cash',  img:'etisalat-cash' },
       { id:'we-pay',        name:'WE Pay',         img:'we-pay' },
       { id:'paypal',        name:'PayPal',         img:'paypal' },
-      { id:'stripe',        name:'Stripe',         img:'stripe' },
-      { id:'paymob',        name:'Paymob',         icon:'i-card' }
+      { id:'stripe',        name:'Stripe',         img:'stripe' }
     ],
 
     services: [
