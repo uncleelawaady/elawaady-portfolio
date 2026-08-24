@@ -480,11 +480,13 @@ button{font:inherit;color:inherit}
 }
 .tool-card:hover{transform:translateY(-6px)}
 .tool-card:active{transform:translateY(-1px)}
+/* الحاوية بمقاس مربع ثابت (مش 100% عرض) — عشان الحواف المستديرة تتقص عند
+   حواف الصورة الفعلية بالظبط، مش عند حواف صندوق أعرض منها فاضي حواليها. */
 .tool-logo{
-  width:100%;height:64px;display:flex;align-items:center;justify-content:center;
-  flex:0 0 auto;overflow:hidden;
+  width:64px;height:64px;display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;overflow:hidden;border-radius:20%;
 }
-.tool-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:20%}
+.tool-logo img{display:block;width:100%;height:100%;object-fit:contain}
 .tool-name{font-weight:700;font-size:.86rem}
 
 /* =====================================================================
