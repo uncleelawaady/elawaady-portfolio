@@ -17,10 +17,16 @@ service cloud.firestore {
     match /users/{uid} {
       function isSelf() { return signedIn() && request.auth.uid == uid; }
       function userEditableOnly() { return onlyChanged(['displayName','photoURL','bio','lastSeenAt','updatedAt']); }
+      function validUserProfile() {
+        let d = request.resource.data;
+        return d.displayName is string && d.displayName.size() <= 80
+          && d.bio is string && d.bio.size() <= 500
+          && d.photoURL is string && (d.photoURL == '' || d.photoURL.matches('^https://.*'));
+      }
       function userFieldsOnly() { return request.resource.data.keys().hasOnly(['uid','email','displayName','photoURL','bio','role','status','createdAt','updatedAt','lastSeenAt']); }
       allow read: if isSelf() || isOwner();
       allow create: if isSelf() && userFieldsOnly() && request.resource.data.role == 'user' && request.resource.data.status == 'active' && request.resource.data.uid == uid;
-      allow update: if isOwner() || (isSelf() && userEditableOnly());
+      allow update: if isOwner() || (isSelf() && userEditableOnly() && validUserProfile());
       allow delete: if isOwner();
     }
 
@@ -33,9 +39,23 @@ service cloud.firestore {
       }
       function authorEditableOnly() { return onlyChanged(['title','body','rating','dealType','updatedAt']); }
       function mediaFieldsOnly() { return onlyChanged(['images','imageCount','updatedAt']); }
+      function validEditableReview() {
+        let d = request.resource.data;
+        return d.rating is int && d.rating >= 1 && d.rating <= 5
+          && d.title is string && d.title.size() <= 90
+          && d.body is string && d.body.size() >= 10 && d.body.size() <= 1500
+          && d.dealType in ['digital','design','development','marketing','consulting','mediation','project','trade','other','escrow','guarantee','transfer'];
+      }
+      function validReviewMediaList() {
+        let d = request.resource.data;
+        return d.images is list && d.images.size() <= 5
+          && d.imageCount is int && d.imageCount >= 0 && d.imageCount <= 5
+          && d.images.size() == d.imageCount;
+      }
       allow read: if resource.data.status == 'approved' || isOwner() || isAuthor();
       allow create: if signedIn() && validNewReview();
-      allow update: if isOwner() || (isAuthor() && resource.data.status == 'pending' && (authorEditableOnly() || mediaFieldsOnly()));
+      allow update: if isOwner() || (isAuthor() && resource.data.status == 'pending'
+        && ((authorEditableOnly() && validEditableReview()) || (mediaFieldsOnly() && validReviewMediaList())));
       allow delete: if isOwner() || (isAuthor() && resource.data.status == 'pending');
     }
 
@@ -43,7 +63,7 @@ service cloud.firestore {
       function parent() { return get(/databases/$(database)/documents/reviews/$(request.resource.data.reviewId)).data; }
       function existingParent() { return get(/databases/$(database)/documents/reviews/$(resource.data.reviewId)).data; }
       function mediaDocFieldsOnly() { return request.resource.data.keys().hasOnly(['url','publicId','mime','bytes','uid','reviewId','createdAt']); }
-      function validMedia() { let d = request.resource.data; return mediaDocFieldsOnly() && d.url is string && d.url.matches('^https://.*') && d.publicId is string && d.publicId.size() > 0 && d.mime in ['image/jpeg','image/png','image/webp'] && d.bytes is int && d.bytes > 0 && d.bytes <= 5 * 1024 * 1024; }
+      function validMedia() { let d = request.resource.data; return mediaDocFieldsOnly() && d.url is string && d.url.matches('^https://res\\.cloudinary\\.com/usc7hrc5/.*') && d.publicId is string && d.publicId.size() > 0 && d.mime in ['image/jpeg','image/png','image/webp'] && d.bytes is int && d.bytes > 0 && d.bytes <= 5 * 1024 * 1024; }
       allow read: if isOwner() || (signedIn() && resource.data.uid == request.auth.uid) || existingParent().status == 'approved';
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid && parent().uid == request.auth.uid && validMedia();
       allow update: if isOwner();
@@ -51,7 +71,7 @@ service cloud.firestore {
     }
 
     match /links/{linkId} {
-      function validLink() { let d = request.resource.data; return d.title is string && d.title.size() > 0 && d.title.size() <= 120 && d.url is string && (d.url.matches('^https://.*') || d.url.matches('^http://.*')) && d.type in ['official','facebook_group','whatsapp_group','whatsapp_channel'] && d.order is number && d.visible is bool; }
+      function validLink() { let d = request.resource.data; return d.title is string && d.title.size() > 0 && d.title.size() <= 120 && d.url is string && d.url.matches('^https://.*') && d.type in ['official','facebook_group','whatsapp_group','whatsapp_channel'] && d.order is number && d.visible is bool; }
       allow read: if true;
       allow create, update: if isOwner() && validLink();
       allow delete: if isOwner();
