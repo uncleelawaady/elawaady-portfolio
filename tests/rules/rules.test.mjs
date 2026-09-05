@@ -52,7 +52,7 @@ const newReview = (uid, over = {}) => ({
 
 /* مستند صورة إثبات: الحقول السبعة اللي القواعد بتسمح بيها بالظبط */
 const newMedia = (uid, reviewId, over = {}) => ({
-  url:'https://res.cloudinary.com/demo/image/upload/v1/reviews/a.jpg',
+  url:'https://res.cloudinary.com/usc7hrc5/image/upload/v1/reviews/a.jpg',
   publicId:'reviews/a', mime:'image/jpeg', bytes:120000,
   uid, reviewId, createdAt: serverTimestamp(), ...over
 });
@@ -86,7 +86,7 @@ await check('حقل زيادة في الملف بيترفض (رفض افتراض
 
 await check('المستخدم يعدّل اسمه وصورته ونبذته', () =>
   assertSucceeds(updateDoc(doc(userDb,'users',USER),
-    { displayName:'أحمد', photoURL:'x', bio:'نبذة', updatedAt: serverTimestamp() })));
+    { displayName:'أحمد', photoURL:'https://res.cloudinary.com/usc7hrc5/image/upload/avatar.jpg', bio:'نبذة', updatedAt: serverTimestamp() })));
 
 await check('المستخدم يحدّث lastSeenAt (الكود بيعملها كل دخول)', () =>
   assertSucceeds(updateDoc(doc(userDb,'users',USER),
@@ -202,7 +202,7 @@ await check('صاحب التقييم يعدّل نصه وهو pending', () =>
 
 await check('صاحب التقييم يكتب روابط الصور بعد الرفع', () =>
   assertSucceeds(updateDoc(doc(userDb,'reviews',myReviewId),
-    { images:[{ url:'https://res.cloudinary.com/demo/image/upload/v1/a.jpg',
+    { images:[{ url:'https://res.cloudinary.com/usc7hrc5/image/upload/v1/a.jpg',
                 publicId:'a', mime:'image/jpeg', bytes:1000 }],
       imageCount:1, updatedAt: serverTimestamp() })));
 
@@ -213,6 +213,14 @@ await check('حقل فيديو على تقييم بيترفض (الفيديو ا
 await check('حقل hasVideo على تقييم بيترفض', () =>
   assertFails(updateDoc(doc(userDb,'reviews',myReviewId),
     { hasVideo:true, updatedAt: serverTimestamp() })));
+
+await check('صاحب التقييم ما يقدرش يكتب تقييم ضخم بعد الإنشاء', () =>
+  assertFails(updateDoc(doc(userDb,'reviews',myReviewId),
+    { body:'x'.repeat(1501), updatedAt: serverTimestamp() })));
+
+await check('قائمة صور أكبر من الحد أو بعدد غير مطابق تُرفض', () =>
+  assertFails(updateDoc(doc(userDb,'reviews',myReviewId),
+    { images:[], imageCount:5, updatedAt: serverTimestamp() })));
 
 await check('صاحب التقييم ما يقدرش يعتمد تقييمه بنفسه', () =>
   assertFails(updateDoc(doc(userDb,'reviews',myReviewId), { status:'approved' })));
