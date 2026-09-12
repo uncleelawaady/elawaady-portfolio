@@ -28,16 +28,13 @@ window.FIREBASE_CONFIG = {
    الحقيقية في القواعد نفسها، مش هنا. */
 window.OWNER_UID = 'jJPB9z2WISN7yhW1iq99H4ncfi72';
 
-/* SaaS visual skin + wording sync for app.html.
-   The review/account app remains functional as-is; this layer only makes it
-   visually consistent with the main portfolio and changes public-facing copy. */
+/* Wording sync for app.html — public-facing copy only.
+   السكن البصري القديم (app-saas.css) اتشال: كان بيفرض ألوان بيضاء/أوف-وايت
+   بـ!important فوق ألوان app.html الحمرا الجديدة، وده اللي كان بيبوّظ أي
+   تلوين جديد (زرارات، مستطيلات الإدخال...) من غير ما يبان ليه في الكود
+   نفسه. app.html بقى بيدير مظهره بالكامل من الـ<style> اللي جواه. */
 (function(){
   if(typeof document==='undefined') return;
-  var link=document.createElement('link');
-  link.rel='stylesheet';
-  link.href='app-saas.css?v=2';
-  link.dataset.saasSkin='1';
-  document.head.appendChild(link);
 
   var replacements=[
     ['إثباتات تعاملات العوضي','تعاملات سابقة'],
