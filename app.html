@@ -27,11 +27,20 @@
   --text:#111111; --muted:#6B6B6B; --dim:#9A9A9A;
   --chip-bg:rgba(255,255,255,.5);
   --glass:linear-gradient(160deg,#FFFFFF,#FBF6EF);
-  --grad:linear-gradient(135deg,var(--cyan),var(--turquoise) 55%,var(--aqua));
+  /* نفس التدرّج الأحمر الفاخر اللي في style.css، بدل التدرّج الغامق الفلات
+     القديم — عشان أزرار app.html تبان زي زرار الموقع الرئيسي بالظبط. */
+  --grad:linear-gradient(145deg,#8F0000,#C60000 55%,#FF1E1E);
   --glow:0 0 0 1px rgba(143,0,0,.22),0 18px 46px rgba(23,6,6,.3);
   --ok:#2ED47A; --warn:#FFC53D; --bad:#FF6B6B;
   --accent-ink:var(--cyan);
   --radius:22px; --radius-sm:14px; --container:1080px; --nav-h:70px;
+  /* أزرار 3D بارزة بحدود بيضاء — نفس وصفة style.css بالظبط */
+  --btn-3d-shadow:0 8px 0 0 #520000,0 16px 32px rgba(100,0,0,.38),inset 0 1px 0 rgba(255,255,255,.35);
+  --btn-3d-shadow-hover:0 11px 0 0 #520000,0 20px 42px rgba(100,0,0,.46),inset 0 1px 0 rgba(255,255,255,.42);
+  --btn-3d-shadow-active:0 2px 0 0 #520000,0 6px 14px rgba(100,0,0,.32),inset 0 1px 0 rgba(255,255,255,.22);
+  --btn-3d-shadow-ghost:0 6px 0 0 rgba(0,0,0,.08),0 14px 28px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);
+  --btn-3d-shadow-ghost-hover:0 9px 0 0 rgba(0,0,0,.1),0 18px 36px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.7);
+  --btn-3d-shadow-ghost-active:0 1px 0 0 rgba(0,0,0,.06),0 4px 10px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.4);
 }
 /* الصفحة دايمًا نفس الهوية الحمراء/البيضاء بغض النظر عن تفضيل الجهاز —
    القيم مكرّرة هنا لأن CSS مبيسمحش نشارك بلوك واحد بين @media وselector. */
@@ -71,17 +80,29 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .container{width:min(100% - 28px,var(--container));margin-inline:auto}
 
 /* ===== أزرار ===== */
+/* كل زرار في الموقع بارز 3D بحدود بيضاء — نفس هوية style.css بالظبط،
+   كل نوع بلونه (أحمر أساسي، رمادي فاتح ثانوي، أخضر/أحمر/برتقالي للحالات)
+   لكن بنفس المعالجة: حدّ أبيض، ظل بارز، ورفع/ضغط عند الـhover/الـactive. */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:12px 22px;border-radius:999px;border:1px solid transparent;
-  font-weight:700;font-size:.93rem;cursor:pointer;transition:.24s;white-space:nowrap}
+  padding:12px 22px;border-radius:999px;border:2px solid transparent;
+  font-weight:800;font-size:.93rem;cursor:pointer;white-space:nowrap;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none!important}
-.btn-grad{background:var(--grad);color:#fff;border:2px solid #fff;box-shadow:0 4px 0 0 rgba(23,6,6,.4),0 12px 30px rgba(143,0,0,.3)}
-.btn-grad:hover:not([disabled]){transform:translateY(-2px)}
-.btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text)}
-.btn-ghost:hover:not([disabled]){border-color:var(--turquoise);background:rgba(143,0,0,.12)}
-.btn-ok{background:rgba(46,212,122,.14);border-color:rgba(46,212,122,.45);color:var(--ok)}
-.btn-bad{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.42);color:var(--bad)}
-.btn-warn{background:rgba(255,49,49,.1);border-color:rgba(255,49,49,.45);color:var(--orange)}
+.btn-grad{background:var(--grad);color:#fff;border-color:#fff;box-shadow:var(--btn-3d-shadow)}
+.btn-grad:hover:not([disabled]){transform:translateY(-3px);box-shadow:var(--btn-3d-shadow-hover)}
+.btn-grad:active:not([disabled]){transform:translateY(3px);box-shadow:var(--btn-3d-shadow-active)}
+.btn-ghost{background:var(--chip-bg);border-color:var(--line);color:var(--text);box-shadow:var(--btn-3d-shadow-ghost)}
+.btn-ghost:hover:not([disabled]){transform:translateY(-3px);border-color:var(--turquoise);background:rgba(143,0,0,.12);box-shadow:var(--btn-3d-shadow-ghost-hover)}
+.btn-ghost:active:not([disabled]){transform:translateY(2px);box-shadow:var(--btn-3d-shadow-ghost-active)}
+.btn-ok{background:rgba(46,212,122,.14);border-color:#fff;color:var(--ok);box-shadow:0 6px 0 0 rgba(10,90,50,.35),0 14px 28px rgba(46,212,122,.25),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn-ok:hover:not([disabled]){transform:translateY(-3px)}
+.btn-ok:active:not([disabled]){transform:translateY(2px)}
+.btn-bad{background:rgba(255,107,107,.12);border-color:#fff;color:var(--bad);box-shadow:0 6px 0 0 rgba(120,20,20,.35),0 14px 28px rgba(255,107,107,.25),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn-bad:hover:not([disabled]){transform:translateY(-3px)}
+.btn-bad:active:not([disabled]){transform:translateY(2px)}
+.btn-warn{background:rgba(255,49,49,.1);border-color:#fff;color:var(--orange);box-shadow:0 6px 0 0 rgba(90,10,10,.35),0 14px 28px rgba(255,49,49,.22),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn-warn:hover:not([disabled]){transform:translateY(-3px)}
+.btn-warn:active:not([disabled]){transform:translateY(2px)}
 .btn-sm{padding:8px 15px;font-size:.84rem}
 .btn.block{width:100%}
 
@@ -1715,8 +1736,9 @@ async function viewAccount(){
         </div>
 
         <div class="field">
-          <label for="pPhoto">الصورة الشخصية</label>
-          <input type="file" id="pPhoto" accept="image/jpeg,image/png,image/webp" class="input">
+          <label>الصورة الشخصية</label>
+          <input type="file" id="pPhoto" accept="image/jpeg,image/png,image/webp" hidden>
+          <button type="button" class="btn btn-grad btn-sm" id="pPhotoBtn" style="width:fit-content">اختار صورة</button>
           <p class="counter">اختيارية — بتتصغّر وبتترفع لوحدها.</p>
         </div>
 
@@ -1744,6 +1766,7 @@ async function viewAccount(){
   const show = (t, k = 'err') => { setText(msg, t); msg.className = 'msg show ' + k; };
 
   let newPhotoBlob = null;
+  $('#pPhotoBtn').onclick = () => $('#pPhoto').click();
   $('#pPhoto').onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -2642,7 +2665,7 @@ function renderOwnerProofEditor(){
           ${p.imageUrl ? `<img src="${esc(cldThumb(p.imageUrl,320))}" style="width:100%;height:100%;object-fit:cover">` : '<span style="opacity:.5">مفيش صورة</span>'}
         </div>
         <input type="file" id="opFile" accept="image/jpeg,image/png,image/webp" hidden>
-        <button type="button" class="btn btn-ghost btn-sm" id="opPick">${p.imageUrl ? 'غيّر الصورة' : 'اختار صورة'}</button>
+        <button type="button" class="btn btn-grad btn-sm" id="opPick">${p.imageUrl ? 'غيّر الصورة' : 'اختار صورة'}</button>
       </div>
 
       <div class="field">
