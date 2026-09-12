@@ -172,6 +172,7 @@ textarea.input{resize:vertical;min-height:130px}
 .pill.rejected{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4);color:var(--bad)}
 .pill.hidden  {background:var(--chip-bg);border-color:var(--line);color:var(--dim)}
 .pill.featured{background:rgba(255,49,49,.12);border-color:rgba(255,49,49,.45);color:var(--orange)}
+.pill.mediation{background:rgba(143,0,0,.12);border-color:rgba(143,0,0,.4);color:var(--turquoise)}
 
 /* ===== بطاقة تقييم ===== */
 .review{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);
@@ -776,7 +777,7 @@ function makeTestBackend(){
   async function load(){
     db = await idbGet('db');
     if (!db){
-      db = { users:{}, reviews:[], media:{}, links: seedLinks() };
+      db = { users:{}, reviews:[], media:{}, links: seedLinks(), dealProofs:[] };
       /* حسابين جاهزين عشان تقدر تجرب الرحلة كاملة من أول لحظة */
       db.users[TEST_OWNER_UID] = {
         uid: TEST_OWNER_UID, email:'owner@elawaady-db.com',
@@ -795,6 +796,8 @@ function makeTestBackend(){
     }
     /* قاعدة قديمة اتخزنت قبل ما الروابط تبقى جزء من النظام */
     if (!db.links) { db.links = seedLinks(); await save(); }
+    /* قاعدة قديمة اتخزنت قبل ما التوثيق المباشر يبقى جزء من النظام */
+    if (!db.dealProofs) { db.dealProofs = []; await save(); }
     currentUid = localStorage.getItem(SESSION_KEY);
     if (currentUid && !db.users[currentUid]) currentUid = null;
     if (currentUid){ db.users[currentUid].lastSeenAt = Date.now(); await save(); }
@@ -830,6 +833,15 @@ function makeTestBackend(){
       thumbUrl: urlFor(id + ':t', db.media[id] && db.media[id].thumb)
     }));
     return { ...r, images };
+  }
+
+  function hydrateProof(p){
+    const m = db.media[p.imageId];
+    return {
+      ...p,
+      imageUrl:  urlFor(p.imageId,       m && m.full),
+      thumbUrl:  urlFor(p.imageId + ':t', m && m.thumb)
+    };
   }
 
   return {
@@ -1028,6 +1040,47 @@ function makeTestBackend(){
     async restoreLinks(){
       if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
       db.links = seedLinks();
+      await save();
+    },
+
+    /* ------------------------  التوثيق المباشر  ------------------------ */
+    /* منفصلة تمامًا عن reviews العملاء: صورة + وصف المعاملة + هل كانت
+       وساطة، يضيفها العوضي بنفسه — لا تقييم نجوم ولا "مؤلف" هنا. */
+    async listDealProofs({ all = false } = {}){
+      const rows = all && isOwner() ? db.dealProofs : db.dealProofs.filter(p => p.visible !== false);
+      return rows.slice().sort((a, b) => b.createdAt - a.createdAt).map(hydrateProof);
+    },
+
+    async saveDealProof({ id, imageBlob, description, isMediation, visible } = {}){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      const text = String(description || '').trim();
+      if (text.length < 5) throw new Error('اكتب وصف المعاملة (5 أحرف على الأقل).');
+      const pid = id || 'dp-' + rid();
+      const existing = db.dealProofs.find(p => p.id === pid);
+      let imageId = existing && existing.imageId;
+      if (imageBlob){
+        imageId = 'dpimg-' + rid();
+        const thumb = await thumbnail(URL.createObjectURL(imageBlob));
+        db.media[imageId] = { full: imageBlob, thumb };
+      }
+      if (!imageId) throw new Error('اختار صورة للتعامل.');
+      const clean = {
+        id: pid, imageId,
+        description: text.slice(0, 600),
+        isMediation: !!isMediation,
+        visible: visible !== false,
+        createdAt: (existing && existing.createdAt) || Date.now(),
+        updatedAt: Date.now()
+      };
+      const at = db.dealProofs.findIndex(p => p.id === pid);
+      if (at >= 0) db.dealProofs[at] = clean; else db.dealProofs.push(clean);
+      await save();
+      return pid;
+    },
+
+    async removeDealProof(id){
+      if (!isOwner()) throw new Error('الصلاحية مرفوضة.');
+      db.dealProofs = db.dealProofs.filter(p => p.id !== id);
       await save();
     },
 
@@ -1362,6 +1415,47 @@ async function makeFirebaseBackend(cfg, ownerUid){
       await batch.commit();
     }),
 
+    /* ------------------------  التوثيق المباشر  ------------------------ */
+    /* منفصلة تمامًا عن reviews العملاء: صورة + وصف المعاملة + هل كانت
+       وساطة، يضيفها العوضي بنفسه — لا تقييم نجوم ولا "مؤلف" هنا. */
+    listDealProofs: ({ all = false } = {}) => run(async () => {
+      const snap = await F.getDocs(F.collection(db, 'deal_proofs'));
+      let rows = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      const owner = Boolean(user && ownerUid && user.uid === ownerUid);
+      if (!(all && owner)) rows = rows.filter(p => p.visible !== false);
+      rows.sort(byNewest);
+      return rows;
+    }),
+
+    saveDealProof: ({ id, imageBlob, description, isMediation, visible } = {}) => run(async () => {
+      const text = String(description || '').trim();
+      if (text.length < 5) throw new Error('اكتب وصف المعاملة (5 أحرف على الأقل).');
+      const pid = id || 'dp-' + rid();
+      let media = null;
+      if (imageBlob){
+        media = await cldUpload(imageBlob, `deal-proofs/${pid}`);
+      } else if (!id){
+        throw new Error('اختار صورة للتعامل.');
+      }
+      const payload = {
+        description: text.slice(0, 600),
+        isMediation: !!isMediation,
+        visible: visible !== false,
+        updatedAt: F.serverTimestamp()
+      };
+      if (media){
+        payload.imageUrl = media.url;
+        payload.publicId = media.publicId;
+        payload.mime = media.mime;
+        payload.bytes = media.bytes;
+      }
+      if (!id) payload.createdAt = F.serverTimestamp();
+      await F.setDoc(F.doc(db, 'deal_proofs', pid), payload, { merge:true });
+      return pid;
+    }),
+
+    removeDealProof: (id) => run(() => F.deleteDoc(F.doc(db, 'deal_proofs', id))),
+
     moderate: (id, status) => run(() => F.updateDoc(F.doc(db, 'reviews', id), {
       status,
       moderatedBy: user ? user.uid : null,
@@ -1429,6 +1523,7 @@ function paintNav(){
   if (owner){
     links.push(['#/admin', 'لوحة المراجعة']);
     links.push(['#/links', 'إدارة الروابط']);
+    links.push(['#/my-proofs', 'التوثيق المباشر']);
   }
 
   const here = location.hash || '#/proofs';
@@ -2050,12 +2145,37 @@ function wireCards(root){
 /* =======================================================================
    6) الصفحة العامة — المعتمد بس
 ======================================================================= */
+/* بطاقة "توثيق مباشر" — بسيطة عن قصد: صورة + وصف + بادچ وساطة لو موجودة،
+   من غير تقييم نجوم ولا "مؤلف" مزيّف زي بطاقة التقييم العادية. */
+function dealProofCard(p){
+  const img = p.imageUrl ? cldThumb(p.imageUrl, 560) : (p.thumbUrl || p.imageUrl);
+  return `
+  <article class="review">
+    ${img ? `<div class="shots"><div class="shot-frame">
+      <img src="${esc(img)}" data-full="${esc(p.imageUrl)}" data-rid="${esc(p.id)}" data-i="0" alt="صورة توثيق" loading="lazy">
+    </div></div>` : ''}
+    <div class="rv-head" style="margin-block-start:10px">
+      <div class="rv-who">
+        <div class="rv-meta">
+          ${p.isMediation ? `<span class="pill mediation">وساطة</span>` : ''}
+          <span>${esc(fmtDate(p.createdAt))}</span>
+        </div>
+      </div>
+    </div>
+    <p class="rv-body" data-nokashida>${esc(p.description || '')}</p>
+  </article>`;
+}
+
 async function viewReviews(){
   loading();
   let list = [];
   let error = '';
   try { list = await api.listApproved(); }
   catch (e){ error = e.message; }
+
+  let proofs = [];
+  try { proofs = await api.listDealProofs(); }
+  catch (e){ /* قسم ثانوي — فشله ما يكسرش صفحة التقييمات */ }
 
   const n = list.length;
   const avg = n ? Math.round((list.reduce((s, r) => s + (r.rating || 0), 0) / n) * 10) / 10 : 0;
@@ -2099,6 +2219,14 @@ async function viewReviews(){
     <div style="text-align:center;margin-block-start:26px">
       <a href="#/new" class="btn btn-grad btn-lg">اكتب تقييمك</a>
     </div>
+
+    ${proofs.length ? `
+    <div class="page-head" style="margin-block-start:48px">
+      <span class="eyebrow">توثيق مباشر</span>
+      <h2 class="title" style="font-size:1.6rem">تعاملات وثّقها العوضي بنفسه</h2>
+      <p class="sub">صور ووصف تعاملات — قديمة أو جديدة — أضافها صاحب الموقع بنفسه، منفصلة عن تقييمات العملاء فوق.</p>
+    </div>
+    <div class="grid reviews-bento">${proofs.map(dealProofCard).join('')}</div>` : ''}
   </div>`);
 
   wireCards(v);
@@ -2406,6 +2534,238 @@ async function viewLinks(){
   });
 }
 
+/* =======================================================================
+   8) التوثيق المباشر — للمالك بس
+   -----------------------------------------------------------------------
+   منفصلة تمامًا عن نظام تقييمات العملاء: العوضي بنفسه بيضيف صورة + وصف
+   المعاملة + هل كانت وساطة. الفورم صفحة كاملة (مش Modal) لأن اختيار
+   الصورة بيفتح أداة التمويه اللي هي نفسها Modal — والموقع عنده نافذة
+   واحدة مشتركة (#modal)، فمودال جوه مودال هيقفل التاني. نفس الحل المتبع
+   في viewNew().
+======================================================================= */
+let opDraft; // undefined = مفيش فورم مفتوح، {} = إضافة جديدة، {...} = تعديل
+
+async function viewOwnerProofs(){
+  const u = api.getUser();
+  if (!u) return (location.hash = '#/login?next=' + encodeURIComponent('#/my-proofs'));
+
+  if (!api.isOwner()){
+    render(`
+      <div class="container page" style="max-width:520px;text-align:center">
+        <div class="card"><div class="empty">
+          <div class="big">🔒</div>
+          <p style="font-weight:800;color:var(--text)">الصفحة دي مش ليك</p>
+          <p>التوثيق المباشر لصاحب الموقع بس.</p>
+          <a href="#/proofs" class="btn btn-ghost" style="margin-block-start:16px">رجوع للإثباتات</a>
+        </div></div>
+      </div>`);
+    return;
+  }
+
+  if (opDraft !== undefined) return renderOwnerProofEditor();
+
+  loading();
+  let list = [], error = '';
+  try { list = await api.listDealProofs({ all:true }); }
+  catch (e){ error = e.message; }
+
+  const row = (p) => `
+    <div class="lrow ${p.visible === false ? 'off' : ''}">
+      <div class="lrow-main" style="display:flex;align-items:center;gap:12px">
+        ${p.imageUrl ? `<img src="${esc(cldThumb(p.imageUrl, 120))}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex:0 0 auto">` : ''}
+        <div style="min-width:0">
+          <strong data-nokashida style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:360px">${esc(p.description)}</strong>
+          <span class="rv-meta">${p.isMediation ? '<span class="pill mediation">وساطة</span>' : ''} ${esc(fmtDate(p.createdAt))}</span>
+        </div>
+      </div>
+      <div class="lrow-acts">
+        <button class="btn btn-ghost btn-sm" data-vis="${p.visible === false ? '1' : '0'}" data-id="${esc(p.id)}">${p.visible === false ? 'إظهار' : 'إخفاء'}</button>
+        <button class="btn btn-ghost btn-sm" data-edit="${esc(p.id)}">تعديل</button>
+        <button class="btn btn-bad btn-sm"   data-del="${esc(p.id)}">حذف</button>
+      </div>
+    </div>`;
+
+  const v = render(`
+  <div class="container page">
+    <div class="page-head">
+      <span class="eyebrow">إدارة</span>
+      <h1 class="title">التوثيق المباشر</h1>
+      <p class="sub">${list.length} تعامل. صور ووصف تعاملات تضيفها بنفسك — منفصلة عن تقييمات العملاء.</p>
+    </div>
+
+    ${error ? `<div class="msg show err">${esc(error)}</div>` : ''}
+
+    <div style="margin-block-end:18px">
+      <button class="btn btn-grad" id="addProof">أضف إثبات</button>
+    </div>
+
+    ${list.length
+      ? `<div class="lrows">${list.map(row).join('')}</div>`
+      : `<div class="card">${emptyState('🗂️','لسه مفيش تعاملات مضافة.')}</div>`}
+  </div>`);
+
+  const reload = () => viewOwnerProofs();
+
+  $('#addProof', v).onclick = () => { opDraft = {}; reload(); };
+  $$('[data-edit]', v).forEach(b => b.onclick = () => { opDraft = list.find(p => p.id === b.dataset.edit); reload(); });
+  $$('[data-vis]', v).forEach(b => b.onclick = async () => {
+    const p = list.find(x => x.id === b.dataset.id);
+    try {
+      await api.saveDealProof({ id:p.id, description:p.description, isMediation:p.isMediation, visible: b.dataset.vis === '1' });
+      reload();
+    } catch (e){ toast(e.message, 'err'); }
+  });
+  $$('[data-del]', v).forEach(b => b.onclick = async () => {
+    if (!confirm('هيتشال التعامل ده نهائي. متأكد؟')) return;
+    try { await api.removeDealProof(b.dataset.del); toast('اتشال.', 'ok'); reload(); }
+    catch (e){ toast(e.message, 'err'); }
+  });
+}
+
+function renderOwnerProofEditor(){
+  const p = opDraft && opDraft.id ? opDraft : { id:'', description:'', isMediation:false, visible:true, imageUrl:'' };
+  let pickedBlob = null;
+
+  const v = render(`
+  <div class="container page" style="max-width:640px">
+    <div class="page-head">
+      <span class="eyebrow">توثيق مباشر</span>
+      <h1 class="title">${p.id ? 'تعديل إثبات' : 'إثبات جديد'}</h1>
+    </div>
+
+    <div class="card">
+      <div class="msg" id="opMsg"></div>
+
+      <div class="field">
+        <label>الصورة</label>
+        <div id="opPreviewBox" style="width:160px;height:160px;border-radius:14px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--surface-2);margin-block-end:10px">
+          ${p.imageUrl ? `<img src="${esc(cldThumb(p.imageUrl,320))}" style="width:100%;height:100%;object-fit:cover">` : '<span style="opacity:.5">مفيش صورة</span>'}
+        </div>
+        <input type="file" id="opFile" accept="image/jpeg,image/png,image/webp" hidden>
+        <button type="button" class="btn btn-ghost btn-sm" id="opPick">${p.imageUrl ? 'غيّر الصورة' : 'اختار صورة'}</button>
+      </div>
+
+      <div class="field">
+        <label for="opDesc">المعاملة كانت إيه؟</label>
+        <textarea class="input" id="opDesc" maxlength="600" placeholder="مثلًا: بيع حساب إنستجرام موثّق بين طرفين عبر الوساطة الآمنة...">${esc(p.description)}</textarea>
+        <p class="counter"><span id="opCount">${p.description.length}</span>/600 — الحد الأدنى 5 حروف</p>
+      </div>
+
+      <label class="check"><input type="checkbox" id="opMed" ${p.isMediation ? 'checked' : ''}> كانت وساطة</label>
+      <label class="check"><input type="checkbox" id="opVis" ${p.visible !== false ? 'checked' : ''}> ظاهر في الموقع</label>
+
+      <div style="display:flex;gap:10px;margin-block-start:16px">
+        <button class="btn btn-grad block" id="opSave" style="flex:1">حفظ</button>
+        <button class="btn btn-ghost" id="opCancel">إلغاء</button>
+      </div>
+    </div>
+  </div>`);
+
+  $('#opDesc', v).oninput = (e) => setText($('#opCount', v), e.target.value.length);
+
+  /* أداة التمويه — نفس نمط redactFlow في viewNew()، نسخة محلية لصورة
+     واحدة عشان الموقع عنده نافذة Modal مشتركة واحدة بس. */
+  function redactOne(src){
+    return new Promise((resolve) => {
+      const box = openModal(`
+        <div class="modal-head">
+          <h3>موّه البيانات الحساسة</h3>
+          <button class="icon-btn" data-close>✕</button>
+        </div>
+        <p class="sub" style="font-size:.86rem;margin-block-end:12px">
+          امسح بصباعك أو بالماوس فوق أرقام التليفون والأسماء وأرقام الحسابات
+          والمبالغ. المسح بيمسح البكسلات نفسها — مفيش رجوع بعد الحفظ.
+        </p>
+        <div class="redact-stage"><canvas id="rc"></canvas></div>
+        <div class="redact-bar">
+          <label style="font-size:.84rem;font-weight:700">حجم الفرشاة</label>
+          <input type="range" id="rBrush" min="14" max="90" value="34">
+          <button class="btn btn-ghost btn-sm" id="rUndo">تراجع</button>
+        </div>
+        <div class="msg info show" id="rWarn" style="display:none">
+          متمسحتش أي حاجة. لو الصورة فعلًا مفيهاش بيانات شخصية اضغط «خلصت» تاني.
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-grad" id="rDone" style="flex:1">خلصت — استخدم الصورة</button>
+          <button class="btn btn-ghost" data-close>إلغاء</button>
+        </div>`);
+
+      const red = new Redactor($('#rc', box));
+      let settled = false;
+      const finish = (out) => {
+        if (settled) return;
+        settled = true;
+        red.destroy();
+        closeModal();
+        resolve(out);
+      };
+
+      red.load(src).catch(e => { toast(e.message, 'err'); finish(null); });
+
+      $$('[data-close]', box).forEach(b => b.onclick = () => finish(null));
+      $('#modal').addEventListener('click', function bg(e){
+        if (e.target.id !== 'modal') return;
+        $('#modal').removeEventListener('click', bg);
+        finish(null);
+      });
+
+      $('#rBrush', box).oninput = (e) => red.brush = +e.target.value;
+      $('#rUndo', box).onclick = () => { if (!red.undo()) toast('مفيش حاجة أتراجع عنها.'); };
+
+      let confirmed = false;
+      $('#rDone', box).onclick = async () => {
+        if (!red.dirty && !confirmed){
+          confirmed = true;
+          $('#rWarn', box).style.display = 'block';
+          return;
+        }
+        const blob = await red.toBlob();
+        finish({ blob, url: URL.createObjectURL(blob) });
+      };
+    });
+  }
+
+  $('#opPick', v).onclick = () => $('#opFile', v).click();
+  $('#opFile', v).onchange = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const bad = checkFile(file);
+    if (bad){ toast(bad, 'err'); return; }
+    const out = await redactOne(URL.createObjectURL(file));
+    if (!out) return;
+    pickedBlob = out.blob;
+    $('#opPreviewBox', v).innerHTML = `<img src="${out.url}" style="width:100%;height:100%;object-fit:cover">`;
+  };
+
+  $('#opCancel', v).onclick = () => { opDraft = undefined; viewOwnerProofs(); };
+
+  const msg = $('#opMsg', v);
+  $('#opSave', v).onclick = async () => {
+    const description = $('#opDesc', v).value.trim();
+    if (description.length < 5){ setText(msg, 'اكتب وصف المعاملة (5 أحرف على الأقل).'); msg.className = 'msg show err'; return; }
+    if (!p.id && !pickedBlob){ setText(msg, 'اختار صورة للتعامل.'); msg.className = 'msg show err'; return; }
+
+    const btn = $('#opSave', v);
+    btn.disabled = true; const original = btn.textContent; btn.textContent = 'جاري الحفظ…';
+    try {
+      await api.saveDealProof({
+        id: p.id || undefined,
+        imageBlob: pickedBlob,
+        description,
+        isMediation: $('#opMed', v).checked,
+        visible: $('#opVis', v).checked
+      });
+      toast('اتحفظ.', 'ok');
+      opDraft = undefined;
+      viewOwnerProofs();
+    } catch (e){
+      setText(msg, e.message); msg.className = 'msg show err';
+      btn.disabled = false; btn.textContent = original;
+    }
+  };
+}
+
 /* ===========================  التوجيه  ================================== */
 /* #/proofs هو الاسم الأساسي للصفحة العامة. #/reviews و#/transactions
    بيوصّلوا لنفس المكان عشان أي رابط قديم أو مكتوب بالإيد يفضل شغال. */
@@ -2415,6 +2775,7 @@ const ROUTES = {
   '#/transactions': viewReviews,
   '#/channels':     viewChannels,
   '#/links':        viewLinks,
+  '#/my-proofs':    viewOwnerProofs,
   '#/new':          viewNew,
   '#/thanks':       viewThanks,
   '#/login':        viewLogin,

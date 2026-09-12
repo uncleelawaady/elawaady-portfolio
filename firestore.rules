@@ -77,6 +77,26 @@ service cloud.firestore {
       allow delete: if isOwner();
     }
 
+    /* توثيق مباشر: تعاملات (قديمة أو جديدة) يضيفها العوضي بنفسه — منفصلة
+       تمامًا عن reviews العملاء، لا تقييم نجوم ولا "مؤلف" مزيّف هنا. */
+    match /deal_proofs/{proofId} {
+      function dealProofFieldsOnly() { return request.resource.data.keys().hasOnly(['imageUrl', 'publicId', 'mime', 'bytes', 'description', 'isMediation', 'visible', 'createdAt', 'updatedAt']); }
+      function validDealProof() {
+        let d = request.resource.data;
+        return dealProofFieldsOnly()
+          && d.imageUrl is string && d.imageUrl.matches('^https://.*')
+          && d.publicId is string && d.publicId.size() > 0
+          && d.mime in ['image/jpeg', 'image/png', 'image/webp']
+          && d.bytes is int && d.bytes > 0 && d.bytes <= 5 * 1024 * 1024
+          && d.description is string && d.description.size() >= 5 && d.description.size() <= 600
+          && d.isMediation is bool
+          && d.visible is bool;
+      }
+      allow read: if resource.data.visible == true || isOwner();
+      allow create, update: if isOwner() && validDealProof();
+      allow delete: if isOwner();
+    }
+
     match /media/{mediaId} { allow read: if true; allow write: if isOwner(); }
     match /{document=**} { allow read, write: if false; }
   }
