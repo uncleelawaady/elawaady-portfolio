@@ -380,6 +380,13 @@ textarea.input{resize:vertical;min-height:130px}
 
 .testbar{background:rgba(255,197,61,.1);border-block-end:1px solid rgba(255,197,61,.3);
   color:var(--warn);font-size:.8rem;font-weight:700;text-align:center;padding:7px 14px}
+/* تحذير المتصفح المدمج (ماسنجر/إنستجرام/تيك توك...) — الدخول والتقييمات
+   بتفشل جوّاه بـ«الصلاحية مرفوضة» لأن Firebase Auth مش بيحتفظ بتسجيل
+   الدخول صح جوّه الـWebView المدمجة دي. تحذير واضح أحسن من فشل صامت. */
+.iabbar{display:none;position:relative;z-index:950;background:#FFD400;color:#3A1A00;
+  font-weight:800;font-size:.86rem;text-align:center;padding:12px 16px;line-height:1.6}
+.iabbar button{margin-inline-start:10px;background:#1C1C1C;color:#fff;border:none;
+  border-radius:999px;padding:7px 16px;font-size:.78rem;font-weight:800;cursor:pointer}
 .divider{display:flex;align-items:center;gap:12px;color:var(--dim);font-size:.8rem;
   margin-block:18px}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -387,6 +394,12 @@ textarea.input{resize:vertical;min-height:130px}
 </head>
 
 <body class="app-shell">
+
+<div class="iabbar" id="iabbar">
+  الرابط ده اتفتح جوه متصفح التطبيق (ماسنجر/إنستجرام...) — تسجيل الدخول
+  وإرسال التقييم غالبًا هيفشلوا هنا. افتحه في متصفحك الأساسي (Safari أو Chrome).
+  <button type="button" id="iabCopy">انسخ الرابط</button>
+</div>
 
 <nav class="nav">
   <div class="container nav-inner">
@@ -437,6 +450,32 @@ textarea.input{resize:vertical;min-height:130px}
    في firestore.rules — الكود ده مش بيحميها، السيرفر هو اللي بيرفض. الوضع
    test بيقلّد نفس الرفض عشان الاختبار يبان صح.
 =========================================================================== */
+
+/* ===========================  متصفح مدمج  ================================
+   ماسنجر وإنستجرام وتيك توك وغيرهم بيفتحوا الروابط جوّه WebView خاصة بيهم
+   مش المتصفح الأساسي للجهاز. Firebase Auth بيحتاج يخزّن جلسة الدخول محليًا
+   (IndexedDB)، والـWebView دي بتقيّد أو بتفقد التخزين ده أحيانًا — فالنتيجة
+   تسجيل دخول بيظهر ناجح لحظيًا، وبعدين أي كتابة (تقييم، صورة) بترجع
+   «الصلاحية مرفوضة» لأن التوكن اللي اتبعت مش صالح فعليًا. بنكتشف الحالة دي
+   بدري ونحذّر بدل ما نسيب الزائر يواجه فشل غامض في نص الرحلة. */
+(function warnEmbeddedBrowser(){
+  const ua = navigator.userAgent || '';
+  const isEmbedded = /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|BytedanceWebview|musical_ly|TikTok|Snapchat/i.test(ua);
+  if (!isEmbedded) return;
+  const bar = document.getElementById('iabbar');
+  if (!bar) return;
+  bar.style.display = 'block';
+  const copyBtn = document.getElementById('iabCopy');
+  if (copyBtn) copyBtn.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      copyBtn.textContent = 'اتنسخ ✓';
+      setTimeout(() => { copyBtn.textContent = 'انسخ الرابط'; }, 2200);
+    } catch (e){
+      prompt('انسخ الرابط ده والصقه في متصفحك:', location.href);
+    }
+  };
+})();
 
 /* ===========================  KASHIDA  ==================================
    علامة التطويل (ـ) جوّه كل كلمة عربية.
@@ -1228,7 +1267,22 @@ async function makeFirebaseBackend(cfg, ownerUid){
        القائمة يورّي رسالة عامة بس. */
     return new Error(MESSAGES[code] || 'حصل خطأ مش متوقع. حاول تاني.');
   };
-  const run = async (fn) => { try { return await fn(); } catch (e){ throw wrap(e); } };
+  /* بعض المتصفحات المدمجة (ماسنجر/إنستجرام...) بتخزّن توكن دخول قديم أو
+     تالف من غير ما تعرف. لو العملية اترفضت بـpermission-denied وفيه
+     مستخدم مسجّل فعلًا، بنجبر تحديث التوكن ونجرّب مرة واحدة تانية قبل
+     ما نستسلم — ده بيصلّح جزء كبير من حالات «الصلاحية مرفوضة» الوهمية
+     من غير ما الزائر يحتاج يعمل أي حاجة. */
+  const run = async (fn) => {
+    try { return await fn(); }
+    catch (e){
+      const code = String((e && e.code) || '');
+      if (code.includes('permission-denied') && user){
+        try { await user.getIdToken(true); return await fn(); }
+        catch (e2){ throw wrap(e2); }
+      }
+      throw wrap(e);
+    }
+  };
 
   let user = null, profile = null, ready = false;
   const listeners = new Set();
